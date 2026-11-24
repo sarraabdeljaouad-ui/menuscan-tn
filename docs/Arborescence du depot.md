@@ -1,6 +1,6 @@
 # Arborescence du dépôt
 
-**Référence :** MS-DATA-ARB-001 · **Version :** 1.1 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-ARB-001 · **Version :** 1.2 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Le dépôt `menuscan-tn` suit les phases du projet : un dossier numéroté par phase, dans l'ordre de réalisation. Les dossiers des phases à venir sont créés au démarrage de chaque phase.
 
@@ -73,6 +73,7 @@ menuscan-tn/
 ├── 09_recette/                   ← notes de validation et PV des phases 1 à 9
 │
 └── docs/                         ← documents transverses
+    ├── Presentation du projet.md
     ├── Installation du poste de travail.md
     ├── Conventions de nommage et de codage.md
     ├── Arborescence du depot.md

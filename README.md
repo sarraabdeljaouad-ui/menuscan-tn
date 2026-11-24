@@ -44,7 +44,7 @@ flowchart LR
 
 | Phase | Contenu | Statut |
 |---|---|---|
-| 0. Cadrage | Dossier de cadrage, pilotage, analyse des sources, gouvernance des données, recette | Terminée (validée avec réserves le 23/11/2026) |
+| 0. Cadrage | Dossier de cadrage, pilotage, analyse des sources, gouvernance des données, recette | Terminée (validée sans réserve le 24/11/2026) |
 | 1. Environnement et application | Docker, base applicative, application Streamlit, QR codes | À venir |
 | 2. Données | Générateur et jeu de démonstration | Jeu de données livré |
 | 3. Ingestion | Chargement des 124 fichiers bruts | À venir |
@@ -73,6 +73,10 @@ docker compose up -d            # démarre PostgreSQL
 ```
 
 Le détail est dans [docs/Installation du poste de travail.md](docs/Installation%20du%20poste%20de%20travail.md).
+
+## Présentation détaillée
+
+L'entreprise, les données, les dix phases et les outils sont expliqués dans [docs/Presentation du projet.md](docs/Presentation%20du%20projet.md).
 
 ## Arborescence
 
