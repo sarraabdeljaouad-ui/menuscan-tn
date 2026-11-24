@@ -58,14 +58,16 @@ def prendre(appel_id):
 
 
 def encaisser(table_id):
+    """Appelée dans la fenêtre. La fermer depuis l'intérieur casse l'affichage (page blanche) :
+    on relance donc toute la page, sans la fenêtre, et le message s'affiche ensuite sur le tableau."""
     mode = st.session_state.get(f"mode_{table_id}")
     if not mode:
-        st.session_state[f"erreur_{table_id}"] = True
+        st.error("Choisissez le mode de règlement.")
         return
     montant = db.encaisser(choix, table_id, MODES[mode])
-    st.session_state.pop(f"mode_{table_id}", None)
-    fermer_table()  # table réglée : la fenêtre se ferme
-    st.toast(f"Encaissé : {prix(montant)} ({mode.lower()})")
+    st.session_state.message = f"Table encaissée : {prix(montant)} ({mode.lower()})"
+    fermer_table()
+    st.rerun(scope="app")
 
 
 def minutes_depuis(h):
@@ -107,10 +109,8 @@ def fenetre_table(t):
               <b>À encaisser ({len(a_regler)} commande{"s" if len(a_regler) > 1 else ""})</b>
               <span class="titre" style="font-size:24px;color:{MARINE}">{prix(total)}</span></div>""", unsafe_allow_html=True)
             st.pills("Règlement", list(MODES), key=f"mode_{t['table_id']}", label_visibility="collapsed")
-            if st.session_state.pop(f"erreur_{t['table_id']}", False):
-                st.error("Choisissez le mode de règlement.")
-            st.button(f"Encaisser {prix(total)}", key=f"enc_{t['table_id']}", type="primary", icon=":material/payments:",
-                      on_click=encaisser, args=(t["table_id"],), width="stretch")
+            if st.button(f"Encaisser {prix(total)}", key=f"enc_{t['table_id']}", type="primary", icon=":material/payments:", width="stretch"):
+                encaisser(t["table_id"])
         elif en_cours:
             st.caption("Les commandes seront à encaisser une fois servies.")
     contenu()
@@ -220,6 +220,8 @@ def tableau():
         st.markdown(f'<div style="font-size:13px;color:#334155;margin-top:8px">{legende}</div>', unsafe_allow_html=True)
 
 
+if "message" in st.session_state:
+    st.toast(st.session_state.pop("message"), icon=":material/check_circle:")
 tableau()
 ouverte = st.session_state.get("table_ouverte")
 if ouverte:

@@ -50,6 +50,7 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 | Chiffre du jour, panier moyen, délai, taux de commande | Non | Oui |
 | Meilleures ventes du mois | Non | Oui |
 | Ouvrir ou fermer les commandes | Non | Oui |
+| Activité des tables : recherche, comparaison, historique, export CSV | Non | Oui |
 | Tables et QR codes | Non | Oui |
 
 **Rester connecté :** après la connexion, l'appareil reste connecté, même après une actualisation ou la fermeture du navigateur, jusqu'au bouton « Se déconnecter ». La connexion expire seulement après 30 jours sans utilisation ; chaque ouverture de l'application relance ce délai. Le navigateur garde un jeton aléatoire dans un cookie ; la base n'en garde que l'empreinte SHA-256. Le gérant dispose d'un bouton « Déconnecter partout », qui déconnecte tous les appareils des comptes de son établissement (appareil perdu, départ d'un serveur).
@@ -63,10 +64,11 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 | Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », cloche d'appel avec motif (serveur, eau, addition) ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes ; « Commander autre chose » et liste « Mes commandes » avec le total de la visite et les commandes réglées |
 | Équipe | `/` | Accueil public |
 | Équipe | `/connexion` | Connexion |
+| Équipe | `/activite` | Gérant seulement : période (aujourd'hui, 7 jours, 30 jours, mois en cours ou dates choisies), recherche par numéro ou par zone, tableau comparatif des tables (visites, commandes servies et annulées, chiffre, panier moyen, délai, appels), puis historique de la table choisie : indicateurs, commandes avec articles, statut, délai et règlement (export CSV), appels avec délai de prise en charge |
 | Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer |
 | Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, appels, commandes en direct, meilleures ventes, plan de salle. Serveur : 4 compteurs (dont les tables à encaisser), appels, commandes en direct, plan de salle. Mise à jour toutes les 10 secondes |
 
-**Plan de salle (lot 1) :** chaque table est un bouton coloré selon son état, du plus urgent au moins urgent : appel en attente, commande en cours, servi à encaisser, menu ouvert depuis moins de 30 minutes, libre. Toucher une table ouvre sa fenêtre : appels à prendre en charge, commandes avec leur bouton d'étape, puis le total à encaisser avec le mode de règlement. La fenêtre reste ouverte après chaque action et se ferme après l'encaissement.
+**Plan de salle (lot 1) :** chaque table est un bouton coloré selon son état, du plus urgent au moins urgent : appel en attente, commande en cours, servi à encaisser, menu ouvert depuis moins de 30 minutes, libre. Toucher une table ouvre sa fenêtre : appels à prendre en charge, commandes avec leur bouton d'étape, puis le total à encaisser avec le mode de règlement. La fenêtre reste ouverte après chaque action et se ferme après l'encaissement ; un message confirme le montant encaissé. Une table encaissée redevient libre, sauf si un client y rouvre le menu.
 
 ## QR codes et test depuis un téléphone
 
@@ -141,6 +143,7 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 - **Adresse du client :** quiconque obtient l'adresse complète d'un client (avec `s=`), par exemple par une capture partagée, voit son panier et le suivi de sa commande pendant 4 heures. Il ne peut rien voir d'autre.
 - **Deuxième commande d'un même client :** elle ouvre une nouvelle session, qui commence par un événement `scan_qr` comme dans les données générées. Le nombre de scans est donc un peu surestimé quand un client commande plusieurs fois ; le lien entre ces sessions est gardé dans `etats_client`.
 - **Mise à jour du thème :** après le remplacement d'un fichier de `commun/`, relancer les deux applications ; Streamlit ne recharge pas tout seul ce dossier.
+- **Activité des tables :** le détail des appels (motif, délai de prise en charge) n'existe que pour les appels passés depuis l'application ; les appels des données générées sont seulement comptés. L'historique affiche au plus les 300 commandes les plus récentes de la période.
 - **Arabe :** l'interface est traduite, pas les noms ni les descriptions des plats, qui n'existent qu'en français.
 - **Articles vus :** l'application n'écrit pas d'événement `vue_article` ; `nb_articles_vus` reste à 0 pour ses sessions.
 - **Données simulées jusqu'au 31/12/2026 :** le jeu contient déjà des commandes datées après le jour présent ; tous les calculs s'arrêtent à l'heure courante.

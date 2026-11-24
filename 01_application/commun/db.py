@@ -281,7 +281,8 @@ def meilleures_ventes(etablissement_id):
 
 
 def etat_tables(etablissement_id):
-    """État de chaque table : appel en attente, commande en cours, servi à encaisser, menu ouvert (30 min) ou libre."""
+    """État de chaque table : appel en attente, commande en cours, servi à encaisser, menu ouvert (30 min) ou libre.
+    Une table encaissée redevient libre, sauf si un client y a de nouveau ouvert le menu après l'encaissement."""
     n = maintenant()
     return lire(f"""
         SELECT t.table_id, t.numero_table, t.zone,
@@ -289,7 +290,9 @@ def etat_tables(etablissement_id):
                EXISTS (SELECT 1 FROM commandes c WHERE c.table_id = t.table_id AND c.statut_commande IN {ACTIVES}) AS commande,
                EXISTS (SELECT 1 FROM commandes c WHERE c.table_id = t.table_id AND c.statut_commande = 'servie'
                        AND c.date_heure_reglement IS NULL) AS a_encaisser,
-               EXISTS (SELECT 1 FROM sessions s WHERE s.table_id = t.table_id AND s.fin_session BETWEEN :o AND :n) AS ouvert
+               EXISTS (SELECT 1 FROM sessions s WHERE s.table_id = t.table_id AND s.fin_session BETWEEN :o AND :n
+                       AND s.fin_session > COALESCE((SELECT MAX(c.date_heure_reglement) FROM commandes c WHERE c.table_id = t.table_id),
+                                                    TIMESTAMP '1900-01-01')) AS ouvert
         FROM tables_salle t WHERE t.etablissement_id = :e ORDER BY t.numero_table""",
                 e=etablissement_id, n=n, o=n - timedelta(minutes=30))
 
@@ -472,3 +475,49 @@ def commandes_visite(commande_ids):
     """Statut et montant des commandes d'un client pendant sa visite, dans l'ordre."""
     return lire("""SELECT commande_id, statut_commande, montant_total_ttc, date_heure_commande, date_heure_reglement FROM commandes
                    WHERE commande_id = ANY(:ids) ORDER BY date_heure_commande""", ids=list(commande_ids))
+
+
+# ---------- Activité des tables (gérant, lot 2) ----------
+
+def activite_tables(etablissement_id, debut, fin):
+    """Une ligne par table sur la période [debut, fin] (bornée à maintenant) : visites, commandes, chiffre encaissé, appels.
+    Les appels comptent les événements appel_serveur, présents aussi dans les données générées."""
+    fin = min(fin, maintenant())
+    return lire("""
+        SELECT t.table_id, t.numero_table, t.zone, t.capacite,
+               (SELECT COUNT(*) FROM sessions s WHERE s.table_id = t.table_id AND s.debut_session BETWEEN :d AND :f) AS visites,
+               COUNT(c.commande_id) FILTER (WHERE c.statut_commande = 'servie') AS servies,
+               COUNT(c.commande_id) FILTER (WHERE c.statut_commande = 'annulee') AS annulees,
+               COALESCE(SUM(c.montant_total_ttc) FILTER (WHERE c.statut_commande = 'servie'), 0) AS chiffre,
+               AVG(c.montant_total_ttc) FILTER (WHERE c.statut_commande = 'servie') AS panier,
+               AVG(EXTRACT(EPOCH FROM c.date_heure_service - c.date_heure_commande) / 60) FILTER (WHERE c.statut_commande = 'servie') AS delai,
+               (SELECT COUNT(*) FROM evenements ev JOIN sessions s USING (session_id)
+                 WHERE s.table_id = t.table_id AND ev.type_evenement = 'appel_serveur' AND ev.horodatage BETWEEN :d AND :f) AS appels,
+               MAX(c.date_heure_commande) AS derniere
+        FROM tables_salle t
+        LEFT JOIN commandes c ON c.table_id = t.table_id AND c.date_heure_commande BETWEEN :d AND :f
+        WHERE t.etablissement_id = :e
+        GROUP BY t.table_id ORDER BY t.numero_table""", e=etablissement_id, d=debut, f=fin)
+
+
+def historique_table(etablissement_id, table_id, debut, fin, limite=300):
+    """Commandes d'une table sur la période, les plus récentes d'abord, avec leurs articles et leurs heures d'étape."""
+    fin = min(fin, maintenant())
+    return lire("""
+        SELECT c.commande_id, c.date_heure_commande, c.statut_commande, c.montant_total_ttc, c.mode_reglement,
+               c.date_heure_reglement, c.note, c.motif_annulation,
+               ROUND(EXTRACT(EPOCH FROM c.date_heure_service - c.date_heure_commande) / 60) AS delai,
+               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article), ' · ' ORDER BY l.ligne_id) AS detail
+        FROM commandes c JOIN lignes_commande l USING (commande_id) JOIN articles a ON a.article_id = l.article_id
+        WHERE c.etablissement_id = :e AND c.table_id = :t AND c.date_heure_commande BETWEEN :d AND :f
+        GROUP BY c.commande_id ORDER BY c.date_heure_commande DESC LIMIT :n""",
+                e=etablissement_id, t=table_id, d=debut, f=fin, n=limite)
+
+
+def appels_table(etablissement_id, table_id, debut, fin):
+    """Appels passés par l'application (table appels, migration 004), avec le délai de prise en charge."""
+    fin = min(fin, maintenant())
+    return lire("""SELECT motif, date_heure_appel, date_heure_prise,
+                          ROUND(EXTRACT(EPOCH FROM date_heure_prise - date_heure_appel) / 60) AS attente
+                   FROM appels WHERE etablissement_id = :e AND table_id = :t AND date_heure_appel BETWEEN :d AND :f
+                   ORDER BY date_heure_appel DESC""", e=etablissement_id, t=table_id, d=debut, f=fin)

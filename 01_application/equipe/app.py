@@ -62,6 +62,7 @@ else:
     pages = [st.Page("vues/tableau.py", title=titre, icon=":material/dashboard:" if u["role"] == "gerant" else ":material/room_service:",
                      url_path="tableau", default=True)]
     if u["role"] == "gerant":
+        pages.append(st.Page("vues/activite.py", title="Activité des tables", icon=":material/table_restaurant:", url_path="activite"))
         pages.append(st.Page("vues/qr_codes.py", title="Tables et QR codes", icon=":material/qr_code_2:", url_path="qr"))
     with st.sidebar:
         role = "Gérant" if u["role"] == "gerant" else "Serveur"
