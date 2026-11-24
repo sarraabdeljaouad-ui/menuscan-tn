@@ -55,6 +55,12 @@ h1, h2, h3, .titre, .stApp .titre {{ font-family: 'Plus Jakarta Sans', Inter, sa
 [class*="st-key-case_"] .stButton button:hover {{ filter: brightness(0.95); outline: 2px solid {MARINE}; }}
 [class*="st-key-appel_"] {{ background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 16px; padding: 10px 14px; }}
 .st-key-barre [data-testid="stPopover"] button {{ min-height: 52px; border-radius: 12px; }}
+[class*="st-key-carte_art_"] {{ position: relative; }}
+[class*="st-key-voile_"] {{ position: absolute !important; inset: 0; width: auto !important; z-index: 1; margin: 0 !important; }}
+[class*="st-key-voile_"] .stButton, [class*="st-key-voile_"] button {{ width: 100% !important; height: 100% !important; opacity: 0; cursor: pointer; }}
+[class*="st-key-carte_art_"] [data-testid="stElementContainer"]:not([class*="st-key-voile_"]),
+[class*="st-key-carte_art_"] [data-testid="stHorizontalBlock"] {{ position: relative; z-index: 2; pointer-events: none; }}
+[class*="st-key-carte_art_"] [data-testid="stElementContainer"]:not([class*="st-key-voile_"]) button {{ pointer-events: auto; }}
 [class*="st-key-case_appel_"] .stButton button {{ background: {ORANGE}; color: #422006; }}
 [class*="st-key-case_commande_"] .stButton button {{ background: {BLEU}; color: #FFFFFF; }}
 [class*="st-key-case_encaisser_"] .stButton button {{ background: {VIOLET_CLAIR}; color: {VIOLET}; }}

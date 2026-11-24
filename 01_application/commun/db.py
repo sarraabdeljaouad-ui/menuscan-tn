@@ -69,7 +69,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -153,7 +153,7 @@ def suivi(commande_id):
     c = un("""SELECT commande_id, statut_commande, date_heure_commande, date_heure_acceptation, date_heure_prete,
                      date_heure_service, montant_total_ttc, note FROM commandes WHERE commande_id = :c""", c=commande_id)
     if c:
-        c["lignes"] = lire("""SELECT l.quantite, a.nom_article, l.montant_ligne_ttc FROM lignes_commande l
+        c["lignes"] = lire("""SELECT l.quantite, a.nom_article, l.montant_ligne_ttc, l.options FROM lignes_commande l
                               JOIN articles a USING (article_id) WHERE l.commande_id = :c ORDER BY l.ligne_id""", c=commande_id)
     return c
 
@@ -241,7 +241,7 @@ def etablissements_commande():
 def commandes_actives(etablissement_id):
     return lire(f"""
         SELECT c.commande_id, c.statut_commande, c.date_heure_commande, c.montant_total_ttc, c.note, t.numero_table, t.zone,
-               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article), ' · ' ORDER BY l.ligne_id) AS detail
+               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article) || COALESCE(' (' || LOWER(l.options) || ')', ''), ' · ' ORDER BY l.ligne_id) AS detail
         FROM commandes c
         JOIN tables_salle t USING (table_id)
         JOIN lignes_commande l USING (commande_id)
@@ -312,7 +312,7 @@ def detail_table(etablissement_id, table_id):
     cmd = lire(f"""
         SELECT c.commande_id, c.statut_commande, c.date_heure_commande, c.montant_total_ttc, c.note,
                (c.statut_commande = 'servie') AS a_encaisser,
-               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article), ' · ' ORDER BY l.ligne_id) AS detail
+               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article) || COALESCE(' (' || LOWER(l.options) || ')', ''), ' · ' ORDER BY l.ligne_id) AS detail
         FROM commandes c JOIN lignes_commande l USING (commande_id) JOIN articles a ON a.article_id = l.article_id
         WHERE c.etablissement_id = :e AND c.table_id = :t
           AND (c.statut_commande IN {ACTIVES} OR (c.statut_commande = 'servie' AND c.date_heure_reglement IS NULL))
@@ -328,8 +328,8 @@ def _evenement(c, session_id, etab, type_ev, h, article_id=None, quantite=None):
                       VALUES (:i, :s, :e, :h, :t, :a, :q)"""),
               dict(i=_nouvel_id(c, "seq_evenement"), s=session_id, e=etab, h=h, t=type_ev, a=article_id, q=quantite))
     c.execute(text("""UPDATE sessions SET fin_session = GREATEST(fin_session, :h), nb_evenements = nb_evenements + 1,
-                      a_ajoute_panier = a_ajoute_panier OR :p WHERE session_id = :s"""),
-              dict(h=h, s=session_id, p=(type_ev == "ajout_panier")))
+                      nb_articles_vus = nb_articles_vus + :v, a_ajoute_panier = a_ajoute_panier OR :p WHERE session_id = :s"""),
+              dict(h=h, s=session_id, p=(type_ev == "ajout_panier"), v=int(type_ev == "vue_article")))
 
 
 def ouvrir_session(table_id, etablissement_id, appareil, langue="fr"):
@@ -370,8 +370,10 @@ def appeler(session_id, table_id, etablissement_id, motif="serveur"):
     return True
 
 
-def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
-    """panier : {article_id: quantite}. Les prix sont relus en base au moment de la commande (DQ-06)."""
+def passer_commande(session_id, table_id, etablissement_id, panier, note=None, options=None):
+    """panier : {article_id: quantite} ; options : {article_id: [options]}, sans effet sur le prix.
+    Les prix sont relus en base au moment de la commande (DQ-06)."""
+    options = options or {}
     h = maintenant()
     with moteur().begin() as c:
         ouvert = c.execute(text("SELECT commandes_ouvertes FROM etablissements WHERE etablissement_id = :e"), dict(e=etablissement_id)).scalar()
@@ -397,8 +399,9 @@ def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
                   dict(c=cid, s=session_id, e=etablissement_id, t=table_id, h=h, nl=len(lignes),
                        na=sum(l[2] for l in lignes), m=sum(l[4] for l in lignes), no=(note or "").strip()[:120] or None))
         for lid, a, q, pu, mt in lignes:
-            c.execute(text("""INSERT INTO lignes_commande (ligne_id, commande_id, article_id, quantite, prix_unitaire_ttc, montant_ligne_ttc)
-                              VALUES (:l, :c, :a, :q, :p, :m)"""), dict(l=lid, c=cid, a=a, q=q, p=pu, m=mt))
+            c.execute(text("""INSERT INTO lignes_commande (ligne_id, commande_id, article_id, quantite, prix_unitaire_ttc, montant_ligne_ttc, options)
+                              VALUES (:l, :c, :a, :q, :p, :m, :o)"""),
+                      dict(l=lid, c=cid, a=a, q=q, p=pu, m=mt, o=" · ".join(options.get(a) or [])[:120] or None))
         _evenement(c, session_id, etablissement_id, "commande_envoyee", h)
         c.execute(text("UPDATE sessions SET a_commande = TRUE WHERE session_id = :s"), dict(s=session_id))
     return cid
@@ -457,26 +460,28 @@ def nouvel_etat_client(table_id, etablissement_id, appareil, langue="fr"):
     with moteur().begin() as c:
         c.execute(text("INSERT INTO etats_client (jeton, table_id, session_id, langue) VALUES (:j, :t, :s, :l)"),
                   dict(j=jeton, t=table_id, s=sid, l=langue))
-    return dict(jeton=jeton, session_id=sid, panier={}, langue=langue, vue="menu", commande_id=None, commandes=[])
+    return dict(jeton=jeton, session_id=sid, panier={}, langue=langue, vue="menu", commande_id=None, commandes=[], options={})
 
 
 def etat_client(jeton, table_id):
     """Relit l'état d'un client. None si le jeton est inconnu, d'une autre table ou inutilisé depuis plus de 4 heures."""
     if not isinstance(jeton, str) or not jeton or len(jeton) > 40:
         return None
-    r = un("""SELECT jeton, session_id, panier, langue, vue, commande_id, commandes FROM etats_client
+    r = un("""SELECT jeton, session_id, panier, langue, vue, commande_id, commandes, options FROM etats_client
               WHERE jeton = :j AND table_id = :t AND date_maj >= now() - make_interval(hours => :h)""",
            j=jeton, t=table_id, h=DUREE_ETAT_CLIENT_HEURES)
-    if r and isinstance(r["panier"], str):
-        r["panier"] = json.loads(r["panier"])
+    for k in ("panier", "options"):
+        if r and isinstance(r[k], str):
+            r[k] = json.loads(r[k])
     return r
 
 
-def sauver_etat_client(jeton, session_id, panier, langue, vue, commande_id, commandes):
+def sauver_etat_client(jeton, session_id, panier, langue, vue, commande_id, commandes, options=None):
     with moteur().begin() as c:
         c.execute(text("""UPDATE etats_client SET session_id = :s, panier = CAST(:p AS JSONB), langue = :l, vue = :v, commande_id = :c,
-                          commandes = :cs, date_maj = now() WHERE jeton = :j"""),
-                  dict(s=session_id, p=json.dumps(panier), l=langue, v=vue, c=commande_id, cs=list(commandes), j=jeton))
+                          commandes = :cs, options = CAST(:o AS JSONB), date_maj = now() WHERE jeton = :j"""),
+                  dict(s=session_id, p=json.dumps(panier), l=langue, v=vue, c=commande_id, cs=list(commandes),
+                       o=json.dumps(options or {}), j=jeton))
 
 
 def commandes_visite(commande_ids):
@@ -515,7 +520,7 @@ def historique_table(etablissement_id, table_id, debut, fin, limite=300):
         SELECT c.commande_id, c.date_heure_commande, c.statut_commande, c.montant_total_ttc, c.mode_reglement,
                c.date_heure_reglement, c.note, c.motif_annulation,
                ROUND(EXTRACT(EPOCH FROM c.date_heure_service - c.date_heure_commande) / 60) AS delai,
-               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article), ' · ' ORDER BY l.ligne_id) AS detail
+               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article) || COALESCE(' (' || LOWER(l.options) || ')', ''), ' · ' ORDER BY l.ligne_id) AS detail
         FROM commandes c JOIN lignes_commande l USING (commande_id) JOIN articles a ON a.article_id = l.article_id
         WHERE c.etablissement_id = :e AND c.table_id = :t AND c.date_heure_commande BETWEEN :d AND :f
         GROUP BY c.commande_id ORDER BY c.date_heure_commande DESC LIMIT :n""",

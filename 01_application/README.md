@@ -10,7 +10,7 @@ Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes va
 Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 006
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 007
 
 cd 01_application/client
 streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
@@ -63,7 +63,7 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 
 | Application | Adresse | Contenu |
 |---|---|---|
-| Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », cloche d'appel avec motif (serveur, eau, addition) ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes ; « Commander autre chose » et liste « Mes commandes » avec le total de la visite et les commandes réglées |
+| Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire » ; toucher un article ouvre sa fiche (description, préférences sans effet sur le prix comme « Sans sucre » ou « Sans glaçons », quantité) ; cloche d'appel avec motif (serveur, eau, addition) ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes ; « Commander autre chose » et liste « Mes commandes » avec le total de la visite et les commandes réglées |
 | Équipe | `/` | Accueil public |
 | Équipe | `/connexion` | Connexion |
 | Équipe | `/menu` | Serveur et gérant : articles de la carte par catégorie, recherche, interrupteur « Rupture » (l'article disparaît du menu client pour la journée). Gérant : bouton « Modifier » (prix, description, retrait), ajout d'un article, articles retirés à remettre, prix programmé affiché (« → 2,300 DT à partir du 25/11 ») |
@@ -102,7 +102,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 |---|---|
 | Formule | Essentiel : menu consultable seulement. Commande et Pro : panier et commande. La formule est celle de l'abonnement en vigueur le jour même (comme le contrôle DQ-09). |
 | Commandes fermées | Si le gérant ferme les commandes, le menu reste consultable mais le bouton d'envoi est désactivé ; la base refuse aussi la commande. |
-| Session | Un scan ouvre une session et écrit `scan_qr` et `vue_menu`. Chaque action ajoute un événement et prolonge la fin de session (DQ-11). |
+| Session | Un scan ouvre une session et écrit `scan_qr` et `vue_menu`. Ouvrir la fiche d'un article écrit `vue_article` et incrémente `nb_articles_vus`, comme dans les données générées. Chaque action ajoute un événement et prolonge la fin de session (DQ-11). |
 | Une commande par session | « Commander autre chose » ouvre une nouvelle session (DQ-12), rattachée à la même visite par le jeton du client. |
 | Appels | Un même motif ne peut pas être demandé deux fois tant que le premier appel n'est pas pris en charge. Chaque appel écrit aussi l'événement `appel_serveur`, comme dans les données générées. Encaisser une table clôt ses demandes d'addition. |
 | Prix | Relus en base au moment de la commande, selon l'historique des prix (DQ-06). |
@@ -115,7 +115,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 
 Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migrations 001 à 006, décisions D-24 à D-27)
+## Évolutions du modèle de données (migrations 001 à 007, décisions D-24 à D-27)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
@@ -131,7 +131,8 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - `etats_client.commandes` (migration 004) : les commandes d'un client pendant sa visite ;
 - table `ruptures` (migration 005) : article indisponible pour une journée, avec le compte qui l'a signalé ;
 - table `journal_prix` (migration 005) : changements de prix faits dans l'application ;
-- `tables_salle.date_retrait` (migration 006) : table retirée du service.
+- `tables_salle.date_retrait` (migration 006) : table retirée du service ;
+- `lignes_commande.options` et `etats_client.options` (migration 007) : préférences choisies par le client, par exemple « Sans sucre · Lait à part », affichées à l'équipe entre parenthèses.
 
 Le menu client choisit les articles par leurs dates d'ajout et de retrait, et non par `statut_article`, qui est une photo à la date d'arrêté du jeu.
 
@@ -167,6 +168,7 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 - **Activité des tables :** le détail des appels (motif, délai de prise en charge) n'existe que pour les appels passés depuis l'application ; les appels des données générées sont seulement comptés. L'historique affiche au plus les 300 commandes les plus récentes de la période.
 - **Retrait d'un article :** les commandes simulées après la date de retrait restent dans le jeu ; aucun contrôle ne porte sur ce point.
 - **Arabe :** l'interface est traduite, pas les noms ni les descriptions des plats, qui n'existent qu'en français.
-- **Articles vus :** l'application n'écrit pas d'événement `vue_article` ; `nb_articles_vus` reste à 0 pour ses sessions.
+- **Arabe (fiche article) :** les options sont traduites, pas les noms, catégories et descriptions des plats.
+- **Options :** une seule combinaison d'options par article et par commande (deux capucins, l'un sucré et l'autre non, se notent dans la note pour le serveur).
 - **Données simulées jusqu'au 31/12/2026 :** le jeu contient déjà des commandes datées après le jour présent ; tous les calculs s'arrêtent à l'heure courante.
 - **Contrôle DQ-27 :** il interdit les événements après le 31/12/2026, date d'arrêté du jeu généré. Des événements créés par l'application après cette date seront signalés ; la règle sera adaptée en phase 3.
