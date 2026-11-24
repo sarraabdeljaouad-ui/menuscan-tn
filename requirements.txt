@@ -1,0 +1,15 @@
+pandas
+numpy
+pyarrow
+sqlalchemy
+psycopg2-binary
+dbt-postgres
+streamlit
+qrcode[pil]
+scikit-learn
+statsmodels
+mlxtend
+mlflow
+matplotlib
+jupyter
+black

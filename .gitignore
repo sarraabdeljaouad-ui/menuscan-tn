@@ -1,0 +1,32 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Secrets
+.env
+
+# Données lourdes ou sensibles
+menuscan_dataset/
+solutions/
+*.sqlite
+
+# dbt
+05_dbt/target/
+05_dbt/logs/
+05_dbt/dbt_packages/
+
+# Airflow
+06_orchestration/logs/
+
+# MLflow
+mlruns/
+
+# Power BI (fichiers locaux)
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Système
+.DS_Store
+Thumbs.db

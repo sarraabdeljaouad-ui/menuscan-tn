@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: menuscan_postgres
+    env_file: .env
+    environment:
+      POSTGRES_DB: menuscan_app
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./02_oltp/init:/docker-entrypoint-initdb.d
+volumes:
+  pgdata:
