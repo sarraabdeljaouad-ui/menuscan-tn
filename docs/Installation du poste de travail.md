@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.2 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.3 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -123,6 +123,8 @@ python 02_oltp/charger_base_app.py
 Le script crée les 20 tables du schéma `menuscan` dans `menuscan_app`, les charge avec `COPY`, compare le nombre de lignes à celui des fichiers, puis exécute les 23 contrôles de `02_oltp/controles_qualite.sql` (0 violation attendue). Il écrit le résultat dans `02_oltp/rapport_chargement.md`. Durée constatée : environ 30 secondes.
 
 Pour tout recharger : `python 02_oltp/charger_base_app.py --reinitialiser`.
+
+Le chargement applique ensuite les migrations de `02_oltp/migrations/` (évolutions du modèle pour l'application). Sur une base chargée avant une migration, l'appliquer seule : `python 02_oltp/charger_base_app.py --migrer`. Pour relancer seulement les 23 contrôles qualité : `python 02_oltp/charger_base_app.py --controles`.
 
 ## 6. dbt
 

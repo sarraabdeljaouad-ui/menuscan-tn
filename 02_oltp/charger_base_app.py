@@ -4,14 +4,17 @@
 Usage, depuis la racine du dépôt, environnement Python activé :
     python 02_oltp/charger_base_app.py                 # crée le schéma s'il est absent, puis charge
     python 02_oltp/charger_base_app.py --reinitialiser # supprime le schéma menuscan et recharge tout
+    python 02_oltp/charger_base_app.py --migrer        # applique seulement les migrations (base déjà chargée)
+    python 02_oltp/charger_base_app.py --controles     # relance seulement les contrôles qualité
 
 Étapes :
   1. crée les tables (02_oltp/schema_postgres.sql) ;
   2. charge les 20 tables dans l'ordre des clés étrangères, avec COPY, puis ajoute les clés circulaires
      entre prospects et etablissements ;
   3. compare le nombre de lignes chargées au nombre de lignes des fichiers ;
-  4. exécute les contrôles de 02_oltp/controles_qualite.sql (0 violation attendue partout) ;
-  5. écrit un rapport dans 02_oltp/rapport_chargement.md.
+  4. applique les migrations de 02_oltp/migrations/ (évolutions du modèle pour l'application) ;
+  5. exécute les contrôles de 02_oltp/controles_qualite.sql (0 violation attendue partout) ;
+  6. écrit un rapport dans 02_oltp/rapport_chargement.md (chargement complet seulement).
 
 Sortie 0 si tout est conforme, 1 sinon.
 """
@@ -70,21 +73,56 @@ def executer_sql(cur, texte):
             cur.execute(instr)
 
 
+def appliquer_migrations(cur):
+    for f in sorted((ICI / "migrations").glob("*.sql")):
+        executer_sql(cur, f.read_text(encoding="utf-8"))
+        print(f"   {f.name} appliquée")
+
+
+def controler(cur):
+    cur.execute("SET search_path TO menuscan")
+    sql = (ICI / "controles_qualite.sql").read_text(encoding="utf-8")
+    cur.execute(sql.split("SET search_path TO menuscan;", 1)[1].strip().rstrip(";"))
+    ctl = cur.fetchall()
+    viol = [r for r in ctl if r[2] != 0]
+    print(f"   {len(ctl)} contrôles, {len(viol)} en violation")
+    for r in viol:
+        print(f"   {r[0]} {r[1]} : {r[2]} violation(s)")
+    return ctl, viol
+
+
+def connecter():
+    env = lire_env()
+    return psycopg2.connect(host=env.get("POSTGRES_HOST", "localhost"), port=env.get("POSTGRES_PORT", "5440"),
+                            user=env.get("POSTGRES_USER"), password=env.get("POSTGRES_PASSWORD"), dbname="menuscan_app")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--donnees", default=str(RACINE / "menuscan_dataset" / "donnees_reference"),
                    help="dossier donnees_reference du jeu MenuScan TN")
     p.add_argument("--reinitialiser", action="store_true", help="supprime puis recrée le schéma menuscan")
+    p.add_argument("--migrer", action="store_true", help="applique seulement les migrations")
+    p.add_argument("--controles", action="store_true", help="relance seulement les contrôles qualité")
     a = p.parse_args()
+    if a.migrer or a.controles:
+        cnx = connecter()
+        cur = cnx.cursor()
+        if a.migrer:
+            print("Migrations")
+            appliquer_migrations(cur)
+            cnx.commit()
+        print("Contrôles qualité")
+        _, viol = controler(cur)
+        cnx.close()
+        print(f"\nRésultat : {'CONFORME' if not viol else 'NON CONFORME'}")
+        sys.exit(0 if not viol else 1)
     dossier = Path(a.donnees)
     if not (dossier / "etablissements.csv").exists():
         sys.exit(f"Dossier introuvable ou incomplet : {dossier}\n"
                  "Décompresser menuscan_dataset_v1.0.zip (Release du dépôt) à la racine du dépôt, ou passer --donnees.")
 
-    env = lire_env()
-    cnx = psycopg2.connect(host=env.get("POSTGRES_HOST", "localhost"), port=env.get("POSTGRES_PORT", "5440"),
-                           user=env.get("POSTGRES_USER"), password=env.get("POSTGRES_PASSWORD"), dbname="menuscan_app")
-    cnx.autocommit = False
+    cnx = connecter()
     cur = cnx.cursor()
     debut = time.time()
 
@@ -120,16 +158,12 @@ def main():
     executer_sql(cur, cles_sql)
     cnx.commit()
 
-    print("3. Contrôles qualité")
-    cur.execute("SET search_path TO menuscan")
-    sql = (ICI / "controles_qualite.sql").read_text(encoding="utf-8")
-    requete = sql.split("SET search_path TO menuscan;", 1)[1].strip().rstrip(";")
-    cur.execute(requete)
-    ctl = cur.fetchall()
-    viol = [r for r in ctl if r[2] != 0]
-    print(f"   {len(ctl)} contrôles, {len(viol)} en violation")
-    for r in viol:
-        print(f"   {r[0]} {r[1]} : {r[2]} violation(s)")
+    print("3. Migrations")
+    appliquer_migrations(cur)
+    cnx.commit()
+
+    print("4. Contrôles qualité")
+    ctl, viol = controler(cur)
     cnx.close()
 
     ecarts = [r for r in res if r[2] != r[3]]

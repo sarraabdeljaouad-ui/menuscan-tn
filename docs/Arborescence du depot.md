@@ -1,6 +1,6 @@
 # Arborescence du dépôt
 
-**Référence :** MS-DATA-ARB-001 · **Version :** 1.2 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-ARB-001 · **Version :** 1.3 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Le dépôt `menuscan-tn` suit les phases du projet : un dossier numéroté par phase, dans l'ordre de réalisation. Les dossiers des phases à venir sont créés au démarrage de chaque phase.
 
@@ -24,13 +24,15 @@ menuscan-tn/
 │   └── 6-Validation de la phase 0/         (recette, rapport, PV)
 │
 ├── 01_application/               ← phase 1 : application Streamlit
-│   ├── app.py
-│   ├── pages/                    (menu client, espace gérant, espace MenuScan)
-│   ├── qr/                       (script de génération des QR codes)
+│   ├── app.py, db.py, theme.py
+│   ├── vues/                     (accueil, menu client, espace gérant ; espace MenuScan en phase 8)
+│   ├── qr/                       (script de génération des QR codes, T1.4)
 │   └── README.md
 │
 ├── 02_oltp/                      ← phase 1 : base applicative
 │   ├── schema_postgres.sql
+│   ├── charger_base_app.py
+│   ├── migrations/               (évolutions du modèle : 001_parcours_commande.sql)
 │   ├── controles_qualite.sql
 │   └── diagramme_er.png
 │

@@ -1,0 +1,231 @@
+# -*- coding: utf-8 -*-
+"""Menu client, ouvert par le QR code de la table (/menu?table=TBL00001) : menu, panier, suivi de la commande."""
+import streamlit as st
+
+import db
+from theme import BLEU, CLAIR, FOND, GRIS, MARINE, e, icone_categorie, prix
+
+T = {
+    "fr": dict(recherche="Rechercher un plat, une boisson…", panier="Voir le panier", ma_commande="Ma commande", envoyer="Envoyer la commande",
+               note="Note pour le serveur", note_ex="Ex. : capucin bien chaud, sans sucre", appeler="Appeler le serveur",
+               appel_ok="Le serveur a été prévenu.", total="Total TTC", sous_total="Sous-total", nouvelle="Nouvelle commande",
+               envoyee="Commande envoyée", ou="Où en est ma commande ?", retour="Retour au menu", populaire="Populaire",
+               vide="Votre panier est vide.", articles="articles", reglement="Règlement à table : espèces, carte ou ticket restaurant",
+               ajouter_autres="Ajouter d'autres articles", recap="Récapitulatif", annulee="Commande annulée : un article n'était plus disponible. Le serveur passe à votre table.",
+               etapes=["Reçue", "En préparation", "Prête", "Servie"], details=["Envoyée au café", "Acceptée par l'équipe", "Le serveur l'apporte", "Bon appétit !"],
+               delai="Service en {m} min en moyenne ici (30 derniers jours)", ferme="Les commandes sont fermées pour le moment : le menu reste consultable.",
+               essentiel="Menu consultable uniquement : cet établissement ne propose pas la commande depuis la table."),
+    "ar": dict(recherche="ابحث عن طبق أو مشروب…", panier="عرض السلة", ma_commande="طلبي", envoyer="إرسال الطلب",
+               note="ملاحظة للنادل", note_ex="مثال: كابوسان ساخن جدًا، بدون سكر", appeler="نداء النادل",
+               appel_ok="تم إعلام النادل.", total="المجموع", sous_total="المجموع الفرعي", nouvelle="طلب جديد",
+               envoyee="تم إرسال الطلب", ou="أين وصل طلبي؟", retour="العودة إلى القائمة", populaire="الأكثر طلبًا",
+               vide="سلتك فارغة.", articles="عناصر", reglement="الدفع على الطاولة: نقدًا أو بالبطاقة أو بتذكرة المطعم",
+               ajouter_autres="إضافة عناصر أخرى", recap="ملخص الطلب", annulee="أُلغي الطلب: أحد العناصر غير متوفر. سيأتي النادل إلى طاولتك.",
+               etapes=["تم الاستلام", "قيد التحضير", "جاهز", "تم التقديم"], details=["أُرسل إلى المقهى", "قبله الفريق", "النادل في الطريق", "بالهناء والشفاء!"],
+               delai="مدة التقديم هنا {m} دقيقة في المتوسط (آخر 30 يومًا)", ferme="الطلبات مغلقة حاليًا: يمكنك تصفح القائمة.",
+               essentiel="القائمة للاطلاع فقط: هذا المحل لا يوفر الطلب من الطاولة."),
+}
+
+
+def appareil():
+    ua = (st.context.headers.get("User-Agent") or "").lower()
+    if "iphone" in ua or "ipad" in ua:
+        return "ios"
+    if "android" in ua:
+        return "android"
+    return "web"  # ordinateur : valeur propre à l'application, absente des données générées
+
+
+table_id = st.query_params.get("table")
+if not table_id:
+    st.warning("Scannez le QR code de votre table pour ouvrir le menu. Pour une démonstration, passez par l'accueil.")
+    st.page_link("vues/accueil.py", label="Aller à l'accueil", icon=":material/home:")
+    st.stop()
+info = db.table_et_etablissement(table_id)
+if info is None:
+    st.error("Ce QR code ne correspond à aucune table.")
+    st.stop()
+if info["statut_etablissement"] != "actif" or info["formule_id"] is None:
+    st.error("Le menu de cet établissement n'est plus disponible.")
+    st.stop()
+
+etab = info["etablissement_id"]
+etat = st.session_state
+if etat.get("table") != table_id or etat.get("session_id") is None:
+    etat.table, etat.panier, etat.vue, etat.commande = table_id, {}, "menu", None
+    etat.session_id = db.ouvrir_session(table_id, etab, appareil(), etat.get("langue", "fr"))
+L = T[etat.get("langue", "fr")]
+peut_commander = bool(info["inclut_commande"])
+ouvert = peut_commander and bool(info["commandes_ouvertes"])
+
+
+def changer_langue():
+    etat.langue = "fr" if etat.get("langue", "fr") == "ar" else "ar"
+    db.changer_langue(etat.session_id, etat.langue)
+
+
+def appeler():
+    db.journaliser(etat.session_id, etab, "appel_serveur")
+    st.toast(L["appel_ok"])
+
+
+def modifier(article_id, d):
+    q = etat.panier.get(article_id, 0) + d
+    if q > 0:
+        etat.panier[article_id] = q
+    else:
+        etat.panier.pop(article_id, None)
+    db.journaliser(etat.session_id, etab, "ajout_panier" if d > 0 else "retrait_panier", article_id, 1)
+
+
+def aller(vue):
+    etat.vue = vue
+
+
+initiales = "".join(m[0] for m in info["nom_etablissement"].split() if m[0].isupper())[:2] or "MS"
+with st.container(key="entete"):
+    c1, c2 = st.columns([3, 1], vertical_alignment="center")
+    c1.markdown(f"""<div style="display:flex;align-items:center;gap:12px">
+      <span class="titre" style="width:46px;height:46px;flex:none;border-radius:12px;background:#fff;color:{MARINE} !important;display:flex;align-items:center;justify-content:center;font-size:17px">{e(initiales)}</span>
+      <div><div class="titre" style="font-size:21px;color:#fff">{e(info['nom_etablissement'])}</div>
+      <div style="font-size:13px;color:#C7D7F5">{e(info['nom_ville'])} · table {info['numero_table']} · {e(info['zone'])}</div></div></div>""",
+                unsafe_allow_html=True)
+    c2.button("FR · ع" if etat.get("langue", "fr") == "fr" else "ع · FR", key="langue_btn", on_click=changer_langue,
+              help="Français / العربية", use_container_width=True)
+
+articles = db.menu(etab)
+noms = {a["article_id"]: a for a in articles}
+nb = sum(etat.panier.values())
+total = sum(q * noms[a]["prix_ttc"] for a, q in etat.panier.items() if a in noms)
+
+
+# ---------- Vue : suivi de la commande ----------
+if etat.vue == "suivi" and etat.commande:
+    @st.fragment(run_every="10s")
+    def afficher_suivi():
+        c = db.suivi(etat.commande)
+        st.markdown(f"""<div style="text-align:center;padding:12px 0 4px"><div style="width:58px;height:58px;margin:0 auto 8px;border-radius:50%;background:{CLAIR};display:flex;align-items:center;justify-content:center">
+          <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{BLEU}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div class="titre" style="font-size:24px">{L['envoyee']}</div><div style="color:{GRIS};font-size:14px">{c['commande_id']}</div></div>""", unsafe_allow_html=True)
+        if c["statut_commande"] == "annulee":
+            st.error(L["annulee"])
+        else:
+            heures = [c["date_heure_commande"], c["date_heure_acceptation"], c["date_heure_prete"], c["date_heure_service"]]
+            rang = ["nouvelle", "en_prepa", "prete", "servie"].index(c["statut_commande"])
+            lignes = ""
+            for i, (nom, det, h) in enumerate(zip(L["etapes"], L["details"], heures)):
+                fait = i <= rang
+                pastille = (f'<span style="width:26px;height:26px;border-radius:50%;background:{BLEU};display:flex;align-items:center;justify-content:center">'
+                            f'<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>'
+                            if fait else '<span style="width:26px;height:26px;border-radius:50%;border:2px solid #CBD5E1;box-sizing:border-box;display:block"></span>')
+                trait = f'<span style="width:2px;height:20px;background:{BLEU if i < rang else "#E2E8F5"};display:block;margin:2px auto"></span>' if i < 3 else ""
+                lignes += (f'<div style="display:flex;gap:12px"><div style="width:26px">{pastille}{trait}</div>'
+                           f'<div style="flex:1;display:flex;justify-content:space-between"><div><div style="font-weight:{700 if i == rang else 600};color:{"#0F172A" if fait else "#64748B"}">{nom}</div>'
+                           f'<div style="font-size:13px;color:#64748B">{det}</div></div><span style="font-size:14px;color:{GRIS}">{h.strftime("%H:%M") if h else ""}</span></div></div>')
+            st.markdown(f'<div style="background:#fff;border-radius:20px;padding:16px 18px"><div class="titre" style="font-size:17px;margin-bottom:10px">{L["ou"]}</div>{lignes}</div>',
+                        unsafe_allow_html=True)
+        recap = "".join(f'<div style="display:flex;justify-content:space-between"><span>{l["quantite"]} × {e(l["nom_article"])}</span><span>{prix(l["montant_ligne_ttc"])}</span></div>' for l in c["lignes"])
+        note = f'<div style="font-size:13px;color:#64748B">« {e(c["note"])} »</div>' if c["note"] else ""
+        st.markdown(f"""<div style="background:#fff;border-radius:20px;padding:16px 18px;margin-top:12px;display:flex;flex-direction:column;gap:6px">
+          <div class="titre" style="font-size:17px">{L['recap']}</div>{recap}{note}
+          <div style="border-top:1px solid #E2E8F5;padding-top:8px;display:flex;justify-content:space-between;align-items:baseline"><b>{L['total']}</b>
+          <span class="titre" style="font-size:22px;color:{MARINE}">{prix(c['montant_total_ttc'])}</span></div></div>""", unsafe_allow_html=True)
+
+    afficher_suivi()
+    st.write("")
+    b1, b2 = st.columns(2)
+    b1.button(L["appeler"], icon=":material/notifications:", on_click=appeler, use_container_width=True)
+    if b2.button(L["nouvelle"], type="primary", use_container_width=True):
+        etat.session_id = None  # une commande par session : une nouvelle commande ouvre une nouvelle session
+        st.rerun()
+    st.stop()
+
+
+# ---------- Vue : panier ----------
+if etat.vue == "panier":
+    st.button(L["retour"], icon=":material/arrow_back:", on_click=aller, args=("menu",))
+    st.markdown(f'<div class="titre" style="font-size:26px">{L["ma_commande"]}</div>', unsafe_allow_html=True)
+    m = db.delai_moyen(etab)
+    if m:
+        st.info(L["delai"].format(m=round(m)))
+    if not etat.panier:
+        st.caption(L["vide"])
+    rangs = {c: i for i, c in enumerate(dict.fromkeys(a["nom_categorie"] for a in articles))}
+    for aid, q in list(etat.panier.items()):
+        a = noms[aid]
+        with st.container(key=f"carte_p_{aid}"):
+            c1, c2 = st.columns([5, 3], vertical_alignment="center")
+            c1.markdown(f"""<div style="display:flex;gap:12px;align-items:center">{icone_categorie(a['nom_categorie'], rangs[a['nom_categorie']])}
+              <div><div style="font-weight:700">{e(a['nom_article'])}</div><div style="font-size:13px;color:#64748B">{prix(a['prix_ttc'])} l'unité</div>
+              <div style="font-weight:700;color:{BLEU}">{prix(q * a['prix_ttc'])}</div></div></div>""", unsafe_allow_html=True)
+            m1, m2, m3 = c2.columns(3, vertical_alignment="center")
+            m1.button("−", key=f"pm_{aid}", on_click=modifier, args=(aid, -1), use_container_width=True)
+            m2.markdown(f"<div style='text-align:center;font-weight:700'>{q}</div>", unsafe_allow_html=True)
+            m3.button("+", key=f"pp_{aid}", on_click=modifier, args=(aid, 1), type="primary", use_container_width=True)
+    st.button(L["ajouter_autres"], icon=":material/add:", on_click=aller, args=("menu",), type="tertiary")
+    note = st.text_area(L["note"], placeholder=L["note_ex"], max_chars=200, key="note")
+    if etat.panier:
+        with st.container(key="carte_recap"):
+            st.markdown(f"""<div style="display:flex;justify-content:space-between;color:{GRIS}"><span>{L['sous_total']} ({nb} {L['articles']})</span><span>{prix(total)}</span></div>
+              <div style="color:{GRIS};font-size:14px;margin:6px 0 10px">{L['reglement']}</div>
+              <div style="border-top:1px solid #E2E8F5;padding-top:10px;display:flex;justify-content:space-between;align-items:baseline"><b>{L['total']}</b>
+              <span class="titre" style="font-size:28px;color:{MARINE}">{prix(total)}</span></div>""", unsafe_allow_html=True)
+            if st.button(L["envoyer"], type="primary", icon=":material/send:", use_container_width=True, disabled=not ouvert):
+                try:
+                    etat.commande = db.passer_commande(etat.session_id, table_id, etab, dict(etat.panier), note)
+                    etat.panier, etat.vue = {}, "suivi"
+                    st.rerun()
+                except ValueError as err:
+                    st.error(str(err))
+        if not ouvert:
+            st.warning(L["ferme"])
+    st.stop()
+
+
+# ---------- Vue : menu ----------
+if not peut_commander:
+    st.info(L["essentiel"])
+elif not ouvert:
+    st.warning(L["ferme"])
+recherche = st.text_input("Recherche", placeholder=L["recherche"], label_visibility="collapsed", icon=":material/search:").strip().lower()
+categories = list(dict.fromkeys(a["nom_categorie"] for a in articles))
+rangs = {c: i for i, c in enumerate(categories)}
+if recherche:
+    liste, titre = [a for a in articles if recherche in a["nom_article"].lower() or recherche in (a["description"] or "").lower()], f"« {recherche} »"
+else:
+    cat = st.pills("Catégories", categories, default=categories[0], key="categorie", label_visibility="collapsed") or categories[0]
+    liste, titre = [a for a in articles if a["nom_categorie"] == cat], cat
+st.markdown(f'<div style="display:flex;justify-content:space-between;align-items:baseline;margin:4px 0"><span class="titre" style="font-size:20px">{e(titre)}</span>'
+            f'<span style="font-size:13px;color:#64748B">{len(liste)} {L["articles"]}</span></div>', unsafe_allow_html=True)
+
+for a in liste:
+    aid = a["article_id"]
+    badge = f'<span class="badge" style="background:#FEF3C7;color:#92400E">{L["populaire"]}</span>' if a["populaire"] else ""
+    with st.container(key=f"carte_{aid}"):
+        if ouvert:
+            c1, c2 = st.columns([5, 2], vertical_alignment="center")
+        else:
+            c1 = st.container()
+        c1.markdown(f"""<div style="display:flex;gap:12px;align-items:center">{icone_categorie(a['nom_categorie'], rangs[a['nom_categorie']])}
+          <div style="min-width:0"><div style="font-weight:700;font-size:16px">{e(a['nom_article'])}{badge}</div>
+          <div style="font-size:13px;color:#64748B;line-height:1.35">{e(a['description'] or '')}</div>
+          <div style="font-weight:700;color:{BLEU}">{prix(a['prix_ttc'])}</div></div></div>""", unsafe_allow_html=True)
+        if ouvert:
+            q = etat.panier.get(aid, 0)
+            if q:
+                m1, m2, m3 = c2.columns(3, vertical_alignment="center")
+                m1.button("−", key=f"m_{aid}", on_click=modifier, args=(aid, -1), use_container_width=True)
+                m2.markdown(f"<div style='text-align:center;font-weight:700'>{q}</div>", unsafe_allow_html=True)
+                m3.button("+", key=f"p_{aid}", on_click=modifier, args=(aid, 1), type="primary", use_container_width=True)
+            else:
+                c2.button("+", key=f"a_{aid}", on_click=modifier, args=(aid, 1), type="primary", use_container_width=True)
+
+st.markdown('<div class="espace-bas"></div>', unsafe_allow_html=True)
+if peut_commander:
+    with st.container(key="barre"):
+        b1, b2 = st.columns([1, 4], vertical_alignment="center")
+        b1.button("", icon=":material/notifications:", help=L["appeler"], on_click=appeler, use_container_width=True, key="cloche")
+        if nb:
+            b2.button(f"\u2066{nb}\u2069  ·  {L['panier']}  ·  \u2066{prix(total)}\u2069", type="primary", on_click=aller, args=("panier",), use_container_width=True)
+        else:
+            b2.caption(L["vide"])
