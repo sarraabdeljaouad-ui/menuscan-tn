@@ -30,3 +30,6 @@ mlruns/
 # Système
 .DS_Store
 Thumbs.db
+
+# QR codes générés
+01_application/qr/sortie/

@@ -45,7 +45,7 @@ flowchart LR
 | Phase | Contenu | Statut |
 |---|---|---|
 | 0. Cadrage | Dossier de cadrage, pilotage, analyse des sources, gouvernance des données, recette | Terminée (validée sans réserve le 24/11/2026) |
-| 1. Environnement et application | Docker, base applicative, application Streamlit, QR codes | À venir |
+| 1. Environnement et application | Docker, base applicative, applications client et équipe, QR codes | Terminée (validée sans réserve le 24/11/2026) |
 | 2. Données | Générateur et jeu de démonstration | Jeu de données livré |
 | 3. Ingestion | Chargement des 124 fichiers bruts | À venir |
 | 4. Entrepôt dbt | Nettoyage, sessions, modèle en étoile, tests | À venir |
