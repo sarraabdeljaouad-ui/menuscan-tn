@@ -11,7 +11,7 @@ Parcours d'une commande (migration 001) : nouvelle -> en_prepa -> prete -> servi
 import hashlib
 import json
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import streamlit as st
@@ -69,7 +69,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -116,7 +116,8 @@ def table_et_etablissement(table_id):
 
 
 def menu(etablissement_id):
-    """Articles proposés aujourd'hui, prix en vigueur (DQ-06), description et rang de popularité sur 30 jours."""
+    """Articles proposés aujourd'hui (entre leur date d'ajout et de retrait, hors rupture du jour), prix en vigueur (DQ-06),
+    description et rang de popularité sur 30 jours. Le statut_article n'est pas utilisé : c'est une photo à la date d'arrêté du jeu."""
     n = maintenant()
     return lire("""
         WITH pop AS (
@@ -131,8 +132,9 @@ def menu(etablissement_id):
         JOIN articles_prix_historique p ON p.article_id = a.article_id
              AND CAST(:j AS DATE) BETWEEN p.date_debut AND COALESCE(p.date_fin, DATE '2099-12-31')
         LEFT JOIN pop ON pop.article_id = a.article_id
-        WHERE a.etablissement_id = :e AND a.statut_article = 'propose'
+        WHERE a.etablissement_id = :e
               AND CAST(:j AS DATE) >= a.date_ajout AND (a.date_retrait IS NULL OR a.date_retrait > CAST(:j AS DATE))
+              AND NOT EXISTS (SELECT 1 FROM ruptures r WHERE r.article_id = a.article_id AND r.jour = CAST(:j AS DATE))
         ORDER BY c.ordre_affichage, (pop.article_id IS NULL), a.nom_article""",
                 e=etablissement_id, j=n.date(), d=n - timedelta(days=30), n=n)
 
@@ -379,7 +381,11 @@ def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
             SELECT p.article_id, p.prix_ttc FROM articles_prix_historique p
             WHERE p.article_id = ANY(:ids) AND CAST(:j AS DATE) BETWEEN p.date_debut AND COALESCE(p.date_fin, DATE '2099-12-31')"""),
             dict(ids=list(panier), j=h.date()))}
-        if set(prix) != set(panier):
+        indispo = c.execute(text("""SELECT article_id FROM articles WHERE article_id = ANY(:ids)
+                                    AND (date_retrait <= CAST(:j AS DATE) OR EXISTS (SELECT 1 FROM ruptures r
+                                         WHERE r.article_id = articles.article_id AND r.jour = CAST(:j AS DATE)))"""),
+                            dict(ids=list(panier), j=h.date())).first()
+        if set(prix) != set(panier) or indispo:
             raise ValueError("Un article n'est plus disponible.")
         cid = _nouvel_id(c, "seq_commande")
         lignes = [(_nouvel_id(c, "seq_ligne"), a, q, prix[a], prix[a] * q) for a, q in panier.items()]
@@ -387,7 +393,7 @@ def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
                           date_heure_service, nb_lignes, nb_articles, montant_total_ttc, mode_reglement, motif_annulation, note)
                           VALUES (:c, :s, :e, :t, :h, 'nouvelle', NULL, :nl, :na, :m, NULL, NULL, :no)"""),
                   dict(c=cid, s=session_id, e=etablissement_id, t=table_id, h=h, nl=len(lignes),
-                       na=sum(l[2] for l in lignes), m=sum(l[4] for l in lignes), no=(note or "").strip()[:200] or None))
+                       na=sum(l[2] for l in lignes), m=sum(l[4] for l in lignes), no=(note or "").strip()[:120] or None))
         for lid, a, q, pu, mt in lignes:
             c.execute(text("""INSERT INTO lignes_commande (ligne_id, commande_id, article_id, quantite, prix_unitaire_ttc, montant_ligne_ttc)
                               VALUES (:l, :c, :a, :q, :p, :m)"""), dict(l=lid, c=cid, a=a, q=q, p=pu, m=mt))
@@ -521,3 +527,140 @@ def appels_table(etablissement_id, table_id, debut, fin):
                           ROUND(EXTRACT(EPOCH FROM date_heure_prise - date_heure_appel) / 60) AS attente
                    FROM appels WHERE etablissement_id = :e AND table_id = :t AND date_heure_appel BETWEEN :d AND :f
                    ORDER BY date_heure_appel DESC""", e=etablissement_id, t=table_id, d=debut, f=fin)
+
+
+# ---------- Gestion du menu (lot 2, migration 005) ----------
+
+def carte(etablissement_id):
+    """Tous les articles de l'établissement pour l'écran de gestion : prix du jour, état (proposé, en rupture, retiré, à venir)."""
+    j = maintenant().date()
+    return lire("""
+        SELECT a.article_id, a.nom_article, a.description, a.date_ajout, a.date_retrait, c.categorie_id, c.nom_categorie, c.ordre_affichage,
+               p.prix_ttc,
+               EXISTS (SELECT 1 FROM ruptures r WHERE r.article_id = a.article_id AND r.jour = :j) AS rupture,
+               (a.date_retrait IS NOT NULL AND a.date_retrait <= :j) AS retire,
+               (a.date_ajout > :j) AS a_venir,
+               pr.prix_ttc AS prochain_prix, pr.date_debut AS prochain_date
+        FROM articles a JOIN categories_menu c USING (categorie_id)
+        LEFT JOIN LATERAL (SELECT q.prix_ttc, q.date_debut FROM articles_prix_historique q
+                           WHERE q.article_id = a.article_id AND q.date_debut > :j AND q.motif_changement = 'modification_gerant'
+                           ORDER BY q.date_debut LIMIT 1) pr ON TRUE
+        LEFT JOIN articles_prix_historique p ON p.article_id = a.article_id AND :j BETWEEN p.date_debut AND COALESCE(p.date_fin, DATE '2099-12-31')
+        WHERE a.etablissement_id = :e ORDER BY c.ordre_affichage, a.nom_article""", e=etablissement_id, j=j)
+
+
+def categories(etablissement_id):
+    return lire("SELECT categorie_id, nom_categorie FROM categories_menu WHERE etablissement_id = :e ORDER BY ordre_affichage", e=etablissement_id)
+
+
+def _article(c, etablissement_id, article_id):
+    """Verrouille l'article s'il appartient bien à l'établissement du compte."""
+    return c.execute(text("SELECT article_id FROM articles WHERE article_id = :a AND etablissement_id = :e FOR UPDATE"),
+                     dict(a=article_id, e=etablissement_id)).scalar()
+
+
+def signaler_rupture(etablissement_id, article_id, rupture, utilisateur_id):
+    """Met l'article en rupture pour aujourd'hui, ou le rend de nouveau disponible."""
+    h = maintenant()
+    with moteur().begin() as c:
+        if not _article(c, etablissement_id, article_id):
+            return
+        if rupture:
+            c.execute(text("""INSERT INTO ruptures (article_id, jour, signale_par, date_heure) VALUES (:a, :j, :u, :h)
+                              ON CONFLICT DO NOTHING"""), dict(a=article_id, j=h.date(), u=utilisateur_id, h=h))
+        else:
+            c.execute(text("DELETE FROM ruptures WHERE article_id = :a AND jour = :j"), dict(a=article_id, j=h.date()))
+
+
+def retirer_article(etablissement_id, article_id, retirer):
+    """Retire l'article de la carte à partir d'aujourd'hui, ou le remet. Son historique de prix est conservé."""
+    j = maintenant().date()
+    with moteur().begin() as c:
+        if not _article(c, etablissement_id, article_id):
+            return
+        c.execute(text("""UPDATE articles SET date_retrait = :d, statut_article = :s WHERE article_id = :a"""),
+                  dict(d=j if retirer else None, s="retire" if retirer else "propose", a=article_id))
+
+
+def _nouveau_prix_id(c):
+    n = c.execute(text("SELECT COALESCE(MAX(CAST(SUBSTRING(prix_id FROM 4) AS INTEGER)), 0) + 1 FROM articles_prix_historique")).scalar()
+    return f"PRX{n:06d}"
+
+
+def changer_prix(etablissement_id, article_id, nouveau, utilisateur_id):
+    """Change le prix d'un article (décision D-27).
+
+    - Date d'effet : aujourd'hui si l'article n'a pas encore été commandé aujourd'hui, sinon demain (DQ-06 se juge à la journée).
+    - L'historique (SCD2) est coupé à la veille de la date d'effet ; un seul prix reste ouvert par article (DQ-24).
+    - Le jeu simulé va jusqu'au 31/12/2026 : les commandes simulées de l'article, sur la période du nouveau prix, sont recalculées
+      (prix de ligne, montant de ligne, total de commande ; DQ-03, DQ-04, DQ-06). Le changement est écrit dans journal_prix.
+    Renvoie (date d'effet, lignes recalculées, commandes recalculées), ou None si rien ne change."""
+    n = maintenant()
+    nouveau = round(float(nouveau), 3)
+    with moteur().begin() as c:
+        if not _article(c, etablissement_id, article_id) or nouveau <= 0:
+            return None
+        vendu = c.execute(text("""SELECT 1 FROM lignes_commande l JOIN commandes k USING (commande_id)
+                                  WHERE l.article_id = :a AND k.date_heure_commande BETWEEN :d AND :n LIMIT 1"""),
+                          dict(a=article_id, d=datetime.combine(n.date(), datetime.min.time()), n=n)).first()
+        effet = n.date() + timedelta(days=1 if vendu else 0)
+        r = c.execute(text("""SELECT prix_id, date_debut, date_fin, prix_ttc FROM articles_prix_historique
+                              WHERE article_id = :a AND :j BETWEEN date_debut AND COALESCE(date_fin, DATE '2099-12-31')"""),
+                      dict(a=article_id, j=effet)).first()
+        if r is None or abs(float(r.prix_ttc) - nouveau) < 0.0005:
+            return None
+        if r.date_debut == effet:
+            c.execute(text("UPDATE articles_prix_historique SET prix_ttc = :p, motif_changement = 'modification_gerant' WHERE prix_id = :i"),
+                      dict(p=nouveau, i=r.prix_id))
+        else:
+            c.execute(text("UPDATE articles_prix_historique SET date_fin = :f, est_prix_actuel = FALSE WHERE prix_id = :i"),
+                      dict(f=effet - timedelta(days=1), i=r.prix_id))
+            c.execute(text("""INSERT INTO articles_prix_historique (prix_id, article_id, date_debut, date_fin, prix_ttc, motif_changement, est_prix_actuel)
+                              VALUES (:i, :a, :d, :f, :p, 'modification_gerant', :act)"""),
+                      dict(i=_nouveau_prix_id(c), a=article_id, d=effet, f=r.date_fin, p=nouveau, act=r.date_fin is None))
+        if r.date_fin is None:
+            c.execute(text("UPDATE articles SET prix_actuel_ttc = :p WHERE article_id = :a"), dict(p=nouveau, a=article_id))
+        fin = r.date_fin or date(2099, 12, 31)
+        lignes = c.execute(text("""UPDATE lignes_commande l SET prix_unitaire_ttc = :p, montant_ligne_ttc = :p * l.quantite
+                                   FROM commandes k WHERE k.commande_id = l.commande_id AND l.article_id = :a
+                                   AND CAST(k.date_heure_commande AS DATE) BETWEEN :d AND :f
+                                   RETURNING l.commande_id"""), dict(p=nouveau, a=article_id, d=effet, f=fin)).scalars().all()
+        cmds = sorted(set(lignes))
+        if cmds:
+            c.execute(text("""UPDATE commandes k SET montant_total_ttc = s.total
+                              FROM (SELECT commande_id, SUM(montant_ligne_ttc) AS total FROM lignes_commande
+                                    WHERE commande_id = ANY(:ids) GROUP BY commande_id) s
+                              WHERE k.commande_id = s.commande_id"""), dict(ids=cmds))
+        c.execute(text("""INSERT INTO journal_prix (article_id, ancien_prix, nouveau_prix, date_effet, date_heure, utilisateur_id,
+                          lignes_recalculees, commandes_recalculees) VALUES (:a, :o, :p, :d, :h, :u, :l, :k)"""),
+                  dict(a=article_id, o=r.prix_ttc, p=nouveau, d=effet, h=n, u=utilisateur_id, l=len(lignes), k=len(cmds)))
+    return effet, len(lignes), len(cmds)
+
+
+def ajouter_article(etablissement_id, categorie_id, nom, description, prix):
+    """Nouvel article proposé dès aujourd'hui, avec sa première ligne de prix (motif « creation »)."""
+    j = maintenant().date()
+    nom = (nom or "").strip()[:40]
+    with moteur().begin() as c:
+        ok = c.execute(text("SELECT 1 FROM categories_menu WHERE categorie_id = :c AND etablissement_id = :e"),
+                       dict(c=categorie_id, e=etablissement_id)).first()
+        if not ok or not nom or float(prix) <= 0:
+            raise ValueError("Catégorie, nom et prix sont obligatoires.")
+        if c.execute(text("""SELECT 1 FROM articles WHERE etablissement_id = :e AND LOWER(nom_article) = LOWER(:n)
+                             AND (date_retrait IS NULL OR date_retrait > :j)"""), dict(e=etablissement_id, n=nom, j=j)).first():
+            raise ValueError("Un article de ce nom est déjà sur la carte.")
+        n = c.execute(text("SELECT COALESCE(MAX(CAST(SUBSTRING(article_id FROM 4) AS INTEGER)), 0) + 1 FROM articles")).scalar()
+        aid = f"ART{n:06d}"
+        c.execute(text("""INSERT INTO articles (article_id, etablissement_id, categorie_id, nom_article, date_ajout, date_retrait,
+                          prix_actuel_ttc, statut_article, description) VALUES (:a, :e, :c, :n, :j, NULL, :p, 'propose', :d)"""),
+                  dict(a=aid, e=etablissement_id, c=categorie_id, n=nom, j=j, p=round(float(prix), 3), d=(description or "").strip()[:120] or None))
+        c.execute(text("""INSERT INTO articles_prix_historique (prix_id, article_id, date_debut, date_fin, prix_ttc, motif_changement, est_prix_actuel)
+                          VALUES (:i, :a, :j, NULL, :p, 'creation', TRUE)"""), dict(i=_nouveau_prix_id(c), a=aid, j=j, p=round(float(prix), 3)))
+    return aid
+
+
+def modifier_description(etablissement_id, article_id, description):
+    with moteur().begin() as c:
+        if _article(c, etablissement_id, article_id):
+            c.execute(text("UPDATE articles SET description = :d WHERE article_id = :a"),
+                      dict(d=(description or "").strip()[:120] or None, a=article_id))

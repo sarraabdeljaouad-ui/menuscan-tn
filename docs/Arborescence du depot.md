@@ -33,7 +33,7 @@ menuscan-tn/
 ├── 02_oltp/                      ← phase 1 : base applicative
 │   ├── schema_postgres.sql
 │   ├── charger_base_app.py
-│   ├── migrations/               (évolutions du modèle : 001 parcours de commande, 002 comptes de l'équipe, 003 état conservé après actualisation, 004 service en salle)
+│   ├── migrations/               (évolutions du modèle : 001 parcours de commande, 002 comptes de l'équipe, 003 état conservé après actualisation, 004 service en salle, 005 gestion du menu)
 │   ├── controles_qualite.sql
 │   └── diagramme_er.png
 │
