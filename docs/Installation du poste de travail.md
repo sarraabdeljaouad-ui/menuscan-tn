@@ -65,12 +65,14 @@ dbt --version
 
 ## 4. PostgreSQL dans Docker
 
+Le conteneur publie PostgreSQL sur le port **5440** du poste, et non sur 5432 : le port 5432 est souvent pris par un PostgreSQL installé sous Windows (décision D-19). À l'intérieur du conteneur, PostgreSQL reste sur 5432.
+
 Créer le fichier `.env` à partir de `.env.example` :
 
 ```
 POSTGRES_USER=menuscan
 POSTGRES_PASSWORD=choisir_un_mot_de_passe
-POSTGRES_PORT=5432
+POSTGRES_PORT=5440
 ```
 
 Fichier `docker-compose.yml` (version de la phase 1) :
@@ -106,7 +108,7 @@ docker ps                                   # le conteneur menuscan_postgres doi
 docker exec -it menuscan_postgres psql -U menuscan -d menuscan_app -c "SELECT version();"
 ```
 
-Connexion depuis DBeaver : hôte `localhost`, port `5432`, utilisateur et mot de passe du fichier `.env`, bases `menuscan_app` et `menuscan_dwh`.
+Connexion depuis DBeaver : hôte `localhost`, port `5440`, utilisateur et mot de passe du fichier `.env`, bases `menuscan_app` et `menuscan_dwh`.
 
 ## 5. Charger la base applicative (phase 1)
 
@@ -128,7 +130,7 @@ menuscan:
     dev:
       type: postgres
       host: localhost
-      port: 5432
+      port: 5440
       user: menuscan
       password: "{{ env_var('POSTGRES_PASSWORD') }}"
       dbname: menuscan_dwh
@@ -144,7 +146,7 @@ dbt debug
 
 ## 7. Power BI Desktop
 
-Connexion : Obtenir les données → Base de données PostgreSQL → serveur `localhost:5432`, base `menuscan_dwh`. Mode Import. Si la connexion échoue, consulter la documentation Microsoft du connecteur PostgreSQL pour le pilote requis par ta version.
+Connexion : Obtenir les données → Base de données PostgreSQL → serveur `localhost:5440`, base `menuscan_dwh`. Mode Import. Si la connexion échoue, consulter la documentation Microsoft du connecteur PostgreSQL pour le pilote requis par ta version.
 
 ## 8. Vérification finale
 
@@ -170,7 +172,7 @@ Il affiche un tableau OK / KO et se termine par le nombre de contrôles réussis
 
 | Problème | Cause probable | Solution |
 |---|---|---|
-| Le port 5432 est déjà utilisé | Un PostgreSQL Windows tourne déjà | Changer `POSTGRES_PORT` dans `.env` (par exemple 5433) |
+| Le port 5440 est déjà utilisé | Un autre service écoute sur ce port | Choisir un port libre (`netstat -ano \| findstr :5441` ne doit rien renvoyer) et le mettre dans `POSTGRES_PORT` |
 | `docker compose` introuvable | Docker Desktop arrêté | Lancer Docker Desktop, attendre qu'il soit prêt |
 | La base `menuscan_dwh` n'existe pas | Le volume existait avant le script d'initialisation | `docker compose down -v` puis `docker compose up -d` (efface les données) |
 | `dbt debug` échoue sur le mot de passe | Variable non définie dans la session | Définir `POSTGRES_PASSWORD` dans la session ou dans les variables d'environnement Windows |

@@ -84,10 +84,14 @@ if env:
         import psycopg2
         for base in ("menuscan_app", "menuscan_dwh"):
             try:
-                c = psycopg2.connect(host="localhost", port=env.get("POSTGRES_PORT", "5432"), user=env.get("POSTGRES_USER"),
+                c = psycopg2.connect(host="localhost", port=env.get("POSTGRES_PORT", "5440"), user=env.get("POSTGRES_USER"),
                                      password=env.get("POSTGRES_PASSWORD"), dbname=base, connect_timeout=5)
                 cur = c.cursor(); cur.execute("SHOW server_version"); ver = cur.fetchone()[0]; c.close()
                 note(f"Base {base}", True, f"PostgreSQL {ver}")
+            except UnicodeDecodeError as e:
+                # Message d'erreur en français (cp1252) que psycopg2 ne sait pas lire : on le décode nous-mêmes.
+                msg = e.object.decode("cp1252", errors="replace").strip().splitlines()
+                note(f"Base {base}", False, (msg[-1] if msg else "connexion impossible")[:150])
             except Exception as e:  # noqa: BLE001
                 note(f"Base {base}", False, str(e).strip().splitlines()[0])
     except ImportError:

@@ -3,6 +3,7 @@ numpy
 pyarrow
 sqlalchemy
 psycopg2-binary
+dbt-core==1.12.7
 dbt-postgres
 streamlit
 qrcode[pil]
