@@ -27,13 +27,13 @@ menuscan-tn/
 │   ├── commun/                   (db.py, theme.py : accès aux données et thème partagés)
 │   ├── client/                   (application client ouverte par QR code, port 8501)
 │   ├── equipe/                   (application équipe avec connexion gérant et serveur, port 8502)
-│   ├── qr/                       (script de génération des QR codes, T1.4)
+│   ├── qr/                       (generer_qr.py ; sortie/ exclu de Git)
 │   └── README.md
 │
 ├── 02_oltp/                      ← phase 1 : base applicative
 │   ├── schema_postgres.sql
 │   ├── charger_base_app.py
-│   ├── migrations/               (évolutions du modèle : 001 parcours de commande, 002 comptes de l'équipe)
+│   ├── migrations/               (évolutions du modèle : 001 parcours de commande, 002 comptes de l'équipe, 003 état conservé après actualisation)
 │   ├── controles_qualite.sql
 │   └── diagramme_er.png
 │

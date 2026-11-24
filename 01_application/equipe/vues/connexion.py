@@ -15,11 +15,12 @@ with centre:
     with st.form("connexion", border=True):
         identifiant = st.text_input("Identifiant", placeholder="gerant.etb0005")
         mot_de_passe = st.text_input("Mot de passe", type="password")
-        envoyer = st.form_submit_button("Se connecter", type="primary", use_container_width=True)
+        envoyer = st.form_submit_button("Se connecter", type="primary", width="stretch")
     if envoyer:
         u = db.authentifier(identifiant, mot_de_passe)
         if u:
-            st.session_state.utilisateur = u
+            jeton = db.creer_jeton(u["utilisateur_id"])
+            st.session_state.update(utilisateur=u, jeton=jeton, cookie_a_poser=jeton, deconnecte=False)
             st.rerun()
         time.sleep(1)  # ralentit les essais en série
         st.error("Identifiant ou mot de passe incorrect.")

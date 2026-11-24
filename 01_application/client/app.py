@@ -66,17 +66,29 @@ if info["statut_etablissement"] != "actif" or info["formule_id"] is None:
 
 etab = info["etablissement_id"]
 etat = st.session_state
-if etat.get("table") != table_id or etat.get("session_id") is None:
-    etat.table, etat.panier, etat.vue, etat.commande = table_id, {}, "menu", None
-    etat.session_id = db.ouvrir_session(table_id, etab, appareil(), etat.get("langue", "fr"))
+jeton = st.query_params.get("s")
+# Le panier, la langue, la vue et la commande sont gardés en base (migration 003) et retrouvés grâce au jeton
+# placé dans l'adresse : une actualisation de la page ne fait plus rien perdre, et ne compte plus comme un nouveau scan.
+if etat.get("jeton") is None or etat.get("jeton") != jeton or etat.get("table") != table_id:
+    ec = db.etat_client(jeton, table_id) or db.nouvel_etat_client(table_id, etab, appareil(), etat.get("langue", "fr"))
+    etat.jeton, etat.table, etat.session_id = ec["jeton"], table_id, ec["session_id"]
+    etat.panier = {k: int(v) for k, v in ec["panier"].items()}
+    etat.langue, etat.vue, etat.commande = ec["langue"], ec["vue"], ec["commande_id"]
+    if jeton != ec["jeton"]:
+        st.query_params["s"] = ec["jeton"]
 L = T[etat.get("langue", "fr")]
 peut_commander = bool(info["inclut_commande"])
 ouvert = peut_commander and bool(info["commandes_ouvertes"])
 
 
+def sauver():
+    db.sauver_etat_client(etat.jeton, etat.panier, etat.langue, etat.vue, etat.commande)
+
+
 def changer_langue():
     etat.langue = "fr" if etat.get("langue", "fr") == "ar" else "ar"
     db.changer_langue(etat.session_id, etat.langue)
+    sauver()
 
 
 def appeler():
@@ -91,10 +103,18 @@ def modifier(article_id, d):
     else:
         etat.panier.pop(article_id, None)
     db.journaliser(etat.session_id, etab, "ajout_panier" if d > 0 else "retrait_panier", article_id, 1)
+    sauver()
 
 
 def aller(vue):
     etat.vue = vue
+    sauver()
+
+
+def nouvelle_commande():
+    """Une commande par session (DQ-12) : une nouvelle commande ouvre une nouvelle session, avec un nouveau jeton."""
+    etat.jeton = None
+    del st.query_params["s"]
 
 
 initiales = "".join(m[0] for m in info["nom_etablissement"].split() if m[0].isupper())[:2] or "MS"
@@ -106,7 +126,7 @@ with st.container(key="entete"):
       <div style="font-size:13px;color:#C7D7F5">{e(info['nom_ville'])} · table {info['numero_table']} · {e(info['zone'])}</div></div></div>""",
                 unsafe_allow_html=True)
     c2.button("FR · ع" if etat.get("langue", "fr") == "fr" else "ع · FR", key="langue_btn", on_click=changer_langue,
-              help="Français / العربية", use_container_width=True)
+              help="Français / العربية", width="stretch")
 
 articles = db.menu(etab)
 noms = {a["article_id"]: a for a in articles}
@@ -149,10 +169,8 @@ if etat.vue == "suivi" and etat.commande:
     afficher_suivi()
     st.write("")
     b1, b2 = st.columns(2)
-    b1.button(L["appeler"], icon=":material/notifications:", on_click=appeler, use_container_width=True)
-    if b2.button(L["nouvelle"], type="primary", use_container_width=True):
-        etat.session_id = None  # une commande par session : une nouvelle commande ouvre une nouvelle session
-        st.rerun()
+    b1.button(L["appeler"], icon=":material/notifications:", on_click=appeler, width="stretch")
+    b2.button(L["nouvelle"], type="primary", width="stretch", on_click=nouvelle_commande)
     st.stop()
 
 
@@ -174,9 +192,9 @@ if etat.vue == "panier":
               <div><div style="font-weight:700">{e(a['nom_article'])}</div><div style="font-size:13px;color:#64748B">{prix(a['prix_ttc'])} l'unité</div>
               <div style="font-weight:700;color:{BLEU}">{prix(q * a['prix_ttc'])}</div></div></div>""", unsafe_allow_html=True)
             m1, m2, m3 = c2.columns(3, vertical_alignment="center")
-            m1.button("−", key=f"pm_{aid}", on_click=modifier, args=(aid, -1), use_container_width=True)
+            m1.button("−", key=f"pm_{aid}", on_click=modifier, args=(aid, -1), width="stretch")
             m2.markdown(f"<div style='text-align:center;font-weight:700'>{q}</div>", unsafe_allow_html=True)
-            m3.button("+", key=f"pp_{aid}", on_click=modifier, args=(aid, 1), type="primary", use_container_width=True)
+            m3.button("+", key=f"pp_{aid}", on_click=modifier, args=(aid, 1), type="primary", width="stretch")
     st.button(L["ajouter_autres"], icon=":material/add:", on_click=aller, args=("menu",), type="tertiary")
     note = st.text_area(L["note"], placeholder=L["note_ex"], max_chars=200, key="note")
     if etat.panier:
@@ -185,10 +203,11 @@ if etat.vue == "panier":
               <div style="color:{GRIS};font-size:14px;margin:6px 0 10px">{L['reglement']}</div>
               <div style="border-top:1px solid #E2E8F5;padding-top:10px;display:flex;justify-content:space-between;align-items:baseline"><b>{L['total']}</b>
               <span class="titre" style="font-size:28px;color:{MARINE}">{prix(total)}</span></div>""", unsafe_allow_html=True)
-            if st.button(L["envoyer"], type="primary", icon=":material/send:", use_container_width=True, disabled=not ouvert):
+            if st.button(L["envoyer"], type="primary", icon=":material/send:", width="stretch", disabled=not ouvert):
                 try:
                     etat.commande = db.passer_commande(etat.session_id, table_id, etab, dict(etat.panier), note)
                     etat.panier, etat.vue = {}, "suivi"
+                    sauver()
                     st.rerun()
                 except ValueError as err:
                     st.error(str(err))
@@ -229,18 +248,18 @@ for a in liste:
             q = etat.panier.get(aid, 0)
             if q:
                 m1, m2, m3 = c2.columns(3, vertical_alignment="center")
-                m1.button("−", key=f"m_{aid}", on_click=modifier, args=(aid, -1), use_container_width=True)
+                m1.button("−", key=f"m_{aid}", on_click=modifier, args=(aid, -1), width="stretch")
                 m2.markdown(f"<div style='text-align:center;font-weight:700'>{q}</div>", unsafe_allow_html=True)
-                m3.button("+", key=f"p_{aid}", on_click=modifier, args=(aid, 1), type="primary", use_container_width=True)
+                m3.button("+", key=f"p_{aid}", on_click=modifier, args=(aid, 1), type="primary", width="stretch")
             else:
-                c2.button("+", key=f"a_{aid}", on_click=modifier, args=(aid, 1), type="primary", use_container_width=True)
+                c2.button("+", key=f"a_{aid}", on_click=modifier, args=(aid, 1), type="primary", width="stretch")
 
 st.markdown('<div class="espace-bas"></div>', unsafe_allow_html=True)
 if peut_commander:
     with st.container(key="barre"):
         b1, b2 = st.columns([1, 4], vertical_alignment="center")
-        b1.button("", icon=":material/notifications:", help=L["appeler"], on_click=appeler, use_container_width=True, key="cloche")
+        b1.button("", icon=":material/notifications:", help=L["appeler"], on_click=appeler, width="stretch", key="cloche")
         if nb:
-            b2.button(f"\u2066{nb}\u2069  ·  {L['panier']}  ·  \u2066{prix(total)}\u2069", type="primary", on_click=aller, args=("panier",), use_container_width=True)
+            b2.button(f"\u2066{nb}\u2069  ·  {L['panier']}  ·  \u2066{prix(total)}\u2069", type="primary", on_click=aller, args=("panier",), width="stretch")
         else:
             b2.caption(L["vide"])

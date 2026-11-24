@@ -92,13 +92,13 @@ def tableau():
                                 unsafe_allow_html=True)
                     if statut == "nouvelle":
                         b1, b2 = st.columns([3, 2])
-                        b1.button("Accepter", key=f"acc_{cid}", type="primary", on_click=db.avancer, args=(choix, cid), use_container_width=True)
-                        b2.button("Annuler", key=f"ann_{cid}", on_click=db.annuler, args=(choix, cid), use_container_width=True)
+                        b1.button("Accepter", key=f"acc_{cid}", type="primary", on_click=db.avancer, args=(choix, cid), width="stretch")
+                        b2.button("Annuler", key=f"ann_{cid}", on_click=db.annuler, args=(choix, cid), width="stretch")
                     elif statut == "en_prepa":
-                        st.button("Marquer prête", key=f"pre_{cid}", type="primary", on_click=db.avancer, args=(choix, cid), use_container_width=True)
+                        st.button("Marquer prête", key=f"pre_{cid}", type="primary", on_click=db.avancer, args=(choix, cid), width="stretch")
                     else:
                         st.selectbox("Règlement", list(MODES), key=f"mode_{cid}", label_visibility="collapsed")
-                        st.button("Servie", key=f"ser_{cid}", type="primary", on_click=servir, args=(cid,), use_container_width=True)
+                        st.button("Servie", key=f"ser_{cid}", type="primary", on_click=servir, args=(cid,), width="stretch")
 
     if gerant:
         g, d = st.columns(2)
@@ -117,7 +117,7 @@ def tableau():
     with d.container(key="carte_tables"):
         occ = sum(1 for t in tables if t["appel"] or t["commande"] or t["ouvert"])
         st.markdown(f'<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="titre" style="font-size:19px">Tables</span>'
-                    f'<span style="font-size:13px;color:#64748B">{occ} occupées sur {len(tables)}</span></div>', unsafe_allow_html=True)
+                    f'<span style="font-size:13px;color:#64748B">{occ} occupée{"s" if occ > 1 else ""} sur {len(tables)}</span></div>', unsafe_allow_html=True)
         html = ""
         for zone in dict.fromkeys(t["zone"] for t in tables):
             cases = ""

@@ -10,7 +10,7 @@ Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes va
 Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 et 002
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 003
 
 cd 01_application/client
 streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
@@ -32,6 +32,9 @@ Chaque application lit sa configuration (thème, port) dans son dossier `.stream
 | `equipe/vues/accueil.py` | Page publique : présentation, chiffres de la base, formules, tables de démonstration, comptes de démonstration |
 | `equipe/vues/connexion.py` | Connexion : identifiant et mot de passe |
 | `equipe/vues/tableau.py` | Écran du gérant (tableau de bord) ou du serveur (service) |
+| `equipe/vues/qr_codes.py` | Tables et QR codes (gérant) : un QR par table, PNG et planche PDF à imprimer |
+| `commun/qr.py` | Génération des QR codes, des cartes de table et de la planche PDF (A4, 6 cartes par page) |
+| `qr/generer_qr.py` | Même génération en ligne de commande, écrite dans `qr/sortie/` (exclu de Git) |
 
 Les dossiers ne s'appellent pas `pages/` : ce nom déclencherait l'ancienne navigation automatique de Streamlit.
 
@@ -46,6 +49,9 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 | Chiffre du jour, panier moyen, délai, taux de commande | Non | Oui |
 | Meilleures ventes du mois | Non | Oui |
 | Ouvrir ou fermer les commandes | Non | Oui |
+| Tables et QR codes | Non | Oui |
+
+**Rester connecté :** après la connexion, l'appareil reste connecté, même après une actualisation ou la fermeture du navigateur, jusqu'au bouton « Se déconnecter ». La connexion expire seulement après 30 jours sans utilisation ; chaque ouverture de l'application relance ce délai. Le navigateur garde un jeton aléatoire dans un cookie ; la base n'en garde que l'empreinte SHA-256. Le gérant dispose d'un bouton « Déconnecter partout », qui déconnecte tous les appareils des comptes de son établissement (appareil perdu, départ d'un serveur).
 
 Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par la navigation. Chaque écriture de l'équipe est limitée à l'établissement du compte connecté : un compte ne peut pas avancer ni annuler la commande d'un autre établissement.
 
@@ -56,7 +62,18 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 | Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », barre de panier avec appel du serveur ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes |
 | Équipe | `/` | Accueil public |
 | Équipe | `/connexion` | Connexion |
+| Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer |
 | Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, commandes en direct, meilleures ventes, plan des tables. Serveur : compteurs des commandes, commandes en direct, plan des tables. Mise à jour toutes les 10 secondes |
+
+## QR codes et test depuis un téléphone
+
+Chaque QR code encode `CLIENT_URL/?table=<identifiant de la table>`. Pour qu'un téléphone l'ouvre :
+
+1. Le téléphone et le PC sont sur le même Wi-Fi.
+2. Dans `.env`, `CLIENT_URL` contient l'adresse réseau du PC, celle que Streamlit affiche comme « Network URL » au lancement de l'application client (par exemple `CLIENT_URL=http://192.168.1.222:8501`). Relancer ensuite l'application équipe.
+3. Au premier lancement, Windows peut demander d'autoriser Python dans le pare-feu : accepter pour les réseaux **privés** seulement.
+
+En ligne de commande : `python 01_application/qr/generer_qr.py ETB0005` (option `--url` pour forcer une adresse). Les QR codes ont été vérifiés avec un décodeur : chacun renvoie l'adresse de sa table.
 
 ## Parcours d'une commande
 
@@ -88,7 +105,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 
 Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migrations 001 et 002, décisions D-24 et D-25)
+## Évolutions du modèle de données (migrations 001 à 003, décisions D-24 à D-26)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
@@ -96,7 +113,9 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - `articles` : colonne `description`, remplie pour les 87 noms d'articles du jeu (textes rédigés pour l'application, pas issus du générateur) ;
 - `etablissements` : colonne `commandes_ouvertes` ;
 - table `migrations` : journal des migrations appliquées ;
-- table `utilisateurs` (migration 002) : identifiant, établissement, rôle (`gerant`, `serveur`), prénom, mot de passe haché, dernière connexion.
+- table `utilisateurs` (migration 002) : identifiant, établissement, rôle (`gerant`, `serveur`), prénom, mot de passe haché, dernière connexion ;
+- table `etats_client` (migration 003) : panier, langue, écran et commande de chaque client, retrouvés grâce au jeton placé dans l'adresse (`?table=TBL00079&s=...`). Une actualisation de la page ne fait rien perdre et ne compte pas comme un nouveau scan. Le jeton est valable 4 heures après la dernière action et seulement pour sa table ;
+- table `jetons_connexion` (migration 003) : connexions gardées de l'équipe (empreinte du jeton, compte, dernière utilisation).
 
 ## Valeurs propres à l'application
 
@@ -109,7 +128,8 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 
 ## Limites connues
 
-- **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application. Le compte reste connecté tant que l'onglet est ouvert.
+- **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application.
+- **Adresse du client :** quiconque obtient l'adresse complète d'un client (avec `s=`), par exemple par une capture partagée, voit son panier et le suivi de sa commande pendant 4 heures. Il ne peut rien voir d'autre.
 - **Arabe :** l'interface est traduite, pas les noms ni les descriptions des plats, qui n'existent qu'en français.
 - **Articles vus :** l'application n'écrit pas d'événement `vue_article` ; `nb_articles_vus` reste à 0 pour ses sessions.
 - **Données simulées jusqu'au 31/12/2026 :** le jeu contient déjà des commandes datées après le jour présent ; tous les calculs s'arrêtent à l'heure courante.

@@ -8,6 +8,9 @@ montants cohérents entre commande et lignes (DQ-03, DQ-04).
 
 Parcours d'une commande (migration 001) : nouvelle -> en_prepa -> prete -> servie, ou annulee.
 """
+import hashlib
+import json
+import secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -22,6 +25,8 @@ SEQUENCES = {  # nom de la séquence : (table, colonne, préfixe, nombre de chif
     "seq_commande": ("commandes", "commande_id", "CMD", 7),
     "seq_ligne": ("lignes_commande", "ligne_id", "LIG", 7),
 }
+DUREE_CONNEXION_JOURS = 30  # connexion de l'équipe : expire après 30 jours sans utilisation
+DUREE_ETAT_CLIENT_HEURES = 4  # au-delà, un client qui rouvre la page repart d'une nouvelle session
 FORMULES_COMMANDE = "('FRM02', 'FRM03')"
 ACTIVES = "('nouvelle', 'en_prepa', 'prete')"
 SUIVANT = {"nouvelle": ("en_prepa", "date_heure_acceptation"), "en_prepa": ("prete", "date_heure_prete"),
@@ -64,7 +69,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -152,9 +157,7 @@ def suivi(commande_id):
 
 # ---------- Comptes de l'équipe ----------
 
-def authentifier(identifiant, mot_de_passe):
-    """Renvoie le compte si l'identifiant et le mot de passe sont bons (comparaison bcrypt faite par PostgreSQL), sinon None."""
-    u = un(f"""
+_COMPTE = """
         SELECT u.utilisateur_id, u.identifiant, u.role, u.prenom, u.etablissement_id, e.nom_etablissement, e.gerant_prenom,
                v.ville AS nom_ville, a.formule_id, f.nom_formule, f.inclut_statistiques
         FROM utilisateurs u
@@ -163,12 +166,54 @@ def authentifier(identifiant, mot_de_passe):
         LEFT JOIN abonnements a ON a.etablissement_id = e.etablissement_id
              AND CAST(:j AS DATE) BETWEEN a.date_debut AND COALESCE(a.date_fin, DATE '2099-12-31')
         LEFT JOIN formules f ON f.formule_id = a.formule_id
-        WHERE u.identifiant = LOWER(TRIM(:i)) AND u.actif AND u.mot_de_passe_hash = crypt(:m, u.mot_de_passe_hash)""",
-             i=identifiant or "", m=mot_de_passe or "", j=maintenant().date())
+        WHERE u.actif AND """
+
+
+def authentifier(identifiant, mot_de_passe):
+    """Renvoie le compte si l'identifiant et le mot de passe sont bons (comparaison bcrypt faite par PostgreSQL), sinon None."""
+    u = un(_COMPTE + "u.identifiant = LOWER(TRIM(:i)) AND u.mot_de_passe_hash = crypt(:m, u.mot_de_passe_hash)",
+           i=identifiant or "", m=mot_de_passe or "", j=maintenant().date())
     if u:
         with moteur().begin() as c:
             c.execute(text("UPDATE utilisateurs SET derniere_connexion = :h WHERE utilisateur_id = :u"), dict(h=maintenant(), u=u["utilisateur_id"]))
     return u
+
+
+def _empreinte(jeton):
+    return hashlib.sha256(jeton.encode()).hexdigest()
+
+
+def creer_jeton(utilisateur_id):
+    """Crée un jeton de connexion (à poser dans un cookie). Seule son empreinte SHA-256 est stockée."""
+    jeton = secrets.token_urlsafe(32)
+    with moteur().begin() as c:
+        c.execute(text("DELETE FROM jetons_connexion WHERE dernier_usage < now() - make_interval(days => :d)"), dict(d=DUREE_CONNEXION_JOURS))
+        c.execute(text("INSERT INTO jetons_connexion (jeton_hash, utilisateur_id) VALUES (:h, :u)"), dict(h=_empreinte(jeton), u=utilisateur_id))
+    return jeton
+
+
+def compte_par_jeton(jeton):
+    """Renvoie le compte lié au jeton s'il a servi depuis moins de 30 jours et que le compte est actif ; prolonge sa validité."""
+    if not isinstance(jeton, str) or not jeton or len(jeton) > 100:
+        return None
+    with moteur().begin() as c:
+        uid = c.execute(text("""UPDATE jetons_connexion SET dernier_usage = now()
+                                WHERE jeton_hash = :h AND dernier_usage >= now() - make_interval(days => :d)
+                                RETURNING utilisateur_id"""), dict(h=_empreinte(jeton), d=DUREE_CONNEXION_JOURS)).scalar()
+    return un(_COMPTE + "u.utilisateur_id = :u", u=uid, j=maintenant().date()) if uid else None
+
+
+def supprimer_jeton(jeton):
+    if jeton:
+        with moteur().begin() as c:
+            c.execute(text("DELETE FROM jetons_connexion WHERE jeton_hash = :h"), dict(h=_empreinte(jeton)))
+
+
+def deconnecter_etablissement(etablissement_id):
+    """Déconnecte tous les appareils de tous les comptes de l'établissement (téléphone perdu, départ d'un serveur)."""
+    with moteur().begin() as c:
+        return c.execute(text("""DELETE FROM jetons_connexion WHERE utilisateur_id IN
+                                 (SELECT utilisateur_id FROM utilisateurs WHERE etablissement_id = :e)"""), dict(e=etablissement_id)).rowcount
 
 
 def commandes_ouvertes(etablissement_id):
@@ -336,3 +381,33 @@ def annuler(etablissement_id, commande_id, motif="article_indisponible"):
 def ouvrir_commandes(etablissement_id, ouvert):
     with moteur().begin() as c:
         c.execute(text("UPDATE etablissements SET commandes_ouvertes = :o WHERE etablissement_id = :e"), dict(o=ouvert, e=etablissement_id))
+
+
+# ---------- État du client conservé après actualisation (migration 003) ----------
+
+def nouvel_etat_client(table_id, etablissement_id, appareil, langue="fr"):
+    """Nouveau scan : ouvre la session et crée le jeton à placer dans l'adresse de la page."""
+    sid = ouvrir_session(table_id, etablissement_id, appareil, langue)
+    jeton = secrets.token_urlsafe(16)
+    with moteur().begin() as c:
+        c.execute(text("INSERT INTO etats_client (jeton, table_id, session_id, langue) VALUES (:j, :t, :s, :l)"),
+                  dict(j=jeton, t=table_id, s=sid, l=langue))
+    return dict(jeton=jeton, session_id=sid, panier={}, langue=langue, vue="menu", commande_id=None)
+
+
+def etat_client(jeton, table_id):
+    """Relit l'état d'un client. None si le jeton est inconnu, d'une autre table ou inutilisé depuis plus de 4 heures."""
+    if not isinstance(jeton, str) or not jeton or len(jeton) > 40:
+        return None
+    r = un("""SELECT jeton, session_id, panier, langue, vue, commande_id FROM etats_client
+              WHERE jeton = :j AND table_id = :t AND date_maj >= now() - make_interval(hours => :h)""",
+           j=jeton, t=table_id, h=DUREE_ETAT_CLIENT_HEURES)
+    if r and isinstance(r["panier"], str):
+        r["panier"] = json.loads(r["panier"])
+    return r
+
+
+def sauver_etat_client(jeton, panier, langue, vue, commande_id):
+    with moteur().begin() as c:
+        c.execute(text("""UPDATE etats_client SET panier = CAST(:p AS JSONB), langue = :l, vue = :v, commande_id = :c, date_maj = now()
+                          WHERE jeton = :j"""), dict(p=json.dumps(panier), l=langue, v=vue, c=commande_id, j=jeton))
