@@ -68,6 +68,9 @@ info = db.table_et_etablissement(table_id)
 if info is None:
     st.error("Ce QR code ne correspond à aucune table.")
     st.stop()
+if info["table_retiree"]:
+    st.error("Cette table n'est plus en service. Demandez au serveur le QR code d'une autre table.")
+    st.stop()
 if info["statut_etablissement"] != "actif" or info["formule_id"] is None:
     st.error("Le menu de cet établissement n'est plus disponible.")
     st.stop()

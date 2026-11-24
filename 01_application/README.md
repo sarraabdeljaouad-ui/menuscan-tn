@@ -10,7 +10,7 @@ Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes va
 Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 005
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 006
 
 cd 01_application/client
 streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
@@ -53,7 +53,7 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 | Activité des tables : recherche, comparaison, historique, export CSV | Non | Oui |
 | Menu : mettre un article en rupture pour la journée | Oui | Oui |
 | Menu : changer un prix, une description, retirer, remettre ou ajouter un article | Non | Oui |
-| Tables et QR codes | Non | Oui |
+| Tables et QR codes : ajouter, renuméroter, changer de zone ou de places, retirer ou remettre une table | Non | Oui |
 
 **Rester connecté :** après la connexion, l'appareil reste connecté, même après une actualisation ou la fermeture du navigateur, jusqu'au bouton « Se déconnecter ». La connexion expire seulement après 30 jours sans utilisation ; chaque ouverture de l'application relance ce délai. Le navigateur garde un jeton aléatoire dans un cookie ; la base n'en garde que l'empreinte SHA-256. Le gérant dispose d'un bouton « Déconnecter partout », qui déconnecte tous les appareils des comptes de son établissement (appareil perdu, départ d'un serveur).
 
@@ -68,7 +68,7 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 | Équipe | `/connexion` | Connexion |
 | Équipe | `/menu` | Serveur et gérant : articles de la carte par catégorie, recherche, interrupteur « Rupture » (l'article disparaît du menu client pour la journée). Gérant : bouton « Modifier » (prix, description, retrait), ajout d'un article, articles retirés à remettre, prix programmé affiché (« → 2,300 DT à partir du 25/11 ») |
 | Équipe | `/activite` | Gérant seulement : période (aujourd'hui, 7 jours, 30 jours, mois en cours ou dates choisies), recherche par numéro ou par zone, tableau comparatif des tables (visites, commandes servies et annulées, chiffre, panier moyen, délai, appels), puis historique de la table choisie : indicateurs, commandes avec articles, statut, délai et règlement (export CSV), appels avec délai de prise en charge |
-| Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer |
+| Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer ; « ＋ Ajouter une table » (QR code affiché et téléchargeable tout de suite) ; crayon sur chaque carte pour changer le numéro, la zone ou les places, ou retirer la table du service ; tables retirées à remettre en service |
 | Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, appels, commandes en direct, meilleures ventes, plan de salle. Serveur : 4 compteurs (dont les tables à encaisser), appels, commandes en direct, plan de salle. Mise à jour toutes les 10 secondes |
 
 **Plan de salle (lot 1) :** chaque table est un bouton coloré selon son état, du plus urgent au moins urgent : appel en attente, commande en cours, servi à encaisser, menu ouvert depuis moins de 30 minutes, libre. Toucher une table ouvre sa fenêtre : appels à prendre en charge, commandes avec leur bouton d'étape, puis le total à encaisser avec le mode de règlement. La fenêtre reste ouverte après chaque action et se ferme après l'encaissement ; un message confirme le montant encaissé. Une table encaissée redevient libre, sauf si un client y rouvre le menu.
@@ -115,7 +115,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 
 Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migrations 001 à 005, décisions D-24 à D-27)
+## Évolutions du modèle de données (migrations 001 à 006, décisions D-24 à D-27)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
@@ -130,9 +130,16 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - `commandes.date_heure_reglement` (migration 004) : heure de l'encaissement. Les commandes servies du jeu, qui ont toutes un mode de règlement, reçoivent leur heure de service ;
 - `etats_client.commandes` (migration 004) : les commandes d'un client pendant sa visite ;
 - table `ruptures` (migration 005) : article indisponible pour une journée, avec le compte qui l'a signalé ;
-- table `journal_prix` (migration 005) : changements de prix faits dans l'application.
+- table `journal_prix` (migration 005) : changements de prix faits dans l'application ;
+- `tables_salle.date_retrait` (migration 006) : table retirée du service.
 
 Le menu client choisit les articles par leurs dates d'ajout et de retrait, et non par `statut_article`, qui est une photo à la date d'arrêté du jeu.
+
+## Gestion des tables (migration 006)
+
+- Le QR code encode l'identifiant de la table (`TBL...`), pas son numéro : renuméroter une table ne demande pas de réimprimer son QR code.
+- Un numéro ne peut être utilisé que par une seule table en service ; une zone vaut `terrasse`, `salle` ou `etage` ; de 1 à 20 places.
+- Une table n'est jamais supprimée : la retirer remplit `tables_salle.date_retrait`. Son QR code affiche alors « Cette table n'est plus en service », elle disparaît du plan de salle, et son historique reste dans « Activité des tables » avec la mention « (retirée) ». Le retrait est refusé si une commande y est en cours ou à encaisser.
 
 ## Changement de prix (décision D-27)
 

@@ -71,7 +71,7 @@ kpis([("Chiffre servi", prix(chiffre), f"{len(lignes)} table{'s' if len(lignes) 
        prix(meilleure["chiffre"]) if meilleure["chiffre"] else "aucune vente", None)], 190)
 
 df = pd.DataFrame([{
-    "Table": l["numero_table"], "Zone": ZONES.get(l["zone"], l["zone"]), "Places": l["capacite"], "Visites": l["visites"],
+    "Table": l["numero_table"], "Zone": ZONES.get(l["zone"], l["zone"]) + (" (retirée)" if l["date_retrait"] and l["date_retrait"] <= n.date() else ""), "Places": l["capacite"], "Visites": l["visites"],
     "Servies": l["servies"], "Annulées": l["annulees"], "Chiffre (DT)": float(l["chiffre"]),
     "Panier moyen (DT)": float(l["panier"]) if l["panier"] is not None else None,
     "Délai moyen (min)": round(float(l["delai"]), 1) if l["delai"] is not None else None, "Appels": l["appels"],

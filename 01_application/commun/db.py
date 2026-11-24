@@ -69,7 +69,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -104,7 +104,8 @@ def un(sql, **params):
 def table_et_etablissement(table_id):
     """Table, établissement et formule en vigueur aujourd'hui (selon les abonnements, comme DQ-09)."""
     return un("""
-        SELECT t.table_id, t.numero_table, t.zone, e.etablissement_id, e.nom_etablissement, e.type_etablissement,
+        SELECT t.table_id, t.numero_table, t.zone, (t.date_retrait IS NOT NULL AND t.date_retrait <= CAST(:j AS DATE)) AS table_retiree,
+               e.etablissement_id, e.nom_etablissement, e.type_etablissement,
                e.statut_etablissement, e.commandes_ouvertes, v.ville AS nom_ville, a.formule_id, f.nom_formule, f.inclut_commande
         FROM tables_salle t
         JOIN etablissements e USING (etablissement_id)
@@ -295,7 +296,8 @@ def etat_tables(etablissement_id):
                EXISTS (SELECT 1 FROM sessions s WHERE s.table_id = t.table_id AND s.fin_session BETWEEN :o AND :n
                        AND s.fin_session > COALESCE((SELECT MAX(c.date_heure_reglement) FROM commandes c WHERE c.table_id = t.table_id),
                                                     TIMESTAMP '1900-01-01')) AS ouvert
-        FROM tables_salle t WHERE t.etablissement_id = :e ORDER BY t.numero_table""",
+        FROM tables_salle t WHERE t.etablissement_id = :e AND (t.date_retrait IS NULL OR t.date_retrait > CAST(:n AS DATE))
+        ORDER BY t.numero_table""",
                 e=etablissement_id, n=n, o=n - timedelta(minutes=30))
 
 
@@ -490,7 +492,7 @@ def activite_tables(etablissement_id, debut, fin):
     Les appels comptent les événements appel_serveur, présents aussi dans les données générées."""
     fin = min(fin, maintenant())
     return lire("""
-        SELECT t.table_id, t.numero_table, t.zone, t.capacite,
+        SELECT t.table_id, t.numero_table, t.zone, t.capacite, t.date_retrait,
                (SELECT COUNT(*) FROM sessions s WHERE s.table_id = t.table_id AND s.debut_session BETWEEN :d AND :f) AS visites,
                COUNT(c.commande_id) FILTER (WHERE c.statut_commande = 'servie') AS servies,
                COUNT(c.commande_id) FILTER (WHERE c.statut_commande = 'annulee') AS annulees,
@@ -664,3 +666,71 @@ def modifier_description(etablissement_id, article_id, description):
         if _article(c, etablissement_id, article_id):
             c.execute(text("UPDATE articles SET description = :d WHERE article_id = :a"),
                       dict(d=(description or "").strip()[:120] or None, a=article_id))
+
+
+# ---------- Gestion des tables (lot 2, migration 006) ----------
+
+ZONES_VALIDES = ("terrasse", "salle", "etage")
+
+
+def tables_gestion(etablissement_id):
+    """Tables de l'établissement : en service ou retirées, et si une commande y est en cours ou à encaisser."""
+    j = maintenant().date()
+    return lire(f"""
+        SELECT t.table_id, t.numero_table, t.zone, t.capacite, t.qr_code_id, t.date_installation, t.date_retrait,
+               (t.date_retrait IS NOT NULL AND t.date_retrait <= :j) AS retiree,
+               EXISTS (SELECT 1 FROM commandes c WHERE c.table_id = t.table_id AND (c.statut_commande IN {ACTIVES}
+                       OR (c.statut_commande = 'servie' AND c.date_heure_reglement IS NULL))) AS en_cours
+        FROM tables_salle t WHERE t.etablissement_id = :e ORDER BY retiree, t.numero_table""", e=etablissement_id, j=j)
+
+
+def _verifier_table(c, etablissement_id, numero, zone, capacite, sauf=None):
+    if zone not in ZONES_VALIDES:
+        raise ValueError("Zone inconnue.")
+    if not 1 <= int(numero) <= 999 or not 1 <= int(capacite) <= 20:
+        raise ValueError("Numéro entre 1 et 999, places entre 1 et 20.")
+    if c.execute(text("""SELECT 1 FROM tables_salle WHERE etablissement_id = :e AND numero_table = :n AND table_id <> COALESCE(:s, '')
+                         AND (date_retrait IS NULL OR date_retrait > :j)"""),
+                 dict(e=etablissement_id, n=int(numero), s=sauf, j=maintenant().date())).first():
+        raise ValueError(f"La table {int(numero)} existe déjà.")
+
+
+def ajouter_table(etablissement_id, numero, zone, capacite):
+    """Nouvelle table en service dès aujourd'hui ; son QR code est utilisable tout de suite."""
+    with moteur().begin() as c:
+        c.execute(text("LOCK TABLE tables_salle IN SHARE ROW EXCLUSIVE MODE"))
+        _verifier_table(c, etablissement_id, numero, zone, capacite)
+        n = c.execute(text("SELECT COALESCE(MAX(CAST(SUBSTRING(table_id FROM 4) AS INTEGER)), 0) + 1 FROM tables_salle")).scalar()
+        tid = f"TBL{n:05d}"
+        c.execute(text("""INSERT INTO tables_salle (table_id, etablissement_id, numero_table, zone, capacite, qr_code_id, date_installation)
+                          VALUES (:t, :e, :n, :z, :c, :q, :j)"""),
+                  dict(t=tid, e=etablissement_id, n=int(numero), z=zone, c=int(capacite), q=f"QR{n:05d}", j=maintenant().date()))
+    return tid
+
+
+def modifier_table(etablissement_id, table_id, numero, zone, capacite):
+    """Renumérote une table, change sa zone ou ses places. Son QR code ne change pas : il encode l'identifiant, pas le numéro."""
+    with moteur().begin() as c:
+        if not c.execute(text("SELECT 1 FROM tables_salle WHERE table_id = :t AND etablissement_id = :e FOR UPDATE"),
+                         dict(t=table_id, e=etablissement_id)).first():
+            return
+        _verifier_table(c, etablissement_id, numero, zone, capacite, sauf=table_id)
+        c.execute(text("UPDATE tables_salle SET numero_table = :n, zone = :z, capacite = :c WHERE table_id = :t"),
+                  dict(n=int(numero), z=zone, c=int(capacite), t=table_id))
+
+
+def retirer_table(etablissement_id, table_id, retirer):
+    """Retire une table du service (refusé si une commande y est en cours ou à encaisser), ou la remet en service."""
+    j = maintenant().date()
+    with moteur().begin() as c:
+        t = c.execute(text("SELECT numero_table, zone, capacite FROM tables_salle WHERE table_id = :t AND etablissement_id = :e FOR UPDATE"),
+                      dict(t=table_id, e=etablissement_id)).first()
+        if not t:
+            return
+        if retirer:
+            if c.execute(text(f"""SELECT 1 FROM commandes WHERE table_id = :t AND (statut_commande IN {ACTIVES}
+                                  OR (statut_commande = 'servie' AND date_heure_reglement IS NULL))"""), dict(t=table_id)).first():
+                raise ValueError("Une commande est en cours ou à encaisser à cette table.")
+        else:
+            _verifier_table(c, etablissement_id, t.numero_table, t.zone, t.capacite, sauf=table_id)
+        c.execute(text("UPDATE tables_salle SET date_retrait = :d WHERE table_id = :t"), dict(d=j if retirer else None, t=table_id))
