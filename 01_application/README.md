@@ -10,7 +10,7 @@ Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes va
 Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 003
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 004
 
 cd 01_application/client
 streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
@@ -44,8 +44,9 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 
 | Fonction | Serveur | Gérant |
 |---|---|---|
-| Commandes en direct : accepter, marquer prête, servir avec le règlement, annuler | Oui | Oui |
-| Plan des tables et appels du serveur | Oui | Oui |
+| Commandes en direct : accepter, marquer prête, servir, annuler | Oui | Oui |
+| Appels des clients : prise en charge (« Je m'en occupe ») | Oui | Oui |
+| Plan de salle cliquable : fenêtre de la table, actions, encaissement | Oui | Oui |
 | Chiffre du jour, panier moyen, délai, taux de commande | Non | Oui |
 | Meilleures ventes du mois | Non | Oui |
 | Ouvrir ou fermer les commandes | Non | Oui |
@@ -59,11 +60,13 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 
 | Application | Adresse | Contenu |
 |---|---|---|
-| Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », barre de panier avec appel du serveur ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes |
+| Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », cloche d'appel avec motif (serveur, eau, addition) ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes ; « Commander autre chose » et liste « Mes commandes » avec le total de la visite et les commandes réglées |
 | Équipe | `/` | Accueil public |
 | Équipe | `/connexion` | Connexion |
 | Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer |
-| Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, commandes en direct, meilleures ventes, plan des tables. Serveur : compteurs des commandes, commandes en direct, plan des tables. Mise à jour toutes les 10 secondes |
+| Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, appels, commandes en direct, meilleures ventes, plan de salle. Serveur : 4 compteurs (dont les tables à encaisser), appels, commandes en direct, plan de salle. Mise à jour toutes les 10 secondes |
+
+**Plan de salle (lot 1) :** chaque table est un bouton coloré selon son état, du plus urgent au moins urgent : appel en attente, commande en cours, servi à encaisser, menu ouvert depuis moins de 30 minutes, libre. Toucher une table ouvre sa fenêtre : appels à prendre en charge, commandes avec leur bouton d'étape, puis le total à encaisser avec le mode de règlement. La fenêtre reste ouverte après chaque action et se ferme après l'encaissement.
 
 ## QR codes et test depuis un téléphone
 
@@ -82,7 +85,8 @@ En ligne de commande : `python 01_application/qr/generer_qr.py ETB0005` (option 
 | Reçue | `nouvelle` | Le client envoie la commande | `date_heure_commande` |
 | En préparation | `en_prepa` | Le gérant clique sur « Accepter » | `date_heure_acceptation` |
 | Prête | `prete` | Le gérant clique sur « Marquer prête » | `date_heure_prete` |
-| Servie | `servie` | Le gérant choisit le règlement et clique sur « Servie » | `date_heure_service` |
+| Servie | `servie` | L'équipe clique sur « Servie » | `date_heure_service` |
+| Réglée | `servie` | L'équipe encaisse la table dans sa fenêtre, avec le mode de règlement ; toutes les commandes servies non réglées de la table sont encaissées ensemble | `date_heure_reglement`, `mode_reglement` |
 | Annulée | `annulee` | Le gérant clique sur « Annuler » (nouvelle commande seulement) | – |
 
 Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'acceptation ni de préparation.
@@ -94,7 +98,8 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 | Formule | Essentiel : menu consultable seulement. Commande et Pro : panier et commande. La formule est celle de l'abonnement en vigueur le jour même (comme le contrôle DQ-09). |
 | Commandes fermées | Si le gérant ferme les commandes, le menu reste consultable mais le bouton d'envoi est désactivé ; la base refuse aussi la commande. |
 | Session | Un scan ouvre une session et écrit `scan_qr` et `vue_menu`. Chaque action ajoute un événement et prolonge la fin de session (DQ-11). |
-| Une commande par session | « Nouvelle commande » ouvre une nouvelle session (DQ-12). |
+| Une commande par session | « Commander autre chose » ouvre une nouvelle session (DQ-12), rattachée à la même visite par le jeton du client. |
+| Appels | Un même motif ne peut pas être demandé deux fois tant que le premier appel n'est pas pris en charge. Chaque appel écrit aussi l'événement `appel_serveur`, comme dans les données générées. Encaisser une table clôt ses demandes d'addition. |
 | Prix | Relus en base au moment de la commande, selon l'historique des prix (DQ-06). |
 | Montants | Ligne = prix × quantité ; total, nombre de lignes et d'articles cohérents (DQ-03, DQ-04). |
 | Populaire | Les 5 articles les plus servis de l'établissement sur les 30 derniers jours. |
@@ -105,7 +110,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 
 Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migrations 001 à 003, décisions D-24 à D-26)
+## Évolutions du modèle de données (migrations 001 à 004, décisions D-24 à D-26)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
@@ -115,7 +120,10 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - table `migrations` : journal des migrations appliquées ;
 - table `utilisateurs` (migration 002) : identifiant, établissement, rôle (`gerant`, `serveur`), prénom, mot de passe haché, dernière connexion ;
 - table `etats_client` (migration 003) : panier, langue, écran et commande de chaque client, retrouvés grâce au jeton placé dans l'adresse (`?table=TBL00079&s=...`). Une actualisation de la page ne fait rien perdre et ne compte pas comme un nouveau scan. Le jeton est valable 4 heures après la dernière action et seulement pour sa table ;
-- table `jetons_connexion` (migration 003) : connexions gardées de l'équipe (empreinte du jeton, compte, dernière utilisation).
+- table `jetons_connexion` (migration 003) : connexions gardées de l'équipe (empreinte du jeton, compte, dernière utilisation) ;
+- table `appels` (migration 004) : motif (`serveur`, `addition`, `eau`), heure de l'appel, heure de prise en charge et compte qui l'a prise ;
+- `commandes.date_heure_reglement` (migration 004) : heure de l'encaissement. Les commandes servies du jeu, qui ont toutes un mode de règlement, reçoivent leur heure de service ;
+- `etats_client.commandes` (migration 004) : les commandes d'un client pendant sa visite.
 
 ## Valeurs propres à l'application
 
@@ -123,6 +131,7 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 |---|---|---|
 | `commandes.statut_commande` | `nouvelle`, `en_prepa`, `prete` | Étapes avant le service |
 | `sessions.appareil` | `web` | Ordinateur (les données générées ne contiennent que `android` et `ios`) |
+| `commandes.mode_reglement` | vide sur une commande `servie` | Servie mais pas encore encaissée (dans le jeu, toute commande servie a un mode de règlement) |
 
 Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (phase 4).
 
@@ -130,6 +139,8 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 
 - **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application.
 - **Adresse du client :** quiconque obtient l'adresse complète d'un client (avec `s=`), par exemple par une capture partagée, voit son panier et le suivi de sa commande pendant 4 heures. Il ne peut rien voir d'autre.
+- **Deuxième commande d'un même client :** elle ouvre une nouvelle session, qui commence par un événement `scan_qr` comme dans les données générées. Le nombre de scans est donc un peu surestimé quand un client commande plusieurs fois ; le lien entre ces sessions est gardé dans `etats_client`.
+- **Mise à jour du thème :** après le remplacement d'un fichier de `commun/`, relancer les deux applications ; Streamlit ne recharge pas tout seul ce dossier.
 - **Arabe :** l'interface est traduite, pas les noms ni les descriptions des plats, qui n'existent qu'en français.
 - **Articles vus :** l'application n'écrit pas d'événement `vue_article` ; `nb_articles_vus` reste à 0 pour ses sessions.
 - **Données simulées jusqu'au 31/12/2026 :** le jeu contient déjà des commandes datées après le jour présent ; tous les calculs s'arrêtent à l'heure courante.

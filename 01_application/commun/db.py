@@ -69,7 +69,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -281,16 +281,37 @@ def meilleures_ventes(etablissement_id):
 
 
 def etat_tables(etablissement_id):
-    """État de chaque table : appel du serveur (15 min), commande active, menu ouvert (30 min) ou libre."""
+    """État de chaque table : appel en attente, commande en cours, servi à encaisser, menu ouvert (30 min) ou libre."""
     n = maintenant()
     return lire(f"""
         SELECT t.table_id, t.numero_table, t.zone,
-               EXISTS (SELECT 1 FROM evenements ev JOIN sessions s USING (session_id)
-                       WHERE s.table_id = t.table_id AND ev.type_evenement = 'appel_serveur' AND ev.horodatage BETWEEN :a AND :n) AS appel,
+               EXISTS (SELECT 1 FROM appels a WHERE a.table_id = t.table_id AND a.date_heure_prise IS NULL) AS appel,
                EXISTS (SELECT 1 FROM commandes c WHERE c.table_id = t.table_id AND c.statut_commande IN {ACTIVES}) AS commande,
+               EXISTS (SELECT 1 FROM commandes c WHERE c.table_id = t.table_id AND c.statut_commande = 'servie'
+                       AND c.date_heure_reglement IS NULL) AS a_encaisser,
                EXISTS (SELECT 1 FROM sessions s WHERE s.table_id = t.table_id AND s.fin_session BETWEEN :o AND :n) AS ouvert
         FROM tables_salle t WHERE t.etablissement_id = :e ORDER BY t.numero_table""",
-                e=etablissement_id, n=n, a=n - timedelta(minutes=15), o=n - timedelta(minutes=30))
+                e=etablissement_id, n=n, o=n - timedelta(minutes=30))
+
+
+def appels_en_attente(etablissement_id):
+    return lire("""SELECT a.appel_id, a.motif, a.date_heure_appel, t.table_id, t.numero_table, t.zone FROM appels a
+                   JOIN tables_salle t USING (table_id)
+                   WHERE a.etablissement_id = :e AND a.date_heure_prise IS NULL ORDER BY a.date_heure_appel""", e=etablissement_id)
+
+
+def detail_table(etablissement_id, table_id):
+    """Tout ce qui concerne une table : commandes en cours, commandes servies à encaisser, appels en attente."""
+    cmd = lire(f"""
+        SELECT c.commande_id, c.statut_commande, c.date_heure_commande, c.montant_total_ttc, c.note,
+               (c.statut_commande = 'servie') AS a_encaisser,
+               STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article), ' · ' ORDER BY l.ligne_id) AS detail
+        FROM commandes c JOIN lignes_commande l USING (commande_id) JOIN articles a ON a.article_id = l.article_id
+        WHERE c.etablissement_id = :e AND c.table_id = :t
+          AND (c.statut_commande IN {ACTIVES} OR (c.statut_commande = 'servie' AND c.date_heure_reglement IS NULL))
+        GROUP BY c.commande_id ORDER BY c.date_heure_commande""", e=etablissement_id, t=table_id)
+    appels = [a for a in appels_en_attente(etablissement_id) if a["table_id"] == table_id]
+    return dict(commandes=cmd, appels=appels)
 
 
 # ---------- Écriture ----------
@@ -328,6 +349,20 @@ def journaliser(session_id, etablissement_id, type_ev, article_id=None, quantite
         _evenement(c, session_id, etablissement_id, type_ev, maintenant(), article_id, quantite)
 
 
+def appeler(session_id, table_id, etablissement_id, motif="serveur"):
+    """Appel du client. Renvoie False si le même appel attend déjà pour cette table (pas de doublon)."""
+    h = maintenant()
+    with moteur().begin() as c:
+        deja = c.execute(text("""SELECT 1 FROM appels WHERE table_id = :t AND motif = :m AND date_heure_prise IS NULL"""),
+                         dict(t=table_id, m=motif)).scalar()
+        if deja:
+            return False
+        _evenement(c, session_id, etablissement_id, "appel_serveur", h)
+        c.execute(text("""INSERT INTO appels (etablissement_id, table_id, session_id, motif, date_heure_appel)
+                          VALUES (:e, :t, :s, :m, :h)"""), dict(e=etablissement_id, t=table_id, s=session_id, m=motif, h=h))
+    return True
+
+
 def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
     """panier : {article_id: quantite}. Les prix sont relus en base au moment de la commande (DQ-06)."""
     h = maintenant()
@@ -358,17 +393,36 @@ def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
     return cid
 
 
-def avancer(etablissement_id, commande_id, mode_reglement=None):
-    """Fait passer une commande à l'étape suivante et horodate l'étape (seulement une commande de l'établissement du compte)."""
+def avancer(etablissement_id, commande_id):
+    """Fait passer une commande à l'étape suivante et horodate l'étape (seulement une commande de l'établissement du compte).
+    Le règlement est séparé du service (migration 004) : une commande servie reste « à encaisser » jusqu'à encaisser()."""
     with moteur().begin() as c:
         statut = c.execute(text("SELECT statut_commande FROM commandes WHERE commande_id = :c AND etablissement_id = :e FOR UPDATE"),
                            dict(c=commande_id, e=etablissement_id)).scalar()
         if statut not in SUIVANT:
             return
         suivant, colonne = SUIVANT[statut]
-        c.execute(text(f"""UPDATE commandes SET statut_commande = :s, {colonne} = :h,
-                           mode_reglement = COALESCE(:m, mode_reglement) WHERE commande_id = :c"""),
-                  dict(s=suivant, h=maintenant(), m=mode_reglement if suivant == "servie" else None, c=commande_id))
+        c.execute(text(f"UPDATE commandes SET statut_commande = :s, {colonne} = :h WHERE commande_id = :c"),
+                  dict(s=suivant, h=maintenant(), c=commande_id))
+
+
+def encaisser(etablissement_id, table_id, mode_reglement):
+    """Encaisse toutes les commandes servies et non réglées de la table ; clôt les demandes d'addition. Renvoie le montant encaissé."""
+    h = maintenant()
+    with moteur().begin() as c:
+        total = c.execute(text("""UPDATE commandes SET mode_reglement = :m, date_heure_reglement = :h
+                                  WHERE etablissement_id = :e AND table_id = :t AND statut_commande = 'servie' AND date_heure_reglement IS NULL
+                                  RETURNING montant_total_ttc"""), dict(m=mode_reglement, h=h, e=etablissement_id, t=table_id)).scalars().all()
+        c.execute(text("""UPDATE appels SET date_heure_prise = :h WHERE etablissement_id = :e AND table_id = :t
+                          AND motif = 'addition' AND date_heure_prise IS NULL"""), dict(h=h, e=etablissement_id, t=table_id))
+    return sum(total)
+
+
+def prendre_appel(etablissement_id, appel_id, utilisateur_id):
+    with moteur().begin() as c:
+        c.execute(text("""UPDATE appels SET date_heure_prise = :h, pris_par = :u
+                          WHERE appel_id = :a AND etablissement_id = :e AND date_heure_prise IS NULL"""),
+                  dict(h=maintenant(), u=utilisateur_id, a=appel_id, e=etablissement_id))
 
 
 def annuler(etablissement_id, commande_id, motif="article_indisponible"):
@@ -392,14 +446,14 @@ def nouvel_etat_client(table_id, etablissement_id, appareil, langue="fr"):
     with moteur().begin() as c:
         c.execute(text("INSERT INTO etats_client (jeton, table_id, session_id, langue) VALUES (:j, :t, :s, :l)"),
                   dict(j=jeton, t=table_id, s=sid, l=langue))
-    return dict(jeton=jeton, session_id=sid, panier={}, langue=langue, vue="menu", commande_id=None)
+    return dict(jeton=jeton, session_id=sid, panier={}, langue=langue, vue="menu", commande_id=None, commandes=[])
 
 
 def etat_client(jeton, table_id):
     """Relit l'état d'un client. None si le jeton est inconnu, d'une autre table ou inutilisé depuis plus de 4 heures."""
     if not isinstance(jeton, str) or not jeton or len(jeton) > 40:
         return None
-    r = un("""SELECT jeton, session_id, panier, langue, vue, commande_id FROM etats_client
+    r = un("""SELECT jeton, session_id, panier, langue, vue, commande_id, commandes FROM etats_client
               WHERE jeton = :j AND table_id = :t AND date_maj >= now() - make_interval(hours => :h)""",
            j=jeton, t=table_id, h=DUREE_ETAT_CLIENT_HEURES)
     if r and isinstance(r["panier"], str):
@@ -407,7 +461,14 @@ def etat_client(jeton, table_id):
     return r
 
 
-def sauver_etat_client(jeton, panier, langue, vue, commande_id):
+def sauver_etat_client(jeton, session_id, panier, langue, vue, commande_id, commandes):
     with moteur().begin() as c:
-        c.execute(text("""UPDATE etats_client SET panier = CAST(:p AS JSONB), langue = :l, vue = :v, commande_id = :c, date_maj = now()
-                          WHERE jeton = :j"""), dict(p=json.dumps(panier), l=langue, v=vue, c=commande_id, j=jeton))
+        c.execute(text("""UPDATE etats_client SET session_id = :s, panier = CAST(:p AS JSONB), langue = :l, vue = :v, commande_id = :c,
+                          commandes = :cs, date_maj = now() WHERE jeton = :j"""),
+                  dict(s=session_id, p=json.dumps(panier), l=langue, v=vue, c=commande_id, cs=list(commandes), j=jeton))
+
+
+def commandes_visite(commande_ids):
+    """Statut et montant des commandes d'un client pendant sa visite, dans l'ordre."""
+    return lire("""SELECT commande_id, statut_commande, montant_total_ttc, date_heure_commande, date_heure_reglement FROM commandes
+                   WHERE commande_id = ANY(:ids) ORDER BY date_heure_commande""", ids=list(commande_ids))

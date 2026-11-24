@@ -6,6 +6,10 @@ import streamlit as st
 
 MARINE, BLEU, CLAIR, FOND, BORD = "#1E3A8A", "#1D4ED8", "#DBE7FF", "#F3F6FC", "#E2E8F5"
 TEXTE, GRIS, ORANGE = "#0F172A", "#475569", "#F59E0B"
+VIOLET, VIOLET_CLAIR = "#5B21B6", "#EDE9FE"  # servi, à encaisser
+CASES = {  # plan de salle : état -> (libellé, fond, texte), du plus urgent au moins urgent
+    "appel": ("Appel", ORANGE, "#422006"), "commande": ("Commande", BLEU, "#FFFFFF"),
+    "encaisser": ("À encaisser", VIOLET_CLAIR, VIOLET), "menu": ("Menu", CLAIR, MARINE), "libre": ("Libre", "#F1F5F9", "#64748B")}
 
 CSS = f"""
 <style>
@@ -21,6 +25,7 @@ h1, h2, h3, .titre, .stApp .titre {{ font-family: 'Plus Jakarta Sans', Inter, sa
 [data-testid="stSidebar"] {{ background: {MARINE}; }}
 [data-testid="stSidebar"] * {{ color: #FFFFFF; }}
 [data-testid="stSidebar"] .stButton button {{ background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.3); }}
+[data-testid="stSidebar"] [data-testid="stPopoverButton"] {{ background: transparent !important; border: 1px solid rgba(255,255,255,.3) !important; color: #FFFFFF !important; }}
 [data-testid="stSidebar"] [data-testid="stSidebarNavLink"][aria-current="page"] {{ background: rgba(255,255,255,0.16); }}
 [data-testid="stSidebar"] [data-testid="stSelectbox"] input, [data-testid="stSidebar"] [data-testid="stSelectbox"] button, [data-testid="stSidebar"] [data-testid="stSelectbox"] [role="group"] {{ color: {TEXTE} !important; -webkit-text-fill-color: {TEXTE}; background: #FFFFFF; }}
 .st-key-entete .stButton button {{ background: transparent !important; border: 1px solid rgba(255,255,255,.45) !important; border-radius: 999px; min-height: 40px; }}
@@ -42,6 +47,19 @@ h1, h2, h3, .titre, .stApp .titre {{ font-family: 'Plus Jakarta Sans', Inter, sa
 .kpi .v {{ font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 800; color: {MARINE}; line-height: 1.2; }}
 .kpi .s {{ font-size: 13px; font-weight: 500; color: {GRIS}; }}
 .grille {{ display: grid; gap: 14px; }}
+.st-key-plan [data-testid="stHorizontalBlock"], [class*="st-key-appel_"] [data-testid="stHorizontalBlock"] {{ flex-wrap: nowrap !important; gap: 6px; }}
+.st-key-plan [data-testid="stColumn"], [class*="st-key-appel_"] [data-testid="stColumn"] {{ min-width: 0 !important; }}
+[class*="st-key-case_"] .stButton button {{ min-height: 58px; padding: 2px; border: none; line-height: 1.1; border-radius: 12px; }}
+[class*="st-key-case_"] .stButton button p {{ font-size: 10px; font-weight: 600; color: inherit !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+[class*="st-key-case_"] .stButton button p strong {{ display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; }}
+[class*="st-key-case_"] .stButton button:hover {{ filter: brightness(0.95); outline: 2px solid {MARINE}; }}
+[class*="st-key-appel_"] {{ background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 16px; padding: 10px 14px; }}
+.st-key-barre [data-testid="stPopover"] button {{ min-height: 52px; border-radius: 12px; }}
+[class*="st-key-case_appel_"] .stButton button {{ background: {ORANGE}; color: #422006; }}
+[class*="st-key-case_commande_"] .stButton button {{ background: {BLEU}; color: #FFFFFF; }}
+[class*="st-key-case_encaisser_"] .stButton button {{ background: {VIOLET_CLAIR}; color: {VIOLET}; }}
+[class*="st-key-case_menu_"] .stButton button {{ background: {CLAIR}; color: {MARINE}; }}
+[class*="st-key-case_libre_"] .stButton button {{ background: #F1F5F9; color: #64748B; }}
 </style>
 """
 

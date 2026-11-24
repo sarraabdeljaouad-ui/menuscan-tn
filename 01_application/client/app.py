@@ -30,7 +30,11 @@ T = {
                ajouter_autres="Ajouter d'autres articles", recap="Récapitulatif", annulee="Commande annulée : un article n'était plus disponible. Le serveur passe à votre table.",
                etapes=["Reçue", "En préparation", "Prête", "Servie"], details=["Envoyée au café", "Acceptée par l'équipe", "Le serveur l'apporte", "Bon appétit !"],
                delai="Service en {m} min en moyenne ici (30 derniers jours)", ferme="Les commandes sont fermées pour le moment : le menu reste consultable.",
-               essentiel="Menu consultable uniquement : cet établissement ne propose pas la commande depuis la table."),
+               essentiel="Menu consultable uniquement : cet établissement ne propose pas la commande depuis la table.",
+               autre="Commander autre chose", mes_commandes="Mes commandes", total_visite="Total de la visite", suivre="Suivre ma commande",
+               motifs={"serveur": "Appeler le serveur", "addition": "Demander l'addition", "eau": "De l'eau, s'il vous plaît"},
+               appels_ok={"serveur": "Le serveur a été prévenu.", "addition": "L'addition arrive.", "eau": "Le serveur apporte de l'eau."},
+               deja="Déjà demandé : le serveur arrive.", annulee_court="Annulée", reglee="Réglée", besoin="Besoin de quelque chose ?"),
     "ar": dict(recherche="ابحث عن طبق أو مشروب…", panier="عرض السلة", ma_commande="طلبي", envoyer="إرسال الطلب",
                note="ملاحظة للنادل", note_ex="مثال: كابوسان ساخن جدًا، بدون سكر", appeler="نداء النادل",
                appel_ok="تم إعلام النادل.", total="المجموع", sous_total="المجموع الفرعي", nouvelle="طلب جديد",
@@ -39,7 +43,11 @@ T = {
                ajouter_autres="إضافة عناصر أخرى", recap="ملخص الطلب", annulee="أُلغي الطلب: أحد العناصر غير متوفر. سيأتي النادل إلى طاولتك.",
                etapes=["تم الاستلام", "قيد التحضير", "جاهز", "تم التقديم"], details=["أُرسل إلى المقهى", "قبله الفريق", "النادل في الطريق", "بالهناء والشفاء!"],
                delai="مدة التقديم هنا {m} دقيقة في المتوسط (آخر 30 يومًا)", ferme="الطلبات مغلقة حاليًا: يمكنك تصفح القائمة.",
-               essentiel="القائمة للاطلاع فقط: هذا المحل لا يوفر الطلب من الطاولة."),
+               essentiel="القائمة للاطلاع فقط: هذا المحل لا يوفر الطلب من الطاولة.",
+               autre="طلب شيء آخر", mes_commandes="طلباتي", total_visite="مجموع الزيارة", suivre="متابعة طلبي",
+               motifs={"serveur": "نداء النادل", "addition": "طلب الحساب", "eau": "ماء من فضلك"},
+               appels_ok={"serveur": "تم إعلام النادل.", "addition": "الحساب في الطريق.", "eau": "النادل سيحضر الماء."},
+               deja="تم الطلب مسبقًا: النادل في الطريق.", annulee_court="ملغى", reglee="مدفوع", besoin="هل تحتاج شيئًا؟"),
 }
 
 
@@ -74,6 +82,7 @@ if etat.get("jeton") is None or etat.get("jeton") != jeton or etat.get("table") 
     etat.jeton, etat.table, etat.session_id = ec["jeton"], table_id, ec["session_id"]
     etat.panier = {k: int(v) for k, v in ec["panier"].items()}
     etat.langue, etat.vue, etat.commande = ec["langue"], ec["vue"], ec["commande_id"]
+    etat.commandes = list(ec["commandes"] or [])
     if jeton != ec["jeton"]:
         st.query_params["s"] = ec["jeton"]
 L = T[etat.get("langue", "fr")]
@@ -82,7 +91,7 @@ ouvert = peut_commander and bool(info["commandes_ouvertes"])
 
 
 def sauver():
-    db.sauver_etat_client(etat.jeton, etat.panier, etat.langue, etat.vue, etat.commande)
+    db.sauver_etat_client(etat.jeton, etat.session_id, etat.panier, etat.langue, etat.vue, etat.commande, etat.commandes)
 
 
 def changer_langue():
@@ -91,9 +100,21 @@ def changer_langue():
     sauver()
 
 
-def appeler():
-    db.journaliser(etat.session_id, etab, "appel_serveur")
-    st.toast(L["appel_ok"])
+def appeler(motif):
+    if db.appeler(etat.session_id, table_id, etab, motif):
+        st.toast(L["appels_ok"][motif])
+    else:
+        st.toast(L["deja"])
+
+
+def bouton_appel(cle, plein=False):
+    """Cloche : appel du serveur avec un motif (serveur, addition, eau)."""
+    with st.popover("" if not plein else L["besoin"], icon=":material/notifications:", width="stretch", key=cle):
+        for motif, texte in L["motifs"].items():
+            if motif == "addition" and not etat.commandes:
+                continue
+            st.button(texte, key=f"{cle}_{motif}", on_click=appeler, args=(motif,), width="stretch",
+                      type="primary" if motif == "addition" else "secondary")
 
 
 def modifier(article_id, d):
@@ -111,10 +132,12 @@ def aller(vue):
     sauver()
 
 
-def nouvelle_commande():
-    """Une commande par session (DQ-12) : une nouvelle commande ouvre une nouvelle session, avec un nouveau jeton."""
-    etat.jeton = None
-    del st.query_params["s"]
+def commander_autre():
+    """Une commande par session (DQ-12) : retour au menu après une commande = nouvelle session, même jeton, même visite."""
+    if etat.commande:
+        etat.session_id = db.ouvrir_session(table_id, etab, appareil(), etat.langue)
+        etat.commande = None
+    aller("menu")
 
 
 initiales = "".join(m[0] for m in info["nom_etablissement"].split() if m[0].isupper())[:2] or "MS"
@@ -135,10 +158,10 @@ total = sum(q * noms[a]["prix_ttc"] for a, q in etat.panier.items() if a in noms
 
 
 # ---------- Vue : suivi de la commande ----------
-if etat.vue == "suivi" and etat.commande:
+if etat.vue == "suivi" and etat.commandes:
     @st.fragment(run_every="10s")
     def afficher_suivi():
-        c = db.suivi(etat.commande)
+        c = db.suivi(etat.commandes[-1])
         st.markdown(f"""<div style="text-align:center;padding:12px 0 4px"><div style="width:58px;height:58px;margin:0 auto 8px;border-radius:50%;background:{CLAIR};display:flex;align-items:center;justify-content:center">
           <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{BLEU}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
           <div class="titre" style="font-size:24px">{L['envoyee']}</div><div style="color:{GRIS};font-size:14px">{c['commande_id']}</div></div>""", unsafe_allow_html=True)
@@ -167,10 +190,30 @@ if etat.vue == "suivi" and etat.commande:
           <span class="titre" style="font-size:22px;color:{MARINE}">{prix(c['montant_total_ttc'])}</span></div></div>""", unsafe_allow_html=True)
 
     afficher_suivi()
+
+    @st.fragment(run_every="10s")
+    def afficher_visite():
+        if len(etat.commandes) < 2:
+            return
+        cs = db.commandes_visite(etat.commandes)
+        etats = dict(zip(["nouvelle", "en_prepa", "prete", "servie"], L["etapes"]), annulee=L["annulee_court"])
+        lignes = "".join(f"""<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid #E2E8F5">
+          <span><b>{c['commande_id']}</b> <span style="color:#64748B;font-size:13px">· {c['date_heure_commande']:%H:%M} ·
+          {L['reglee'] if c['date_heure_reglement'] else etats[c['statut_commande']]}</span></span>
+          <span style="{'text-decoration:line-through;color:#94A3B8' if c['statut_commande'] == 'annulee' else ''}">{prix(c['montant_total_ttc'])}</span></div>""" for c in cs)
+        total_visite = sum(c["montant_total_ttc"] for c in cs if c["statut_commande"] != "annulee")
+        st.markdown(f"""<div style="background:#fff;border-radius:20px;padding:16px 18px;margin-top:12px">
+          <div class="titre" style="font-size:17px;margin-bottom:6px">{L['mes_commandes']}</div>{lignes}
+          <div style="border-top:1px solid #E2E8F5;padding-top:8px;display:flex;justify-content:space-between;align-items:baseline"><b>{L['total_visite']}</b>
+          <span class="titre" style="font-size:20px;color:{MARINE}">{prix(total_visite)}</span></div></div>""", unsafe_allow_html=True)
+
+    afficher_visite()
     st.write("")
     b1, b2 = st.columns(2)
-    b1.button(L["appeler"], icon=":material/notifications:", on_click=appeler, width="stretch")
-    b2.button(L["nouvelle"], type="primary", width="stretch", on_click=nouvelle_commande)
+    with b1:
+        bouton_appel("cloche_suivi", plein=True)
+    if ouvert:
+        b2.button(L["autre"], type="primary", width="stretch", on_click=commander_autre, icon=":material/add:")
     st.stop()
 
 
@@ -206,6 +249,7 @@ if etat.vue == "panier":
             if st.button(L["envoyer"], type="primary", icon=":material/send:", width="stretch", disabled=not ouvert):
                 try:
                     etat.commande = db.passer_commande(etat.session_id, table_id, etab, dict(etat.panier), note)
+                    etat.commandes.append(etat.commande)
                     etat.panier, etat.vue = {}, "suivi"
                     sauver()
                     st.rerun()
@@ -217,6 +261,8 @@ if etat.vue == "panier":
 
 
 # ---------- Vue : menu ----------
+if etat.commandes:
+    st.button(L["suivre"], icon=":material/receipt_long:", on_click=aller, args=("suivi",), width="stretch", key="suivre")
 if not peut_commander:
     st.info(L["essentiel"])
 elif not ouvert:
@@ -258,7 +304,8 @@ st.markdown('<div class="espace-bas"></div>', unsafe_allow_html=True)
 if peut_commander:
     with st.container(key="barre"):
         b1, b2 = st.columns([1, 4], vertical_alignment="center")
-        b1.button("", icon=":material/notifications:", help=L["appeler"], on_click=appeler, width="stretch", key="cloche")
+        with b1:
+            bouton_appel("cloche")
         if nb:
             b2.button(f"\u2066{nb}\u2069  ·  {L['panier']}  ·  \u2066{prix(total)}\u2069", type="primary", on_click=aller, args=("panier",), width="stretch")
         else:
