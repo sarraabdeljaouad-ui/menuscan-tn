@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.1 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.2 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -112,12 +112,17 @@ Connexion depuis DBeaver : hôte `localhost`, port `5440`, utilisateur et mot de
 
 ## 5. Charger la base applicative (phase 1)
 
+1. Télécharger `menuscan_dataset_v1.0.zip` depuis la page Releases du dépôt.
+2. Le décompresser **à la racine du dépôt** : on doit obtenir `menuscan-tn/menuscan_dataset/donnees_reference/`. Si Windows crée un dossier intermédiaire (`menuscan_dataset_v1.0/menuscan_dataset/`), déplacer `menuscan_dataset` d'un niveau. Le dossier est exclu de Git.
+3. Lancer le chargement, conteneur démarré et environnement Python activé :
+
 ```bash
-docker cp menuscan_dataset/sql/schema_postgres.sql menuscan_postgres:/tmp/
-docker exec -it menuscan_postgres psql -U menuscan -d menuscan_app -f /tmp/schema_postgres.sql
+python 02_oltp/charger_base_app.py
 ```
 
-Les données se chargent ensuite table par table, dans l'ordre indiqué à la fin du fichier `schema_postgres.sql`, avec le script Python de la phase 1. Les contrôles de `sql/controles_qualite.sql` doivent tous renvoyer 0.
+Le script crée les 20 tables du schéma `menuscan` dans `menuscan_app`, les charge avec `COPY`, compare le nombre de lignes à celui des fichiers, puis exécute les 23 contrôles de `02_oltp/controles_qualite.sql` (0 violation attendue). Il écrit le résultat dans `02_oltp/rapport_chargement.md`. Durée constatée : environ 30 secondes.
+
+Pour tout recharger : `python 02_oltp/charger_base_app.py --reinitialiser`.
 
 ## 6. dbt
 
