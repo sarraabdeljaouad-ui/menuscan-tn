@@ -23,16 +23,17 @@ menuscan-tn/
 │   ├── 4-Gouvernance des données/          (référentiel, qualité, modélisation, modèles)
 │   └── 6-Validation de la phase 0/         (recette, rapport, PV)
 │
-├── 01_application/               ← phase 1 : application Streamlit
-│   ├── app.py, db.py, theme.py
-│   ├── vues/                     (accueil, menu client, espace gérant ; espace MenuScan en phase 8)
+├── 01_application/               ← phase 1 : deux applications Streamlit
+│   ├── commun/                   (db.py, theme.py : accès aux données et thème partagés)
+│   ├── client/                   (application client ouverte par QR code, port 8501)
+│   ├── equipe/                   (application équipe avec connexion gérant et serveur, port 8502)
 │   ├── qr/                       (script de génération des QR codes, T1.4)
 │   └── README.md
 │
 ├── 02_oltp/                      ← phase 1 : base applicative
 │   ├── schema_postgres.sql
 │   ├── charger_base_app.py
-│   ├── migrations/               (évolutions du modèle : 001_parcours_commande.sql)
+│   ├── migrations/               (évolutions du modèle : 001 parcours de commande, 002 comptes de l'équipe)
 │   ├── controles_qualite.sql
 │   └── diagramme_er.png
 │

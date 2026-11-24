@@ -1,39 +1,62 @@
 # Application MenuScan TN
 
-Application Streamlit du menu numérique à QR code, avec commande depuis la table (phase 1, tâche T1.3). Elle suit les maquettes validées le 24/11/2026 et lit et écrit dans la base applicative `menuscan_app` (schéma `menuscan`).
+Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes validées le 24/11/2026 et partagent la base applicative `menuscan_app` (schéma `menuscan`) :
+
+- **l'application client**, ouverte par le QR code de la table, sans compte : menu, panier, suivi de la commande ;
+- **l'application équipe** (back-office), avec connexion : écran du serveur ou du gérant selon le rôle (décision D-25).
 
 ## Lancement
 
-Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé :
+Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant la migration 001
-cd 01_application
-streamlit run app.py
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 et 002
+
+cd 01_application/client
+streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
+
+cd 01_application/equipe
+streamlit run app.py                          # application équipe : http://localhost:8502
 ```
 
-L'application s'ouvre sur `http://localhost:8501`. Le thème est défini dans `.streamlit/config.toml` et `theme.py` ; le fichier de configuration n'est lu que si l'application est lancée depuis ce dossier.
+Chaque application lit sa configuration (thème, port) dans son dossier `.streamlit/` : il faut la lancer depuis son dossier. L'adresse de l'application client, utilisée par les liens de démonstration et plus tard par les QR codes, se règle avec `CLIENT_URL` dans `.env` (par défaut `http://localhost:8501`).
 
 ## Fichiers
 
 | Fichier | Rôle |
 |---|---|
-| `app.py` | Point d'entrée : thème, vérification de la base, navigation |
-| `theme.py` | Couleurs, polices (Inter, Plus Jakarta Sans), cartes, barre de panier fixe |
-| `db.py` | Toutes les lectures et écritures en base |
-| `vues/accueil.py` | Accueil : présentation, chiffres de la base, étapes, formules et tables de démonstration |
-| `vues/menu_client.py` | Menu client en trois vues : menu, panier, suivi de la commande |
-| `vues/espace_gerant.py` | Espace gérant : indicateurs, commandes en direct, meilleures ventes, plan des tables |
+| `commun/db.py` | Toutes les lectures et écritures en base, connexion des comptes |
+| `commun/theme.py` | Couleurs, polices (Inter, Plus Jakarta Sans), cartes, barre de panier fixe |
+| `client/app.py` | Application client : menu, panier, suivi de la commande |
+| `equipe/app.py` | Application équipe : navigation selon la connexion et le rôle, déconnexion |
+| `equipe/vues/accueil.py` | Page publique : présentation, chiffres de la base, formules, tables de démonstration, comptes de démonstration |
+| `equipe/vues/connexion.py` | Connexion : identifiant et mot de passe |
+| `equipe/vues/tableau.py` | Écran du gérant (tableau de bord) ou du serveur (service) |
 
-Le dossier s'appelle `vues/` et non `pages/` : un dossier `pages/` déclencherait l'ancienne navigation automatique de Streamlit.
+Les dossiers ne s'appellent pas `pages/` : ce nom déclencherait l'ancienne navigation automatique de Streamlit.
+
+## Comptes et rôles (migration 002)
+
+Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur.etbXXXX` (par exemple `gerant.etb0005` pour le Café Les Arcades). Mot de passe de démonstration commun : `Demo2026!`. Les mots de passe sont hachés avec bcrypt (extension `pgcrypto`) et comparés par PostgreSQL ; ils ne sont jamais stockés en clair.
+
+| Fonction | Serveur | Gérant |
+|---|---|---|
+| Commandes en direct : accepter, marquer prête, servir avec le règlement, annuler | Oui | Oui |
+| Plan des tables et appels du serveur | Oui | Oui |
+| Chiffre du jour, panier moyen, délai, taux de commande | Non | Oui |
+| Meilleures ventes du mois | Non | Oui |
+| Ouvrir ou fermer les commandes | Non | Oui |
+
+Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par la navigation. Chaque écriture de l'équipe est limitée à l'établissement du compte connecté : un compte ne peut pas avancer ni annuler la commande d'un autre établissement.
 
 ## Pages
 
-| Page | Adresse | Contenu |
+| Application | Adresse | Contenu |
 |---|---|---|
-| Accueil | `/` | Présentation, 4 chiffres lus en base, parcours en 4 étapes, une table de démonstration par formule |
-| Menu client | `/menu?table=TBL00001` | Ouvert par le QR code : en-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », barre de panier avec appel du serveur ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes |
-| Espace gérant | `/gerant` | Ouverture ou fermeture des commandes, 5 indicateurs, commandes en direct en 3 colonnes (nouvelles, en préparation, prêtes), meilleures ventes du mois, plan des tables ; mise à jour toutes les 10 secondes |
+| Client | `/?table=TBL00001` | En-tête de l'établissement, bouton FR · ع, recherche, catégories, articles avec description et badge « Populaire », barre de panier avec appel du serveur ; panier avec note pour le serveur ; suivi de la commande en 4 étapes, mis à jour toutes les 10 secondes |
+| Équipe | `/` | Accueil public |
+| Équipe | `/connexion` | Connexion |
+| Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, commandes en direct, meilleures ventes, plan des tables. Serveur : compteurs des commandes, commandes en direct, plan des tables. Mise à jour toutes les 10 secondes |
 
 ## Parcours d'une commande
 
@@ -63,16 +86,17 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 | Identifiants | Séquences PostgreSQL calées sur le plus grand identifiant existant (`SES`, `EVT`, `CMD`, `LIG`). |
 | Heure | Heure de Tunis (UTC+1, pas d'heure d'été), comme les données existantes. |
 
-Après un parcours complet (commande, quatre étapes, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
+Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migration 001, décision D-24)
+## Évolutions du modèle de données (migrations 001 et 002, décisions D-24 et D-25)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
 - `commandes` : statuts `nouvelle`, `en_prepa`, `prete` (contrainte de valeurs), colonnes `date_heure_acceptation`, `date_heure_prete` et `note` ;
 - `articles` : colonne `description`, remplie pour les 87 noms d'articles du jeu (textes rédigés pour l'application, pas issus du générateur) ;
 - `etablissements` : colonne `commandes_ouvertes` ;
-- table `migrations` : journal des migrations appliquées.
+- table `migrations` : journal des migrations appliquées ;
+- table `utilisateurs` (migration 002) : identifiant, établissement, rôle (`gerant`, `serveur`), prénom, mot de passe haché, dernière connexion.
 
 ## Valeurs propres à l'application
 
@@ -85,7 +109,7 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 
 ## Limites connues
 
-- **Pas d'authentification** dans l'espace gérant : le choix de l'établissement est libre (démonstration).
+- **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application. Le compte reste connecté tant que l'onglet est ouvert.
 - **Arabe :** l'interface est traduite, pas les noms ni les descriptions des plats, qui n'existent qu'en français.
 - **Articles vus :** l'application n'écrit pas d'événement `vue_article` ; `nb_articles_vus` reste à 0 pour ses sessions.
 - **Données simulées jusqu'au 31/12/2026 :** le jeu contient déjà des commandes datées après le jour présent ; tous les calculs s'arrêtent à l'heure courante.

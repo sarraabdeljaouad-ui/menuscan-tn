@@ -14,7 +14,7 @@ from pathlib import Path
 import streamlit as st
 from sqlalchemy import URL, create_engine, text
 
-RACINE = Path(__file__).resolve().parent.parent
+RACINE = Path(__file__).resolve().parents[2]  # racine du dépôt (01_application/commun/db.py)
 TUNIS = timezone(timedelta(hours=1))  # la Tunisie est en UTC+1 toute l'année, sans heure d'été
 SEQUENCES = {  # nom de la séquence : (table, colonne, préfixe, nombre de chiffres)
     "seq_session": ("sessions", "session_id", "SES", 7),
@@ -63,8 +63,10 @@ def _preparer(eng):
     """Vérifie la migration 001, crée les séquences d'identifiants et les cale sur le plus grand identifiant existant."""
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
-        if not ok or not c.execute(text("SELECT COUNT(*) FROM migrations WHERE migration_id = '001_parcours_commande'")).scalar():
-            raise MigrationManquante("La base n'a pas la migration 001. Lancer : python 02_oltp/charger_base_app.py --migrer")
+        faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe"} - faites)
+        if manquantes:
+            raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
             c.execute(text(f"CREATE SEQUENCE IF NOT EXISTS {seq}"))
             c.execute(text(f"""SELECT setval('{seq}', GREATEST(
@@ -75,6 +77,11 @@ def _preparer(eng):
 def _nouvel_id(c, seq):
     _, _, pref, n = SEQUENCES[seq]
     return f"{pref}{c.execute(text('SELECT nextval(:s)'), {'s': seq}).scalar():0{n}d}"
+
+
+def url_client():
+    """Adresse de l'application client (variable CLIENT_URL du fichier .env, par défaut http://localhost:8501)."""
+    return _lire_env().get("CLIENT_URL", "http://localhost:8501").rstrip("/")
 
 
 def lire(sql, **params):
@@ -143,7 +150,32 @@ def suivi(commande_id):
     return c
 
 
-# ---------- Lecture : gérant ----------
+# ---------- Comptes de l'équipe ----------
+
+def authentifier(identifiant, mot_de_passe):
+    """Renvoie le compte si l'identifiant et le mot de passe sont bons (comparaison bcrypt faite par PostgreSQL), sinon None."""
+    u = un(f"""
+        SELECT u.utilisateur_id, u.identifiant, u.role, u.prenom, u.etablissement_id, e.nom_etablissement, e.gerant_prenom,
+               v.ville AS nom_ville, a.formule_id, f.nom_formule, f.inclut_statistiques
+        FROM utilisateurs u
+        JOIN etablissements e USING (etablissement_id)
+        JOIN ref_villes v USING (ville_id)
+        LEFT JOIN abonnements a ON a.etablissement_id = e.etablissement_id
+             AND CAST(:j AS DATE) BETWEEN a.date_debut AND COALESCE(a.date_fin, DATE '2099-12-31')
+        LEFT JOIN formules f ON f.formule_id = a.formule_id
+        WHERE u.identifiant = LOWER(TRIM(:i)) AND u.actif AND u.mot_de_passe_hash = crypt(:m, u.mot_de_passe_hash)""",
+             i=identifiant or "", m=mot_de_passe or "", j=maintenant().date())
+    if u:
+        with moteur().begin() as c:
+            c.execute(text("UPDATE utilisateurs SET derniere_connexion = :h WHERE utilisateur_id = :u"), dict(h=maintenant(), u=u["utilisateur_id"]))
+    return u
+
+
+def commandes_ouvertes(etablissement_id):
+    return bool(un("SELECT commandes_ouvertes AS o FROM etablissements WHERE etablissement_id = :e", e=etablissement_id)["o"])
+
+
+# ---------- Lecture : équipe ----------
 
 def etablissements_commande():
     """Établissements actifs dont la formule du jour permet la commande."""
@@ -281,10 +313,11 @@ def passer_commande(session_id, table_id, etablissement_id, panier, note=None):
     return cid
 
 
-def avancer(commande_id, mode_reglement=None):
-    """Fait passer une commande à l'étape suivante et horodate l'étape."""
+def avancer(etablissement_id, commande_id, mode_reglement=None):
+    """Fait passer une commande à l'étape suivante et horodate l'étape (seulement une commande de l'établissement du compte)."""
     with moteur().begin() as c:
-        statut = c.execute(text("SELECT statut_commande FROM commandes WHERE commande_id = :c FOR UPDATE"), dict(c=commande_id)).scalar()
+        statut = c.execute(text("SELECT statut_commande FROM commandes WHERE commande_id = :c AND etablissement_id = :e FOR UPDATE"),
+                           dict(c=commande_id, e=etablissement_id)).scalar()
         if statut not in SUIVANT:
             return
         suivant, colonne = SUIVANT[statut]
@@ -293,10 +326,11 @@ def avancer(commande_id, mode_reglement=None):
                   dict(s=suivant, h=maintenant(), m=mode_reglement if suivant == "servie" else None, c=commande_id))
 
 
-def annuler(commande_id, motif="article_indisponible"):
+def annuler(etablissement_id, commande_id, motif="article_indisponible"):
     with moteur().begin() as c:
         c.execute(text(f"""UPDATE commandes SET statut_commande = 'annulee', motif_annulation = :m
-                           WHERE commande_id = :c AND statut_commande IN {ACTIVES}"""), dict(m=motif, c=commande_id))
+                           WHERE commande_id = :c AND etablissement_id = :e AND statut_commande IN {ACTIVES}"""),
+                  dict(m=motif, c=commande_id, e=etablissement_id))
 
 
 def ouvrir_commandes(etablissement_id, ouvert):

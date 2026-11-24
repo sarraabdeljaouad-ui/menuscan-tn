@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
-"""Menu client, ouvert par le QR code de la table (/menu?table=TBL00001) : menu, panier, suivi de la commande."""
+"""Application client MenuScan TN, ouverte par le QR code de la table (/?table=TBL00001) : menu, panier, suivi de la commande.
+
+Lancement, depuis le dossier 01_application/client, environnement Python activé :
+    streamlit run app.py          (port 8501, défini dans .streamlit/config.toml)
+"""
+import sys
+from pathlib import Path
+
 import streamlit as st
 
-import db
-from theme import BLEU, CLAIR, FOND, GRIS, MARINE, e, icone_categorie, prix
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from commun import db, theme  # noqa: E402
+from commun.theme import BLEU, CLAIR, GRIS, MARINE, e, icone_categorie, prix  # noqa: E402
+
+st.set_page_config(page_title="Menu · MenuScan TN", page_icon=":material/restaurant_menu:", layout="centered", initial_sidebar_state="collapsed")
+theme.appliquer()
+try:
+    db.moteur()
+except db.MigrationManquante as err:
+    st.error(str(err))
+    st.stop()
 
 T = {
     "fr": dict(recherche="Rechercher un plat, une boisson…", panier="Voir le panier", ma_commande="Ma commande", envoyer="Envoyer la commande",
@@ -38,8 +54,7 @@ def appareil():
 
 table_id = st.query_params.get("table")
 if not table_id:
-    st.warning("Scannez le QR code de votre table pour ouvrir le menu. Pour une démonstration, passez par l'accueil.")
-    st.page_link("vues/accueil.py", label="Aller à l'accueil", icon=":material/home:")
+    st.warning("Scannez le QR code de votre table pour ouvrir le menu.")
     st.stop()
 info = db.table_et_etablissement(table_id)
 if info is None:

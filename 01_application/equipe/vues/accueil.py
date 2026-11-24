@@ -2,10 +2,8 @@
 """Page d'accueil : présentation, chiffres de la base, étapes, formules et tables de démonstration."""
 import streamlit as st
 
-import db
-from theme import BORD, BLEU, CLAIR, FOND, GRIS, MARINE, TEXTE, e, kpis
-
-st.set_page_config(layout="wide")
+from commun import db
+from commun.theme import BORD, BLEU, CLAIR, FOND, GRIS, MARINE, TEXTE, e, kpis
 
 QR = "1111111100000110111011010101101110110000011111111"
 cases = "".join(f'<div style="border-radius:3px;background:{MARINE if b == "1" else (BLEU if i * 7 % 5 == 0 else FOND)}"></div>'
@@ -48,7 +46,7 @@ cartes = "".join(f"""<div style="background:#fff;border:1px solid {BORD};border-
 st.markdown(f'<div class="grille" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">{cartes}</div>', unsafe_allow_html=True)
 
 st.markdown("## Trois formules, trois tables de démonstration")
-st.caption("Chaque bouton imite le scan du QR code de la table 1 d'un établissement actif.")
+st.caption("Chaque bouton imite le scan du QR code de la table 1 d'un établissement actif : le menu s'ouvre dans l'application client, dans un nouvel onglet.")
 demos = db.lire("""
     SELECT DISTINCT ON (a.formule_id) a.formule_id, f.nom_formule, f.prix_mensuel_ht, f.description, e.nom_etablissement,
            v.ville AS nom_ville, t.table_id
@@ -70,9 +68,17 @@ for d in demos:
   <div><span class="titre" style="font-size:38px;color:{MARINE}">{int(d['prix_mensuel_ht'])}</span> <span style="font-size:14px;color:{GRIS}">DT HT par mois</span></div>
   <span style="font-size:15px;line-height:1.5;color:#334155;min-height:66px">{e(d['description'])}</span>
   <div style="background:{FOND};border-radius:14px;padding:10px 14px"><b>{e(d['nom_etablissement'])}</b><br><span style="font-size:13px;color:{GRIS}">{e(d['nom_ville'])} · table 1</span></div>
-  <a href="/menu?table={e(d['table_id'])}" target="_self" style="display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:14px;background:{BLEU if vedette else FOND};color:{'#fff' if vedette else MARINE};font-weight:700;text-decoration:none">Ouvrir le menu de la table</a>
+  <a href="{e(db.url_client())}/?table={e(d['table_id'])}" target="_blank" style="display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:14px;background:{BLEU if vedette else FOND};color:{'#fff' if vedette else MARINE};font-weight:700;text-decoration:none">Ouvrir le menu de la table</a>
 </div>"""
 st.markdown(f'<div class="grille" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">{cartes}</div>', unsafe_allow_html=True)
+
+st.markdown("## Espace équipe")
+c1, c2 = st.columns([2, 1], vertical_alignment="center")
+c1.markdown(f"""<div style="font-size:15px;color:#334155;line-height:1.6">Les serveurs et les gérants se connectent pour suivre les commandes.
+  Le <b>serveur</b> voit les commandes en direct et le plan des tables. Le <b>gérant</b> voit en plus le chiffre du jour, les indicateurs,
+  les meilleures ventes, et ouvre ou ferme les commandes.<br><span style="color:{GRIS}">Comptes de démonstration : <code>gerant.etb0005</code> et
+  <code>serveur.etb0005</code>, mot de passe <code>Demo2026!</code>.</span></div>""", unsafe_allow_html=True)
+c2.page_link("vues/connexion.py", label="Se connecter", icon=":material/login:")
 
 st.divider()
 st.caption("MenuScan TN · projet de portfolio de Sarra Abdeljaouad · entreprise et données fictives · chiffres lus dans la base à chaque visite")

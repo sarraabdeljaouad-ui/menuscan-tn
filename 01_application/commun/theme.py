@@ -20,6 +20,7 @@ h1, h2, h3, .titre, .stApp .titre {{ font-family: 'Plus Jakarta Sans', Inter, sa
 .stApp {{ background: {FOND}; }}
 [data-testid="stSidebar"] {{ background: {MARINE}; }}
 [data-testid="stSidebar"] * {{ color: #FFFFFF; }}
+[data-testid="stSidebar"] .stButton button {{ background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.3); }}
 [data-testid="stSidebar"] [data-testid="stSidebarNavLink"][aria-current="page"] {{ background: rgba(255,255,255,0.16); }}
 [data-testid="stSidebar"] [data-testid="stSelectbox"] input, [data-testid="stSidebar"] [data-testid="stSelectbox"] button, [data-testid="stSidebar"] [data-testid="stSelectbox"] [role="group"] {{ color: {TEXTE} !important; -webkit-text-fill-color: {TEXTE}; background: #FFFFFF; }}
 .st-key-entete .stButton button {{ background: transparent !important; border: 1px solid rgba(255,255,255,.45) !important; border-radius: 999px; min-height: 40px; }}
