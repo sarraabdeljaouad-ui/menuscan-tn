@@ -75,12 +75,13 @@ df = pd.DataFrame([{
     "Servies": l["servies"], "Annulées": l["annulees"], "Chiffre (DT)": float(l["chiffre"]),
     "Panier moyen (DT)": float(l["panier"]) if l["panier"] is not None else None,
     "Délai moyen (min)": round(float(l["delai"]), 1) if l["delai"] is not None else None, "Appels": l["appels"],
+    "Note clients": round(float(l["note_moyenne"]), 1) if l["note_moyenne"] is not None else None,
     "Dernière commande": l["derniere"]} for l in lignes])
 st.markdown('<div class="titre" style="font-size:20px;margin-top:16px">Tables</div>', unsafe_allow_html=True)
 st.caption("Cliquez sur une ligne pour ouvrir l'historique de la table. Les colonnes se trient en cliquant sur leur titre.")
 sel = st.dataframe(df, hide_index=True, width="stretch", on_select="rerun", selection_mode="single-row", key="tableau_tables",
                    column_config={
-                       "Chiffre (DT)": ARGENT, "Panier moyen (DT)": ARGENT, "Délai moyen (min)": ARGENT,
+                       "Chiffre (DT)": ARGENT, "Panier moyen (DT)": ARGENT, "Délai moyen (min)": ARGENT, "Note clients": ARGENT,
                        "Dernière commande": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm")})
 rangs = sel.selection.rows
 if not rangs and len(lignes) == 1:
@@ -110,7 +111,8 @@ with onglets[0]:
             "Heure": c["date_heure_commande"], "Commande": c["commande_id"], "Articles": c["detail"],
             "Montant (DT)": float(c["montant_total_ttc"]), "Statut": STATUTS.get(c["statut_commande"], c["statut_commande"]),
             "Délai (min)": float(c["delai"]) if c["delai"] is not None else None, "Règlement": MODES.get(c["mode_reglement"], "À encaisser" if c["statut_commande"] == "servie" else ""),
-            "Note": c["note"] or ANNULATIONS.get(c["motif_annulation"], c["motif_annulation"] or "")} for c in hist])
+            "Note": c["note"] or ANNULATIONS.get(c["motif_annulation"], c["motif_annulation"] or ""),
+            "Avis": ("★" * c["avis_note"] + (f" {c['avis_commentaire']}" if c["avis_commentaire"] else "")) if c["avis_note"] else ""} for c in hist])
         st.dataframe(h, hide_index=True, width="stretch", column_config={
             "Heure": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm"),
             "Montant (DT)": ARGENT, "Délai (min)": ARGENT})

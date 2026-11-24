@@ -35,7 +35,12 @@ T = {
                motifs={"serveur": "Appeler le serveur", "addition": "Demander l'addition", "eau": "De l'eau, s'il vous plaît"},
                appels_ok={"serveur": "Le serveur a été prévenu.", "addition": "L'addition arrive.", "eau": "Le serveur apporte de l'eau."},
                deja="Déjà demandé : le serveur arrive.", annulee_court="Annulée", reglee="Réglée", besoin="Besoin de quelque chose ?",
-               options="Vos préférences", ajouter="Ajouter", maj="Mettre à jour", retirer_panier="Retirer du panier", unite="l'unité", qte="Quantité"),
+               options="Vos préférences", ajouter="Ajouter", maj="Mettre à jour", retirer_panier="Retirer du panier", unite="l'unité", qte="Quantité",
+               estime="Servie vers {h}, dans environ {m} min", bientot="Servie d'un moment à l'autre",
+               estime_note="Estimation d'après les commandes servies ici ces 30 derniers jours.",
+               prete_titre="Votre commande est prête !", prete_txt="Le serveur vous l'apporte.", onglet_pret="Commande prête !",
+               avis_titre="Votre avis", avis_q="Comment s'est passée votre commande ?", avis_com="Un commentaire ? (facultatif)",
+               avis_env="Envoyer mon avis", merci="Merci pour votre avis !"),
     "ar": dict(recherche="ابحث عن طبق أو مشروب…", panier="عرض السلة", ma_commande="طلبي", envoyer="إرسال الطلب",
                note="ملاحظة للنادل", note_ex="مثال: كابوسان ساخن جدًا، بدون سكر", appeler="نداء النادل",
                appel_ok="تم إعلام النادل.", total="المجموع", sous_total="المجموع الفرعي", nouvelle="طلب جديد",
@@ -49,7 +54,12 @@ T = {
                motifs={"serveur": "نداء النادل", "addition": "طلب الحساب", "eau": "ماء من فضلك"},
                appels_ok={"serveur": "تم إعلام النادل.", "addition": "الحساب في الطريق.", "eau": "النادل سيحضر الماء."},
                deja="تم الطلب مسبقًا: النادل في الطريق.", annulee_court="ملغى", reglee="مدفوع", besoin="هل تحتاج شيئًا؟",
-               options="تفضيلاتك", ajouter="إضافة", maj="تحديث", retirer_panier="حذف من السلة", unite="للوحدة", qte="الكمية"),
+               options="تفضيلاتك", ajouter="إضافة", maj="تحديث", retirer_panier="حذف من السلة", unite="للوحدة", qte="الكمية",
+               estime="يُقدَّم حوالي الساعة {h}، بعد {m} دقيقة تقريبًا", bientot="يُقدَّم بعد قليل",
+               estime_note="تقدير حسب الطلبات المقدَّمة هنا خلال آخر 30 يومًا.",
+               prete_titre="طلبك جاهز!", prete_txt="النادل في الطريق إليك.", onglet_pret="الطلب جاهز!",
+               avis_titre="رأيك", avis_q="كيف كان طلبك؟", avis_com="تعليق؟ (اختياري)",
+               avis_env="إرسال رأيي", merci="شكرًا على رأيك!"),
 }
 
 # Options sans effet sur le prix, par type de plat (enregistrées en français pour l'équipe, affichées dans la langue du client)
@@ -200,7 +210,27 @@ if etat.vue == "suivi" and etat.commandes:
         st.markdown(f"""<div style="text-align:center;padding:12px 0 4px"><div style="width:58px;height:58px;margin:0 auto 8px;border-radius:50%;background:{CLAIR};display:flex;align-items:center;justify-content:center">
           <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{BLEU}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
           <div class="titre" style="font-size:24px">{L['envoyee']}</div><div style="color:{GRIS};font-size:14px">{c['commande_id']}</div></div>""", unsafe_allow_html=True)
-        if c["statut_commande"] == "annulee":
+        statut = c["statut_commande"]
+        if statut in ("nouvelle", "en_prepa"):
+            est = db.estimation(etab, c)
+            if est:
+                reste = round((est[0] - db.maintenant()).total_seconds() / 60)
+                texte = L["estime"].format(h=f"\u2066{est[0]:%H:%M}\u2069", m=reste) if reste > 0 else L["bientot"]
+                st.markdown(f"""<div style="background:{CLAIR};border-radius:16px;padding:12px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:center">
+                  <span style="font-size:22px">⏱</span><div><div style="font-weight:700;color:{MARINE}">{texte}</div>
+                  <div style="font-size:12px;color:#64748B">{L['estime_note']}</div></div></div>""", unsafe_allow_html=True)
+        if statut == "prete":
+            st.markdown(f"""<div style="background:#16A34A;border-radius:20px;padding:18px;margin-bottom:10px;text-align:center;color:#fff">
+              <div class="titre" style="font-size:24px;color:#fff !important">🔔 {L['prete_titre']}</div>
+              <div style="font-size:15px;color:#fff">{L['prete_txt']}</div></div>""", unsafe_allow_html=True)
+        # titre de l'onglet : visible même quand le client regarde un autre onglet ; vibration sur Android (l'iPhone l'ignore)
+        titre = f"✅ {L['onglet_pret']}" if statut == "prete" else "Menu · MenuScan TN"
+        st.html(f"<script>document.title = {titre!r}; {'try{{navigator.vibrate&&navigator.vibrate([200,100,200])}}catch(e){{}}' if statut == 'prete' else ''}</script>",
+                unsafe_allow_javascript=True, width=1)
+        if statut == "servie" and not etat.get(f"avis_vu_{c['commande_id']}"):
+            etat[f"avis_vu_{c['commande_id']}"] = True
+            st.rerun(scope="app")  # affiche la carte « Votre avis », placée hors de la zone rafraîchie toutes les 10 s
+        if statut == "annulee":
             st.error(L["annulee"])
         else:
             heures = [c["date_heure_commande"], c["date_heure_acceptation"], c["date_heure_prete"], c["date_heure_service"]]
@@ -226,6 +256,10 @@ if etat.vue == "suivi" and etat.commandes:
           <div style="border-top:1px solid #E2E8F5;padding-top:8px;display:flex;justify-content:space-between;align-items:baseline"><b>{L['total']}</b>
           <span class="titre" style="font-size:22px;color:{MARINE}">{prix(c['montant_total_ttc'])}</span></div></div>""", unsafe_allow_html=True)
 
+    derniere = etat.commandes[-1]
+    servie = db.suivi(derniere)["statut_commande"] == "servie"
+    if servie:
+        etat[f"avis_vu_{derniere}"] = True  # déjà servie à l'ouverture : pas de rechargement en plus
     afficher_suivi()
 
     @st.fragment(run_every="10s")
@@ -245,6 +279,21 @@ if etat.vue == "suivi" and etat.commandes:
           <span class="titre" style="font-size:20px;color:{MARINE}">{prix(total_visite)}</span></div></div>""", unsafe_allow_html=True)
 
     afficher_visite()
+
+    if servie:
+        deja = db.avis_de(derniere)
+        with st.container(key="carte_avis"):
+            if deja or etat.get(f"avis_ok_{derniere}"):
+                st.markdown(f'<div style="text-align:center;font-weight:700;color:#166534">{L["merci"]}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="titre" style="font-size:17px">{L["avis_titre"]}</div><div style="color:#64748B;font-size:14px">{L["avis_q"]}</div>',
+                            unsafe_allow_html=True)
+                note = st.feedback("stars", key=f"etoiles_{derniere}")
+                com = st.text_input(L["avis_com"], max_chars=300, key=f"com_{derniere}", label_visibility="collapsed", placeholder=L["avis_com"])
+                if st.button(L["avis_env"], type="primary", width="stretch", disabled=note is None, key=f"env_{derniere}"):
+                    db.donner_avis(derniere, note + 1, com)
+                    etat[f"avis_ok_{derniere}"] = True
+                    st.rerun()
     st.write("")
     b1, b2 = st.columns(2)
     with b1:

@@ -69,7 +69,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article", "008_avis"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -147,6 +147,28 @@ def delai_moyen(etablissement_id):
               WHERE etablissement_id = :e AND statut_commande = 'servie' AND date_heure_commande BETWEEN :d AND :n""",
            e=etablissement_id, d=n - timedelta(days=30), n=n)
     return float(r["m"]) if r and r["m"] is not None else None
+
+
+def estimation(etablissement_id, commande):
+    """Heure de service estimée : heure de la commande + délai moyen de l'établissement sur 30 jours. None sans historique."""
+    m = delai_moyen(etablissement_id)
+    return (commande["date_heure_commande"] + timedelta(minutes=m), m) if m else None
+
+
+def avis_de(commande_id):
+    return un("SELECT note, commentaire FROM avis WHERE commande_id = :c", c=commande_id)
+
+
+def donner_avis(commande_id, note, commentaire=None):
+    """Avis du client sur une commande servie ; un seul par commande (le premier est gardé)."""
+    if not 1 <= int(note) <= 5:
+        return
+    with moteur().begin() as c:
+        c.execute(text("""INSERT INTO avis (commande_id, etablissement_id, table_id, note, commentaire, date_heure)
+                          SELECT commande_id, etablissement_id, table_id, :n, :t, :h FROM commandes
+                          WHERE commande_id = :c AND statut_commande = 'servie'
+                          ON CONFLICT (commande_id) DO NOTHING"""),
+                  dict(c=commande_id, n=int(note), t=(commentaire or "").strip()[:300] or None, h=maintenant()))
 
 
 def suivi(commande_id):
@@ -506,7 +528,8 @@ def activite_tables(etablissement_id, debut, fin):
                AVG(EXTRACT(EPOCH FROM c.date_heure_service - c.date_heure_commande) / 60) FILTER (WHERE c.statut_commande = 'servie') AS delai,
                (SELECT COUNT(*) FROM evenements ev JOIN sessions s USING (session_id)
                  WHERE s.table_id = t.table_id AND ev.type_evenement = 'appel_serveur' AND ev.horodatage BETWEEN :d AND :f) AS appels,
-               MAX(c.date_heure_commande) AS derniere
+               MAX(c.date_heure_commande) AS derniere,
+               (SELECT AVG(av.note) FROM avis av WHERE av.table_id = t.table_id AND av.date_heure BETWEEN :d AND :f) AS note_moyenne
         FROM tables_salle t
         LEFT JOIN commandes c ON c.table_id = t.table_id AND c.date_heure_commande BETWEEN :d AND :f
         WHERE t.etablissement_id = :e
@@ -519,6 +542,8 @@ def historique_table(etablissement_id, table_id, debut, fin, limite=300):
     return lire("""
         SELECT c.commande_id, c.date_heure_commande, c.statut_commande, c.montant_total_ttc, c.mode_reglement,
                c.date_heure_reglement, c.note, c.motif_annulation,
+               (SELECT av.note FROM avis av WHERE av.commande_id = c.commande_id) AS avis_note,
+               (SELECT av.commentaire FROM avis av WHERE av.commande_id = c.commande_id) AS avis_commentaire,
                ROUND(EXTRACT(EPOCH FROM c.date_heure_service - c.date_heure_commande) / 60) AS delai,
                STRING_AGG(l.quantite || ' ' || LOWER(a.nom_article) || COALESCE(' (' || LOWER(l.options) || ')', ''), ' · ' ORDER BY l.ligne_id) AS detail
         FROM commandes c JOIN lignes_commande l USING (commande_id) JOIN articles a ON a.article_id = l.article_id
