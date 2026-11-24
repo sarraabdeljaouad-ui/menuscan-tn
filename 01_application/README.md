@@ -133,7 +133,7 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - table `journal_prix` (migration 005) : changements de prix faits dans l'application ;
 - `tables_salle.date_retrait` (migration 006) : table retirée du service ;
 - `lignes_commande.options` et `etats_client.options` (migration 007) : préférences choisies par le client, par exemple « Sans sucre · Lait à part », affichées à l'équipe entre parenthèses ;
-- table `avis` (migration 008) : un avis au plus par commande servie (note de 1 à 5, commentaire), visible dans « Activité des tables » (note moyenne par table, avis dans l'historique).
+- table `avis` (migration 008) : un avis au plus par commande servie (note de 1 à 5, commentaire), visible dans « Activité des tables » (colonne « Note clients » par table, étoiles dans l'historique, onglet « Avis » avec la note moyenne et les commentaires).
 
 Le menu client choisit les articles par leurs dates d'ajout et de retrait, et non par `statut_article`, qui est une photo à la date d'arrêté du jeu.
 

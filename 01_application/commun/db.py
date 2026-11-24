@@ -764,3 +764,11 @@ def retirer_table(etablissement_id, table_id, retirer):
         else:
             _verifier_table(c, etablissement_id, t.numero_table, t.zone, t.capacite, sauf=table_id)
         c.execute(text("UPDATE tables_salle SET date_retrait = :d WHERE table_id = :t"), dict(d=j if retirer else None, t=table_id))
+
+
+def avis_table(etablissement_id, table_id, debut, fin):
+    """Avis laissés à une table sur la période, les plus récents d'abord."""
+    fin = min(fin, maintenant())
+    return lire("""SELECT av.date_heure, av.commande_id, av.note, av.commentaire FROM avis av
+                   WHERE av.etablissement_id = :e AND av.table_id = :t AND av.date_heure BETWEEN :d AND :f
+                   ORDER BY av.date_heure DESC""", e=etablissement_id, t=table_id, d=debut, f=fin)

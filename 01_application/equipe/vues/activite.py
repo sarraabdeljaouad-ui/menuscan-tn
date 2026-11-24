@@ -102,7 +102,8 @@ kpis([("Chiffre servi", prix(t["chiffre"]), f"{t['servies']} commande{'s' if t['
       ("Appels", str(t["appels"]), "sur la période", None)], 185)
 
 hist = db.historique_table(etab, t["table_id"], debut, fin)
-onglets = st.tabs(["Commandes", "Appels"])
+avis = db.avis_table(etab, t["table_id"], debut, fin)
+onglets = st.tabs(["Commandes", "Appels", f"Avis ({len(avis)})"])
 with onglets[0]:
     if not hist:
         st.caption("Aucune commande sur la période.")
@@ -110,9 +111,9 @@ with onglets[0]:
         h = pd.DataFrame([{
             "Heure": c["date_heure_commande"], "Commande": c["commande_id"], "Articles": c["detail"],
             "Montant (DT)": float(c["montant_total_ttc"]), "Statut": STATUTS.get(c["statut_commande"], c["statut_commande"]),
+            "Avis": "★" * c["avis_note"] if c["avis_note"] else "",
             "Délai (min)": float(c["delai"]) if c["delai"] is not None else None, "Règlement": MODES.get(c["mode_reglement"], "À encaisser" if c["statut_commande"] == "servie" else ""),
-            "Note": c["note"] or ANNULATIONS.get(c["motif_annulation"], c["motif_annulation"] or ""),
-            "Avis": ("★" * c["avis_note"] + (f" {c['avis_commentaire']}" if c["avis_commentaire"] else "")) if c["avis_note"] else ""} for c in hist])
+            "Note": c["note"] or ANNULATIONS.get(c["motif_annulation"], c["motif_annulation"] or "")} for c in hist])
         st.dataframe(h, hide_index=True, width="stretch", column_config={
             "Heure": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm"),
             "Montant (DT)": ARGENT, "Délai (min)": ARGENT})
@@ -134,3 +135,16 @@ with onglets[1]:
             hide_index=True, width="stretch", column_config={
                 "Heure": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm"),
                 "Pris en charge": st.column_config.DatetimeColumn(format="HH:mm")})
+with onglets[2]:
+    if not avis:
+        st.caption("Aucun avis sur la période. Les clients notent leur commande une fois servie.")
+    else:
+        moy = sum(a["note"] for a in avis) / len(avis)
+        st.markdown(f'<div class="titre" style="font-size:20px">{nombre(moy)} / 5 <span style="font-size:14px;color:{GRIS};font-weight:600">'
+                    f'· {len(avis)} avis</span></div>', unsafe_allow_html=True)
+        for a in avis:
+            with st.container(key=f"carte_avis_{a['commande_id']}"):
+                st.markdown(f"""<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#F59E0B;font-size:18px">{"★" * a["note"]}<span style="color:#CBD5E1">{"★" * (5 - a["note"])}</span></span>
+                  <span style="font-size:13px;color:{GRIS}">{a['date_heure']:%d/%m/%Y %H:%M} · {a['commande_id']}</span></div>
+                  <div style="margin-top:4px">{e(a['commentaire']) if a['commentaire'] else f'<span style="color:{GRIS}">Sans commentaire</span>'}</div>""",
+                            unsafe_allow_html=True)

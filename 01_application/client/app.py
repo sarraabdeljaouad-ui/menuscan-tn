@@ -221,7 +221,7 @@ if etat.vue == "suivi" and etat.commandes:
                   <div style="font-size:12px;color:#64748B">{L['estime_note']}</div></div></div>""", unsafe_allow_html=True)
         if statut == "prete":
             st.markdown(f"""<div style="background:#16A34A;border-radius:20px;padding:18px;margin-bottom:10px;text-align:center;color:#fff">
-              <div class="titre" style="font-size:24px;color:#fff !important">🔔 {L['prete_titre']}</div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:24px;line-height:1.25;color:#fff">🔔 {L['prete_titre']}</div>
               <div style="font-size:15px;color:#fff">{L['prete_txt']}</div></div>""", unsafe_allow_html=True)
         # titre de l'onglet : visible même quand le client regarde un autre onglet ; vibration sur Android (l'iPhone l'ignore)
         titre = f"✅ {L['onglet_pret']}" if statut == "prete" else "Menu · MenuScan TN"
