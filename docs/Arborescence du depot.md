@@ -45,7 +45,9 @@ menuscan-tn/
 ├── 04_ingestion/                 ← phase 3 : chargement de la couche brute
 │   ├── chargeurs/                (CSV, CSV français, JSON compressé, JSON d'API)
 │   ├── journal.sql               (tables raw.chargements et raw.rejets)
-│   ├── ingerer.py
+│   ├── ingerer.py                (chargement)
+│   ├── controler.py              (contrôle des volumes et rapport)
+│   ├── rapport_ingestion.md      (rapport généré par controler.py)
 │   └── README.md
 │
 ├── 05_dbt/                       ← phase 4 : projet dbt

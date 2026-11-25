@@ -137,6 +137,8 @@ Cette phase montre d'où viennent les données.
 - Un script Python lit chaque fichier (CSV, JSON, journaux de tracking) et l'écrit dans le schéma `raw` de `menuscan_dwh`.
 - Des colonnes techniques sont ajoutées : date de chargement, fichier d'origine.
 - Rien n'est corrigé à cette étape : on garde la donnée telle qu'elle est arrivée.
+- Un journal garde l'empreinte de chaque fichier : une relance ne recharge que les fichiers modifiés, sans doublon.
+- Un second script recompte chaque fichier et le compare à la base : les volumes doivent être identiques.
 
 ### Phase 4 : Entrepôt dbt
 

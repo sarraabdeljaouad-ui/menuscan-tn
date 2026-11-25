@@ -1,6 +1,6 @@
 # 04_ingestion : chargement de la couche brute (phase 3)
 
-**Auteure :** Sarra Abdeljaouad · **Date :** 25/11/2026 · **Tâche :** T3.1
+**Auteure :** Sarra Abdeljaouad · **Date :** 25/11/2026 · **Tâches :** T3.1 et T3.2
 
 Ce dossier charge les **124 fichiers bruts** du jeu complet (`menuscan_dataset/donnees_brutes/`, Release `v1.1-donnees`) dans le schéma `raw` de la base `menuscan_dwh`.
 
@@ -74,9 +74,24 @@ SELECT DISTINCT ON (fichier) fichier, statut, lignes_lues, lignes_ecrites, ligne
 FROM raw.chargements ORDER BY fichier, chargement_id DESC;
 ```
 
+## Contrôler les volumes (T3.2)
+
+```powershell
+python 04_ingestion/controler.py
+```
+
+Le script fait deux contrôles et écrit le rapport `04_ingestion/rapport_ingestion.md` :
+
+1. **Volumes (bloquant).** Chaque fichier est recompté avec un autre lecteur que celui de l'ingestion (pandas pour les CSV, comptage des lignes pour les JSON). Il est conforme si son empreinte est celle du dernier chargement réussi et si : enregistrements dans le fichier = lignes lues = lignes écrites + lignes rejetées ; lignes écrites = lignes en base ; lignes rejetées = lignes de `raw.rejets`. Au moindre écart, le script se termine avec un code d'erreur.
+2. **Rapprochement avec la couche de référence (informatif).** Si `donnees_reference/` est présent, chaque table raw est comparée à sa table de référence par identifiant : lignes en double, identifiants absents du brut ou de la référence. Ces écarts viennent des anomalies volontaires du jeu ; ils sont traités en phase 4.
+
+Durée mesurée : 6 secondes sur l'environnement de test.
+
+**Écart connu :** 11 commandes du 27 au 31/12/2026 et leurs 19 lignes sont dans la référence mais dans aucun fichier brut. Ce sont des commandes en retard qui seraient arrivées dans l'extraction de janvier 2027, qui n'existe pas. Ce n'est pas une perte au chargement (décision D-32, note `09_recette/4-Note de validation de l'ingestion.docx`).
+
 ## Vérifications faites (25/11/2026)
 
 - Les 124 fichiers sont chargés sans échec : 2 015 451 lignes.
 - Pour chaque fichier, le nombre d'enregistrements compté directement dans le fichier est égal au nombre de lignes lues, au nombre de lignes écrites et au nombre de lignes en base : aucun écart.
 - Une relance saute les 124 fichiers (aucune ligne écrite).
-- Un fichier modifié est rechargé sans doublon ; une ligne de 16 colonnes au lieu de 15 et une ligne JSON tronquée partent dans `raw.rejets` avec leur contenu.
+- Un fichier modifié est rechargé sans doublon ; une ligne avec une colonne de trop et une ligne JSON tronquée partent dans `raw.rejets` avec leur contenu.

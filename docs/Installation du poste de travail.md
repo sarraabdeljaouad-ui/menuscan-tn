@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.5 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.6 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -134,7 +134,15 @@ Même jeu de données, conteneur démarré, environnement Python activé :
 python 04_ingestion/ingerer.py
 ```
 
-Le script charge les 124 fichiers de `menuscan_dataset/donnees_brutes/` dans le schéma `raw` de `menuscan_dwh`, sans rien corriger, et tient le journal `raw.chargements`. Une relance ne recharge que les fichiers modifiés. Prévoir environ 600 Mo d'espace pour la base. Détails : `04_ingestion/README.md`.
+Le script charge les 124 fichiers de `menuscan_dataset/donnees_brutes/` dans le schéma `raw` de `menuscan_dwh`, sans rien corriger, et tient le journal `raw.chargements`. Une relance ne recharge que les fichiers modifiés. Prévoir environ 600 Mo d'espace pour la base.
+
+Pour contrôler les volumes après chaque chargement :
+
+```bash
+python 04_ingestion/controler.py
+```
+
+Le script recompte chaque fichier, le compare au journal et à la base, et écrit `04_ingestion/rapport_ingestion.md`. Il répond « CONFORME » ou liste les fichiers en écart. Détails : `04_ingestion/README.md`.
 
 ## 6. dbt
 
