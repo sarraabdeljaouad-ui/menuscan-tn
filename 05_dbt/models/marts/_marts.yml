@@ -1,0 +1,314 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: "Dimension date : un jour par ligne du 01/01/2024 au 31/12/2026, clé AAAAMMJJ."
+    columns:
+      - name: date_id
+        data_tests: [unique, not_null]
+  - name: dim_heure
+    description: "Dimension heure : 24 lignes, avec le moment de la journée (convention du projet)."
+    columns:
+      - name: heure
+        data_tests: [unique, not_null]
+  - name: dim_ville
+    description: "Dimension ville."
+    columns:
+      - name: ville_id
+        data_tests: [unique, not_null]
+  - name: dim_canal
+    description: "Dimension canal d'acquisition."
+    columns:
+      - name: canal_id
+        data_tests: [unique, not_null]
+  - name: dim_formule
+    description: "Dimension formule d'abonnement."
+    columns:
+      - name: formule_id
+        data_tests: [unique, not_null]
+  - name: dim_etablissement
+    description: "Dimension établissement : 403 établissements dédoublonnés, ville, canal et formules dénormalisés ; état au 31/12/2026."
+    columns:
+      - name: etablissement_id
+        data_tests: [unique, not_null]
+      - name: ville_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_ville')
+                field: ville_id
+      - name: canal_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_canal')
+                field: canal_id
+      - name: formule_actuelle_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_formule')
+                field: formule_id
+  - name: dim_categorie
+    description: "Dimension catégorie de menu."
+    columns:
+      - name: categorie_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+  - name: dim_article
+    description: "Dimension article à prix historisés (SCD2) : une ligne par article et par période de prix."
+    columns:
+      - name: prix_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: categorie_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_categorie')
+                field: categorie_id
+  - name: dim_table
+    description: "Dimension table de salle."
+    columns:
+      - name: table_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+  - name: fait_commande
+    description: "Fait commande : une ligne par commande."
+    columns:
+      - name: commande_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: table_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_table')
+                field: table_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+      - name: heure
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_heure')
+                field: heure
+      - name: session_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fait_session')
+                field: session_id
+  - name: fait_ligne_commande
+    description: "Fait ligne de commande : une ligne par article commandé, liée à la version de prix en vigueur le jour de la commande."
+    columns:
+      - name: ligne_id
+        data_tests: [unique, not_null]
+      - name: commande_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fait_commande')
+                field: commande_id
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: table_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_table')
+                field: table_id
+      - name: prix_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_article')
+                field: prix_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+      - name: heure
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_heure')
+                field: heure
+  - name: fait_session
+    description: "Fait session : une ligne par session, entonnoir scan, menu, article, panier, commande."
+    columns:
+      - name: session_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: table_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_table')
+                field: table_id
+      - name: formule_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_formule')
+                field: formule_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+      - name: heure
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_heure')
+                field: heure
+  - name: fait_abonnement_mensuel
+    description: "Fait abonnement mensuel : un établissement x un mois, MRR et mouvements (D-33)."
+    columns:
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: formule_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_formule')
+                field: formule_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+  - name: fait_facturation
+    description: "Fait facturation : une ligne par facture, avec son encaissement."
+    columns:
+      - name: facture_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: formule_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_formule')
+                field: formule_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+  - name: fait_marketing
+    description: "Fait marketing : une campagne x un jour."
+    columns:
+      - name: depense_id
+        data_tests: [unique, not_null]
+      - name: canal_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_canal')
+                field: canal_id
+      - name: ville_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_ville')
+                field: ville_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+  - name: fait_prospect
+    description: "Fait prospect : conversion et délai de signature."
+    columns:
+      - name: prospect_id
+        data_tests: [unique, not_null]
+      - name: canal_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_canal')
+                field: canal_id
+      - name: ville_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_ville')
+                field: ville_id
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+  - name: fait_ticket_support
+    description: "Fait ticket de support : délai de résolution et satisfaction."
+    columns:
+      - name: ticket_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id

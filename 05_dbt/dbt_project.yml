@@ -10,6 +10,7 @@ flags:
 model-paths: ["models"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
 test-paths: ["tests"]
 analysis-paths: ["analyses"]
 target-path: "target"
@@ -32,6 +33,9 @@ models:
         +materialized: table
     intermediate:
       +schema: intermediate
+      +materialized: table
+    marts:
+      +schema: marts
       +materialized: table
     qualite:
       +schema: qualite

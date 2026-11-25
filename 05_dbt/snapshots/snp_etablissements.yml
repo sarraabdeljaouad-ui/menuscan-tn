@@ -1,0 +1,13 @@
+# Snapshot des établissements (SCD2). À chaque lancement, dbt compare l'état courant de int_etablissements
+# à la dernière version gardée ; si une colonne surveillée change, l'ancienne version est fermée (dbt_valid_to)
+# et une nouvelle est ouverte. Les données du jeu étant figées au 31/12/2026, le premier lancement crée une version
+# par établissement ; l'historique se remplira quand de nouvelles extractions arriveront (phase 5, Airflow).
+snapshots:
+  - name: snp_etablissements
+    relation: ref('int_etablissements')
+    description: Historique des changements de statut, de formule, de périodicité et de nombre de tables des établissements.
+    config:
+      schema: snapshots
+      unique_key: etablissement_id
+      strategy: check
+      check_cols: [nom_etablissement, statut_etablissement, formule_actuelle_id, periodicite_facturation, nb_tables, date_resiliation]

@@ -96,3 +96,8 @@
 {% macro mois_fichier(col) -%}
     to_date(substring({{ col }} from '(\d{4}_\d{2})'), 'YYYY_MM')
 {%- endmacro %}
+
+{# Clé de date au format entier AAAAMMJJ, utilisée par dim_date et les faits #}
+{% macro date_id(col) -%}
+    (to_char(({{ col }})::date, 'YYYYMMDD')::integer)
+{%- endmacro %}

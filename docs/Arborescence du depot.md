@@ -55,10 +55,10 @@ menuscan-tn/
 │   ├── models/
 │   │   ├── staging/              (stg_*, et preparation/ : prep_*)
 │   │   ├── qualite/              (quarantaine, corrections, bilan_qualite)
-│   │   ├── intermediate/         (int_*, T4.2)
-│   │   └── marts/                (fait_*, dim_*, T4.3)
+│   │   ├── intermediate/         (int_* : sessions, commandes, MRR...)
+│   │   └── marts/                (8 faits fait_*, 9 dimensions dim_*)
 │   ├── seeds/                    (table de correspondance des libellés)
-│   ├── snapshots/                (T4.3)
+│   ├── snapshots/                (snp_etablissements, SCD2)
 │   ├── tests/                    (tests propres au projet)
 │   └── macros/                   (nettoyage, règles de rejet)
 │
