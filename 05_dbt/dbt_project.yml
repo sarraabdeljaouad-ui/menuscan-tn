@@ -1,0 +1,39 @@
+# MenuScan TN - projet dbt (phase 4). Auteure : Sarra Abdeljaouad.
+name: menuscan
+version: "1.0.0"
+config-version: 2
+profile: menuscan
+
+flags:
+  send_anonymous_usage_stats: false  # dbt n'envoie aucune statistique d'usage
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages", "logs"]
+
+vars:
+  date_arrete: "2026-12-31"          # dernière date des données simulées (DQ-27)
+  panne_debut: "2025-09-12 10:00:00"  # panne de la plateforme : aucun événement attendu (DQ-27)
+  panne_fin: "2025-09-12 16:00:00"
+  seuil_millimes: 1000               # un prix ou un montant >= 1 000 DT est un montant en millimes (DQ-33)
+  fuseau: "Africa/Tunis"             # heure de Tunis, UTC+1 sans heure d'été (DQ-34)
+
+models:
+  menuscan:
+    staging:
+      +schema: staging
+      +materialized: view
+      preparation:
+        +schema: preparation
+        +materialized: table
+    qualite:
+      +schema: qualite
+      +materialized: table
+
+seeds:
+  menuscan:
+    +schema: referentiels

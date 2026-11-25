@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: prep_dim_calendrier
+    description: "Toutes les lignes brutes de dim_calendrier, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_ref_villes
+    description: "Toutes les lignes brutes de ref_villes, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_formules
+    description: "Toutes les lignes brutes de formules, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_canaux_acquisition
+    description: "Toutes les lignes brutes de canaux_acquisition, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_campagnes_marketing
+    description: "Toutes les lignes brutes de campagnes_marketing, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_marketing_depenses_quotidiennes
+    description: "Toutes les lignes brutes de marketing_depenses_quotidiennes, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_prospects
+    description: "Toutes les lignes brutes de prospects, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_etablissements
+    description: "Toutes les lignes brutes de etablissements, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_abonnements
+    description: "Toutes les lignes brutes de abonnements, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_factures
+    description: "Toutes les lignes brutes de factures, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_paiements
+    description: "Toutes les lignes brutes de paiements, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_tickets_support
+    description: "Toutes les lignes brutes de tickets_support, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_categories_menu
+    description: "Toutes les lignes brutes de categories_menu, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_articles
+    description: "Toutes les lignes brutes de articles, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_articles_prix_historique
+    description: "Toutes les lignes brutes de articles_prix_historique, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_tables_salle
+    description: "Toutes les lignes brutes de tables_salle, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_evenements
+    description: "Toutes les lignes brutes de evenements, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_commandes
+    description: "Toutes les lignes brutes de commandes, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_lignes_commande
+    description: "Toutes les lignes brutes de lignes_commande, typées et nettoyées, avec les colonnes de contrôle : _corrections (corrections appliquées), _regle_rejet et _motif_rejet (vides si la ligne passe en staging)."
+  - name: prep_noms_articles
+    description: Forme de référence de chaque nom de plat (clé sans casse ni accent -> écriture la plus fréquente).
+  - name: prep_noms_etablissements
+    description: Forme de référence de chaque nom d'établissement, à partir des établissements et des prospects.

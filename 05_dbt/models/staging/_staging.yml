@@ -1,0 +1,438 @@
+version: 2
+
+models:
+  - name: stg_dim_calendrier
+    description: "Calendrier du 01/01/2024 au 31/12/2026, un jour par ligne. Lignes valides de prep_dim_calendrier ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: date
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_ref_villes
+    description: "Villes couvertes par MenuScan. Lignes valides de prep_ref_villes ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: ville_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_formules
+    description: "Formules d'abonnement (Essentiel, Commande, Pro). Lignes valides de prep_formules ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: formule_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_canaux_acquisition
+    description: "Canaux d'acquisition des prospects. Lignes valides de prep_canaux_acquisition ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: canal_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_campagnes_marketing
+    description: "Campagnes marketing. Lignes valides de prep_campagnes_marketing ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: campagne_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: canal_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_canaux_acquisition')
+                field: canal_id
+      - name: ville_id_cible
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_ref_villes')
+                field: ville_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_marketing_depenses_quotidiennes
+    description: "Dépenses quotidiennes des campagnes. Montants convertis du format français (DQ-36) ; dépenses négatives, clics supérieurs aux impressions et jours hors campagne en quarantaine (DQ-23). Lignes valides de prep_marketing_depenses_quotidiennes ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: depense_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: campagne_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_campagnes_marketing')
+                field: campagne_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_prospects
+    description: "Prospects du CRM. Noms et téléphones normalisés (DQ-31, DQ-32). Lignes valides de prep_prospects ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: prospect_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: canal_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_canaux_acquisition')
+                field: canal_id
+      - name: campagne_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_campagnes_marketing')
+                field: campagne_id
+      - name: ville_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_ref_villes')
+                field: ville_id
+      - name: statut_prospect
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['converti', 'perdu', 'en_cours']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_etablissements
+    description: "Établissements clients. Noms, téléphones et e-mails normalisés (DQ-31, DQ-32), nombre de tables manquant complété (DQ-38). Contient encore les 6 doublons métier, fusionnés en T4.2 (DQ-30). Lignes valides de prep_etablissements ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: etablissement_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: ville_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_ref_villes')
+                field: ville_id
+      - name: canal_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_canaux_acquisition')
+                field: canal_id
+      - name: prospect_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_prospects')
+                field: prospect_id
+      - name: formule_initiale_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_formules')
+                field: formule_id
+      - name: formule_actuelle_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_formules')
+                field: formule_id
+      - name: statut_etablissement
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['actif', 'resilie']
+      - name: periodicite_facturation
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['mensuelle', 'annuelle']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_abonnements
+    description: "Abonnements. Périodicité normalisée (DQ-32). Lignes valides de prep_abonnements ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: abonnement_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: formule_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_formules')
+                field: formule_id
+      - name: periodicite
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['mensuelle', 'annuelle']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_factures
+    description: "Factures. Dates et montants convertis du format français (DQ-36) ; TTC recalculé quand il ne vaut pas net HT + TVA (DQ-15). Lignes valides de prep_factures ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: facture_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: abonnement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_abonnements')
+                field: abonnement_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_paiements
+    description: "Paiements de l'API. Clés renommées, codes traduits (DQ-32), heure de Tunis (DQ-34), millimes convertis (DQ-33). Quarantaine DQ-18 : second paiement réussi, montant différent du TTC, paiement réussi avant l'émission. Lignes valides de prep_paiements ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: paiement_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: facture_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_factures')
+                field: facture_id
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: statut_paiement
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['reussi', 'echoue']
+      - name: mode_paiement
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['virement', 'especes', 'cheque', 'paiement_mobile']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_tickets_support
+    description: "Tickets du support. Statut normalisé (DQ-32), catégorie manquante remplacée par non_renseignee (DQ-38). Lignes valides de prep_tickets_support ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: ticket_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: statut_ticket
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['resolu']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_categories_menu
+    description: "Catégories des menus. Lignes valides de prep_categories_menu ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: categorie_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_articles
+    description: "Articles des menus. Nom du plat normalisé (DQ-32). Lignes valides de prep_articles ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: article_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: categorie_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_categories_menu')
+                field: categorie_id
+      - name: statut_article
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['propose', 'retire']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_articles_prix_historique
+    description: "Historique des prix (SCD2 de la source). Prix en millimes convertis (DQ-33). Lignes valides de prep_articles_prix_historique ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: prix_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: article_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_articles')
+                field: article_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_tables_salle
+    description: "Tables de salle et QR codes. Lignes valides de prep_tables_salle ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: table_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_evenements
+    description: "Événements de navigation. Clés renommées, types traduits (DQ-32), heure de Tunis (DQ-34), retards tracés (DQ-35). Quarantaine : doublons (DQ-29), articles inconnus (DQ-02). Horloges décalées traitées en T4.2 (DQ-37). Lignes valides de prep_evenements ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: evenement_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: article_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_articles')
+                field: article_id
+      - name: table_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_tables_salle')
+                field: table_id
+      - name: type_evenement
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['scan_qr', 'vue_menu', 'vue_article', 'ajout_panier', 'retrait_panier', 'commande_envoyee', 'appel_serveur']
+      - name: appareil
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['android', 'ios']
+      - name: langue
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['fr', 'ar', 'en']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_commandes
+    description: "Commandes. Dates françaises converties (DQ-28), statut normalisé (DQ-32), mode de règlement manquant d'une commande servie remplacé par non_renseigne (DQ-38), retards tracés (DQ-35). Total recalculé depuis les lignes en T4.2 (DQ-03). Lignes valides de prep_commandes ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: commande_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_etablissements')
+                field: etablissement_id
+      - name: table_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_tables_salle')
+                field: table_id
+      - name: statut_commande
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['servie', 'annulee']
+      - name: mode_reglement
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['especes', 'carte_bancaire', 'ticket_restaurant', 'non_renseigne']
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.
+  - name: stg_lignes_commande
+    description: "Lignes de commande. Prix en millimes convertis (DQ-33), montant recalculé (DQ-04). Quarantaine : commande ou article inconnus (DQ-02), quantité nulle ou négative (DQ-05). Lignes valides de prep_lignes_commande ; les lignes écartées sont dans qualite.quarantaine."
+    columns:
+      - name: ligne_id
+        description: Identifiant.
+        data_tests: [unique, not_null]
+      - name: commande_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_commandes')
+                field: commande_id
+      - name: article_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_articles')
+                field: article_id
+      - name: _fichier
+        description: Fichier brut d'origine (chemin relatif à donnees_brutes/).
+      - name: _ligne
+        description: Numéro de ligne dans le fichier brut.

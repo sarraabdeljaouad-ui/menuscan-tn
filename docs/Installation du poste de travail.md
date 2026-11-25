@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.6 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.7 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -146,28 +146,15 @@ Le script recompte chaque fichier, le compare au journal et à la base, et écri
 
 ## 6. dbt
 
-Fichier `%USERPROFILE%\.dbt\profiles.yml` :
+Le profil de connexion est dans le dépôt (`05_dbt/profiles.yml`) et lit le mot de passe dans `.env` : il n'y a rien à créer dans `%USERPROFILE%\.dbt\`. Un ancien fichier `profiles.yml` à cet endroit est ignoré.
 
-```yaml
-menuscan:
-  target: dev
-  outputs:
-    dev:
-      type: postgres
-      host: localhost
-      port: 5440
-      user: menuscan
-      password: "{{ env_var('POSTGRES_PASSWORD') }}"
-      dbname: menuscan_dwh
-      schema: staging
-      threads: 4
-```
-
-Vérification, depuis le dossier `05_dbt/` :
+Vérification, depuis la racine du dépôt :
 
 ```bash
-dbt debug
+python 05_dbt/lancer_dbt.py debug
 ```
+
+La dernière ligne doit dire « All checks passed! ». La prise en main de dbt et toutes les commandes sont dans `05_dbt/README.md`. La base `menuscan_dwh` passe à environ 950 Mo après le premier `build`.
 
 ## 7. Power BI Desktop
 

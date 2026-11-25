@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Couche brute chargée par 04_ingestion/ingerer.py (phase 3). Tout est en texte ou en JSONB, sans correction.
+    schema: raw
+    tables:
+      - name: backoffice_abonnements
+        description: "Fichier source : backoffice/abonnements.csv."
+      - name: backoffice_etablissements
+        description: "Fichier source : backoffice/etablissements.csv."
+      - name: backoffice_formules
+        description: "Fichier source : backoffice/formules.csv."
+      - name: backoffice_tables_salle
+        description: "Fichier source : backoffice/tables_salle.csv."
+      - name: crm_prospects
+        description: "Fichier source : crm/prospects.csv."
+      - name: facturation_factures
+        description: "Fichier source : facturation/factures.csv (CSV français)."
+      - name: marketing_campagnes
+        description: "Fichier source : marketing/campagnes_marketing.csv."
+      - name: marketing_depenses_quotidiennes
+        description: "Fichier source : marketing/depenses_quotidiennes.csv (CSV français)."
+      - name: menus_articles
+        description: "Fichier source : menus/articles.csv."
+      - name: menus_articles_prix_historique
+        description: "Fichier source : menus/articles_prix_historique.csv."
+      - name: menus_categories
+        description: "Fichier source : menus/categories_menu.csv."
+      - name: paiements_api_paiements
+        description: "Fichier source : paiements_api/paiements.jsonl (une ligne JSON par paiement, colonne donnees)."
+      - name: referentiels_calendrier
+        description: "Fichier source : referentiels/dim_calendrier.csv."
+      - name: referentiels_canaux_acquisition
+        description: "Fichier source : referentiels/canaux_acquisition.csv."
+      - name: referentiels_villes
+        description: "Fichier source : referentiels/ref_villes.csv."
+      - name: support_tickets
+        description: "Fichier source : support/tickets_support.csv."
+      - name: tracking_events
+        description: "Fichier source : tracking/events_AAAA_MM.jsonl.gz, 36 fichiers (une ligne JSON par événement, colonne donnees)."
+      - name: ventes_commandes
+        description: "Fichier source : ventes/commandes/commandes_AAAA_MM.csv, 36 fichiers."
+      - name: ventes_lignes_commande
+        description: "Fichier source : ventes/lignes_commande/lignes_commande_AAAA_MM.csv, 36 fichiers."
+      - name: chargements
+        description: Journal de l'ingestion, une ligne par fichier et par lancement.

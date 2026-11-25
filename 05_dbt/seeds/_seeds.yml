@@ -1,0 +1,20 @@
+version: 2
+seeds:
+  - name: correspondance_libelles
+    description: >
+      Table de correspondance des libellés codés (DQ-32). Une ligne par valeur rencontrée dans la couche brute :
+      valeur_source est la clé de comparaison (minuscules, sans accent, espaces normalisés), valeur_cible la valeur
+      de référence. Sources : docs/regles_qualite.md du jeu de données et valeurs observées dans raw.
+    config:
+      column_types: {domaine: text, valeur_source: text, valeur_cible: text}
+    columns:
+      - name: domaine
+        description: Colonne concernée (statut_commande, type_evenement...).
+      - name: valeur_source
+        description: Valeur brute ramenée à sa clé de comparaison.
+        data_tests:
+          - not_null
+      - name: valeur_cible
+        description: Valeur de référence.
+        data_tests:
+          - not_null

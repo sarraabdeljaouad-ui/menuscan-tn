@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: quarantaine
+    description: >
+      Lignes brutes écartées du staging : une ligne par ligne rejetée, avec la règle (regle_dq), le motif, le fichier
+      et le numéro de ligne d'origine, et la ligne complète en JSON (contenu). Une ligne brute est soit en staging, soit ici.
+    columns:
+      - name: table_source
+        data_tests: [not_null]
+      - name: regle_dq
+        data_tests: [not_null]
+      - name: motif
+        data_tests: [not_null]
+  - name: corrections
+    description: >
+      Journal des corrections appliquées aux lignes gardées en staging : une ligne par valeur corrigée,
+      avec la règle, la colonne, la valeur d'origine et la valeur corrigée.
+    columns:
+      - name: regle_dq
+        data_tests: [not_null]
+  - name: bilan_qualite
+    description: "Bilan par table et par règle : lignes brutes, lignes en staging, lignes en quarantaine, nombre de lignes corrigées."

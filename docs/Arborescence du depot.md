@@ -1,6 +1,6 @@
 # Arborescence du dépôt
 
-**Référence :** MS-DATA-ARB-001 · **Version :** 1.3 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-ARB-001 · **Version :** 1.4 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Le dépôt `menuscan-tn` suit les phases du projet : un dossier numéroté par phase, dans l'ordre de réalisation. Les dossiers des phases à venir sont créés au démarrage de chaque phase.
 
@@ -51,15 +51,16 @@ menuscan-tn/
 │   └── README.md
 │
 ├── 05_dbt/                       ← phase 4 : projet dbt
-│   ├── dbt_project.yml
+│   ├── dbt_project.yml, profiles.yml, lancer_dbt.py, README.md (prise en main)
 │   ├── models/
-│   │   ├── staging/              (stg_*)
-│   │   ├── intermediate/         (int_*)
-│   │   └── marts/                (fait_*, dim_*)
-│   ├── seeds/                    (tables de correspondance des libellés)
-│   ├── snapshots/
-│   ├── tests/                    (tests DQ spécifiques)
-│   └── macros/
+│   │   ├── staging/              (stg_*, et preparation/ : prep_*)
+│   │   ├── qualite/              (quarantaine, corrections, bilan_qualite)
+│   │   ├── intermediate/         (int_*, T4.2)
+│   │   └── marts/                (fait_*, dim_*, T4.3)
+│   ├── seeds/                    (table de correspondance des libellés)
+│   ├── snapshots/                (T4.3)
+│   ├── tests/                    (tests propres au projet)
+│   └── macros/                   (nettoyage, règles de rejet)
 │
 ├── 06_orchestration/             ← phase 5 : Airflow
 │   └── dags/menuscan_chaine_complete.py
