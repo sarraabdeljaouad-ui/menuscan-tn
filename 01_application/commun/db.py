@@ -354,8 +354,9 @@ def _evenement(c, session_id, etab, type_ev, h, article_id=None, quantite=None):
               dict(h=h, s=session_id, p=(type_ev == "ajout_panier"), v=int(type_ev == "vue_article")))
 
 
-def ouvrir_session(table_id, etablissement_id, appareil, langue="fr"):
-    """Un scan de QR code : crée la session et ses deux premiers événements (scan_qr, vue_menu)."""
+def ouvrir_session(table_id, etablissement_id, appareil, langue="fr", scan=True):
+    """Un scan de QR code : crée la session et ses deux premiers événements (scan_qr, vue_menu).
+    scan=False : session d'une commande prise par le serveur (appareil 'serveur'), sans scan ni vue du menu."""
     h = maintenant()
     with moteur().begin() as c:
         sid = _nouvel_id(c, "seq_session")
@@ -363,8 +364,9 @@ def ouvrir_session(table_id, etablissement_id, appareil, langue="fr"):
                           nb_articles_vus, a_ajoute_panier, a_commande, nb_evenements)
                           VALUES (:s, :e, :t, :h, :h, :a, :l, 0, FALSE, FALSE, 0)"""),
                   dict(s=sid, e=etablissement_id, t=table_id, h=h, a=appareil, l=langue))
-        _evenement(c, sid, etablissement_id, "scan_qr", h)
-        _evenement(c, sid, etablissement_id, "vue_menu", h)
+        if scan:
+            _evenement(c, sid, etablissement_id, "scan_qr", h)
+            _evenement(c, sid, etablissement_id, "vue_menu", h)
     return sid
 
 
@@ -392,14 +394,14 @@ def appeler(session_id, table_id, etablissement_id, motif="serveur"):
     return True
 
 
-def passer_commande(session_id, table_id, etablissement_id, panier, note=None, options=None):
+def passer_commande(session_id, table_id, etablissement_id, panier, note=None, options=None, par_equipe=False):
     """panier : {article_id: quantite} ; options : {article_id: [options]}, sans effet sur le prix.
     Les prix sont relus en base au moment de la commande (DQ-06)."""
     options = options or {}
     h = maintenant()
     with moteur().begin() as c:
         ouvert = c.execute(text("SELECT commandes_ouvertes FROM etablissements WHERE etablissement_id = :e"), dict(e=etablissement_id)).scalar()
-        if not ouvert:
+        if not ouvert and not par_equipe:  # l'interrupteur ferme la commande par QR code, pas la prise de commande en salle
             raise ValueError("L'établissement ne prend plus de commandes pour le moment.")
         if c.execute(text("SELECT a_commande FROM sessions WHERE session_id = :s FOR UPDATE"), dict(s=session_id)).scalar():
             raise ValueError("Cette session a déjà une commande.")
@@ -772,3 +774,28 @@ def avis_table(etablissement_id, table_id, debut, fin):
     return lire("""SELECT av.date_heure, av.commande_id, av.note, av.commentaire FROM avis av
                    WHERE av.etablissement_id = :e AND av.table_id = :t AND av.date_heure BETWEEN :d AND :f
                    ORDER BY av.date_heure DESC""", e=etablissement_id, t=table_id, d=debut, f=fin)
+
+
+# ---------- Commande prise par le serveur (lot 3) ----------
+
+def peut_commander(etablissement_id):
+    """La formule du jour permet-elle la commande (DQ-09) ?"""
+    return bool(un(f"""SELECT 1 AS ok FROM abonnements WHERE etablissement_id = :e AND formule_id IN {FORMULES_COMMANDE}
+                        AND CAST(:j AS DATE) BETWEEN date_debut AND COALESCE(date_fin, DATE '2099-12-31')""",
+                   e=etablissement_id, j=maintenant().date()))
+
+
+def commande_equipe(etablissement_id, table_id, panier, note=None):
+    """Commande prise par le serveur pour un client sans téléphone : session « serveur » sans scan,
+    commande acceptée d'emblée (elle part en préparation). Renvoie l'identifiant de la commande."""
+    t = un("""SELECT table_id FROM tables_salle WHERE table_id = :t AND etablissement_id = :e
+              AND (date_retrait IS NULL OR date_retrait > CAST(:j AS DATE))""", t=table_id, e=etablissement_id, j=maintenant().date())
+    panier = {a: int(q) for a, q in panier.items() if int(q) > 0}
+    if not t or not panier:
+        raise ValueError("Choisissez au moins un article.")
+    if not peut_commander(etablissement_id):
+        raise ValueError("La formule de l'établissement ne comprend pas la commande.")
+    sid = ouvrir_session(table_id, etablissement_id, "serveur", "fr", scan=False)
+    cid = passer_commande(sid, table_id, etablissement_id, panier, note, par_equipe=True)
+    avancer(etablissement_id, cid)
+    return cid

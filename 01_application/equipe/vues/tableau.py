@@ -26,6 +26,7 @@ if not u:
     st.stop()
 choix = u["etablissement_id"]
 gerant = u["role"] == "gerant"
+commande_possible = db.peut_commander(choix)
 
 n = db.maintenant()
 h1, h2 = st.columns([3, 1], vertical_alignment="center")
@@ -74,11 +75,69 @@ def minutes_depuis(h):
     return int((db.maintenant() - h).total_seconds() // 60)
 
 
+def chrono(minutes):
+    """Pastille d'attente : verte sous 5 min, orange de 5 à 9 min, rouge à partir de 10 min."""
+    fond, texte = (("#DCFCE7", "#166534") if minutes < 5 else ("#FEF3C7", "#92400E") if minutes < 10 else ("#FEE2E2", "#B91C1C"))
+    return (f'<span style="background:{fond};color:{texte};border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;'
+            f'white-space:nowrap">⏱ {minutes} min</span>')
+
+
+def envoyer_commande_equipe(table_id, articles):
+    panier = {a["article_id"]: st.session_state.get(f"q_{table_id}_{a['article_id']}", 0) for a in articles}
+    try:
+        cid = db.commande_equipe(choix, table_id, panier, st.session_state.get(f"note_eq_{table_id}"))
+    except ValueError as err:
+        st.session_state[f"err_eq_{table_id}"] = str(err)
+        return
+    for a in articles:
+        st.session_state.pop(f"q_{table_id}_{a['article_id']}", None)
+    st.session_state.pop(f"note_eq_{table_id}", None)
+    st.session_state[f"saisie_{table_id}"] = False
+    st.session_state[f"ok_eq_{table_id}"] = f"Commande {cid} envoyée en préparation"
+
+
+def saisie_commande(t):
+    """Commande prise par le serveur dans la fenêtre de la table (client sans téléphone)."""
+    tid = t["table_id"]
+    articles = db.menu(choix)
+    st.markdown('<div class="titre" style="font-size:17px">Nouvelle commande</div>', unsafe_allow_html=True)
+    cats = list(dict.fromkeys(a["nom_categorie"] for a in articles))
+    c1, c2 = st.columns([3, 2], vertical_alignment="bottom")
+    cat = c1.selectbox("Catégorie", ["Toutes"] + cats, key=f"cat_eq_{tid}", label_visibility="collapsed")
+    q = c2.text_input("Chercher", placeholder="Chercher un article", key=f"cherche_eq_{tid}", label_visibility="collapsed").strip().lower()
+    for a in articles:
+        visible = (cat == "Toutes" or a["nom_categorie"] == cat) and (not q or q in a["nom_article"].lower())
+        cle = f"q_{tid}_{a['article_id']}"
+        if not visible and not st.session_state.get(cle):
+            continue
+        l1, l2 = st.columns([3, 1.3], vertical_alignment="center")
+        l1.markdown(f"**{e(a['nom_article'])}** <span style='color:#64748B'>· {prix(a['prix_ttc'])}</span>", unsafe_allow_html=True)
+        l2.number_input("Quantité", min_value=0, max_value=20, step=1, key=cle, label_visibility="collapsed")
+    total = sum(st.session_state.get(f"q_{tid}_{a['article_id']}", 0) * a["prix_ttc"] for a in articles)
+    nb = sum(st.session_state.get(f"q_{tid}_{a['article_id']}", 0) for a in articles)
+    st.text_input("Note", placeholder="Note pour la préparation (facultative)", key=f"note_eq_{tid}", max_chars=120, label_visibility="collapsed")
+    if err := st.session_state.pop(f"err_eq_{tid}", None):
+        st.error(err)
+    b1, b2 = st.columns([3, 1.3])
+    b1.button(f"Envoyer · {nb} article{'s' if nb > 1 else ''} · {prix(total)}", type="primary", width="stretch", disabled=nb == 0,
+              on_click=envoyer_commande_equipe, args=(tid, articles), icon=":material/send:")
+    b2.button("Annuler", width="stretch", key=f"ann_eq_{tid}", on_click=lambda: st.session_state.update({f"saisie_{tid}": False}))
+
+
 def fenetre_table(t):
     """Fenêtre d'une table : appels, commandes en cours, encaissement. Elle reste ouverte après chaque action."""
     @st.dialog(f"Table {t['numero_table']} · {ZONES.get(t['zone'], t['zone'])}", width="medium", on_dismiss=fermer_table)
     def contenu():
         d = db.detail_table(choix, t["table_id"])
+        if ok := st.session_state.pop(f"ok_eq_{t['table_id']}", None):
+            st.success(ok)
+        if st.session_state.get(f"saisie_{t['table_id']}"):
+            saisie_commande(t)
+            return
+        if commande_possible:
+            st.button("Prendre une commande", icon=":material/edit_note:", key=f"prendre_{t['table_id']}", width="stretch",
+                      on_click=lambda: st.session_state.update({f"saisie_{t['table_id']}": True}),
+                      help="Pour un client sans téléphone : la commande part directement en préparation.")
         for a in d["appels"]:
             with st.container(key=f"appel_f_{a['appel_id']}"):
                 c1, c2 = st.columns([3, 2], vertical_alignment="center")
@@ -93,7 +152,8 @@ def fenetre_table(t):
             note = f'<div style="font-size:13px;color:#92400E;margin-top:4px">« {e(c["note"])} »</div>' if c["note"] else ""
             with st.container(key=f"carte_f_{c['commande_id']}"):
                 st.markdown(f"""<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>{c['commande_id']}
-                  <span style="font-weight:500;color:#64748B;font-size:13px">· {c['date_heure_commande']:%H:%M}</span></b>
+                  <span style="font-weight:500;color:#64748B;font-size:13px">· {c['date_heure_commande']:%H:%M}</span>
+                  {chrono(minutes_depuis(c['date_heure_commande'])) if not c['a_encaisser'] else ''}</b>
                   <span style="background:{fond};color:{txt};border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700">{lib}</span></div>
                   <div style="font-size:14px;color:#334155;margin-top:4px">{e(c['detail'])}</div>{note}
                   <div style="font-weight:700;color:{BLEU};margin-top:4px">{prix(c['montant_total_ttc'])}</div>""", unsafe_allow_html=True)
@@ -171,7 +231,7 @@ def tableau():
                         if c["note"] else "")
                 with st.container(key=f"carte_{cid}"):
                     st.markdown(f"""<div style="display:flex;justify-content:space-between;align-items:baseline"><b>Table {c['numero_table']} <span style="font-weight:500;color:#64748B;font-size:13px">· {e(c['zone'])}</span></b>
-                      <span style="font-size:13px;font-weight:600;color:{'#B45309' if minutes >= 10 else '#64748B'}">{minutes} min</span></div>
+                      {chrono(minutes)}</div>
                       <div style="font-size:14px;color:#334155;margin-top:4px">{e(c['detail'])}</div>{note}
                       <div style="display:flex;justify-content:space-between;margin-top:6px"><b style="color:{BLEU}">{prix(c['montant_total_ttc'])}</b><span style="font-size:12px;color:#64748B">{cid}</span></div>""",
                                 unsafe_allow_html=True)

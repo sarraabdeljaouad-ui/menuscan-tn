@@ -47,6 +47,7 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 | Commandes en direct : accepter, marquer prête, servir, annuler | Oui | Oui |
 | Appels des clients : prise en charge (« Je m'en occupe ») | Oui | Oui |
 | Plan de salle cliquable : fenêtre de la table, actions, encaissement | Oui | Oui |
+| Prendre une commande pour un client sans téléphone (fenêtre de la table) | Oui | Oui |
 | Chiffre du jour, panier moyen, délai, taux de commande | Non | Oui |
 | Meilleures ventes du mois | Non | Oui |
 | Ouvrir ou fermer les commandes | Non | Oui |
@@ -71,7 +72,7 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 | Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer ; « ＋ Ajouter une table » (QR code affiché et téléchargeable tout de suite) ; crayon sur chaque carte pour changer le numéro, la zone ou les places, ou retirer la table du service ; tables retirées à remettre en service |
 | Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, appels, commandes en direct, meilleures ventes, plan de salle. Serveur : 4 compteurs (dont les tables à encaisser), appels, commandes en direct, plan de salle. Mise à jour toutes les 10 secondes |
 
-**Plan de salle (lot 1) :** chaque table est un bouton coloré selon son état, du plus urgent au moins urgent : appel en attente, commande en cours, servi à encaisser, menu ouvert depuis moins de 30 minutes, libre. Toucher une table ouvre sa fenêtre : appels à prendre en charge, commandes avec leur bouton d'étape, puis le total à encaisser avec le mode de règlement. La fenêtre reste ouverte après chaque action et se ferme après l'encaissement ; un message confirme le montant encaissé. Une table encaissée redevient libre, sauf si un client y rouvre le menu.
+**Plan de salle (lot 1) :** chaque table est un bouton coloré selon son état, du plus urgent au moins urgent : appel en attente, commande en cours, servi à encaisser, menu ouvert depuis moins de 30 minutes, libre. Toucher une table ouvre sa fenêtre : appels à prendre en charge, commandes avec leur bouton d'étape, puis le total à encaisser avec le mode de règlement. Le bouton « Prendre une commande » ouvre une saisie (catégorie, recherche, quantités, note) : la commande part directement en préparation. Chaque commande en cours porte un chronomètre : vert sous 5 minutes, orange de 5 à 9, rouge à partir de 10. La fenêtre reste ouverte après chaque action et se ferme après l'encaissement ; un message confirme le montant encaissé. Une table encaissée redevient libre, sauf si un client y rouvre le menu.
 
 ## QR codes et test depuis un téléphone
 
@@ -101,7 +102,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 | Règle | Application |
 |---|---|
 | Formule | Essentiel : menu consultable seulement. Commande et Pro : panier et commande. La formule est celle de l'abonnement en vigueur le jour même (comme le contrôle DQ-09). |
-| Commandes fermées | Si le gérant ferme les commandes, le menu reste consultable mais le bouton d'envoi est désactivé ; la base refuse aussi la commande. |
+| Commandes fermées | Si le gérant ferme les commandes, le menu reste consultable mais le bouton d'envoi est désactivé ; la base refuse aussi la commande. L'équipe peut toujours prendre une commande en salle (formules Commande et Pro seulement, DQ-09). |
 | Session | Un scan ouvre une session et écrit `scan_qr` et `vue_menu`. Ouvrir la fiche d'un article écrit `vue_article` et incrémente `nb_articles_vus`, comme dans les données générées. Chaque action ajoute un événement et prolonge la fin de session (DQ-11). |
 | Une commande par session | « Commander autre chose » ouvre une nouvelle session (DQ-12), rattachée à la même visite par le jeton du client. |
 | Appels | Un même motif ne peut pas être demandé deux fois tant que le premier appel n'est pas pris en charge. Chaque appel écrit aussi l'événement `appel_serveur`, comme dans les données générées. Encaisser une table clôt ses demandes d'addition. |
@@ -155,6 +156,7 @@ Le menu client choisit les articles par leurs dates d'ajout et de retrait, et no
 |---|---|---|
 | `commandes.statut_commande` | `nouvelle`, `en_prepa`, `prete` | Étapes avant le service |
 | `sessions.appareil` | `web` | Ordinateur (les données générées ne contiennent que `android` et `ios`) |
+| `sessions.appareil` | `serveur` | Commande prise par le serveur : session sans `scan_qr` ni `vue_menu`, à exclure de l'entonnoir de conversion |
 | `articles_prix_historique.motif_changement` | `modification_gerant` | Prix changé dans l'application |
 | `commandes.mode_reglement` | vide sur une commande `servie` | Servie mais pas encore encaissée (dans le jeu, toute commande servie a un mode de règlement) |
 
