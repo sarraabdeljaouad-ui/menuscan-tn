@@ -75,6 +75,13 @@ if not liste:
 for a in liste:
     aid = a["article_id"]
     badge = ('<span class="badge" style="background:#FEF3C7;color:#92400E">Rupture aujourd\'hui</span>' if a["rupture"] else "")
+    marge = ""
+    if gerant and a["cout_revient"] is not None and a["prix_ttc"]:
+        m = float(a["prix_ttc"]) - float(a["cout_revient"])
+        marge = (f'<div style="font-size:12px;color:#166534;font-weight:600">Coût {prix(a["cout_revient"])} · marge {prix(m)} '
+                 f'({100 * m / float(a["prix_ttc"]):.0f} %)</div>')
+    elif gerant:
+        marge = '<div style="font-size:12px;color:#94A3B8">Coût de revient non saisi</div>'
     prochain = ""
     if a["prochain_prix"] is not None:  # prix programmé par le gérant (l'article avait déjà été vendu le jour du changement)
         prochain = (f' <span style="font-size:13px;color:#92400E;font-weight:600">→ {prix(a["prochain_prix"])} '
@@ -85,7 +92,7 @@ for a in liste:
           {icone_categorie(a['nom_categorie'], rangs.get(a['nom_categorie'], 0))}
           <div style="min-width:0"><div style="font-weight:700">{e(a['nom_article'])}{badge}</div>
           <div style="font-size:13px;color:#64748B">{e(a['description'] or '')}</div>
-          <div style="font-weight:700;color:{BLEU}">{prix(a['prix_ttc']) if a['prix_ttc'] is not None else '–'}{prochain}</div></div></div>""",
+          <div style="font-weight:700;color:{BLEU}">{prix(a['prix_ttc']) if a['prix_ttc'] is not None else '–'}{prochain}</div>{marge}</div></div>""",
                          unsafe_allow_html=True)
         cols[1].toggle("Rupture", value=a["rupture"], key=f"rup_{aid}", on_change=rupture, args=(aid,))
         if gerant:
@@ -94,12 +101,19 @@ for a in liste:
                     nv = st.number_input("Nouveau prix TTC (DT)", min_value=0.1, max_value=500.0, step=0.1, format="%.3f",
                                          value=float(a["prix_ttc"] or 1))
                     desc = st.text_input("Description", value=a["description"] or "", max_chars=120)
+                    cout = st.number_input("Coût de revient (DT, facultatif)", min_value=0.0, max_value=500.0, step=0.1, format="%.3f",
+                                           value=float(a["cout_revient"]) if a["cout_revient"] is not None else None,
+                                           help="Ce que l'article coûte au café (ingrédients). Il sert à calculer la marge ; les clients ne le voient pas.")
                     st.caption("Si l'article a déjà été commandé aujourd'hui, le nouveau prix s'applique à partir de demain.")
                     if st.form_submit_button("Enregistrer", type="primary", width="stretch"):
                         msg = []
                         if (desc or "") != (a["description"] or ""):
                             db.modifier_description(etab, aid, desc)
                             msg.append("description mise à jour")
+                        ancien = float(a["cout_revient"]) if a["cout_revient"] is not None else None
+                        if (cout is None) != (ancien is None) or (cout is not None and abs(cout - ancien) > 0.0005):
+                            db.changer_cout(etab, aid, cout)
+                            msg.append("coût de revient " + (prix(cout) if cout is not None else "effacé"))
                         r = db.changer_prix(etab, aid, nv, u["utilisateur_id"])
                         if r:
                             effet, lignes, cmds = r

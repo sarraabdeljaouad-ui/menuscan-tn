@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.3 · **Date :** 23/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.4 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -183,3 +183,15 @@ Il affiche un tableau OK / KO et se termine par le nombre de contrôles réussis
 | `docker compose` introuvable | Docker Desktop arrêté | Lancer Docker Desktop, attendre qu'il soit prêt |
 | La base `menuscan_dwh` n'existe pas | Le volume existait avant le script d'initialisation | `docker compose down -v` puis `docker compose up -d` (efface les données) |
 | `dbt debug` échoue sur le mot de passe | Variable non définie dans la session | Définir `POSTGRES_PASSWORD` dans la session ou dans les variables d'environnement Windows |
+| `docker ps` répond « 500 Internal Server Error » ; l'application reste sur « Connexion à la base de données… » ou affiche « La base de données ne répond pas » | Moteur Docker bloqué après un redémarrage du PC (Docker Desktop affiche « Engine running » sans chiffres de RAM ni de CPU) | Quitter Docker Desktop (clic droit sur la baleine, Quit), lancer `wsl --shutdown`, rouvrir Docker Desktop, puis `docker compose up -d` et `python outils/verifier_poste.py`. Ne jamais utiliser « Clean / Purge data » ni « Reset to factory defaults » : ils effacent la base |
+| Les QR codes ou le téléphone n'ouvrent plus le menu | L'adresse du PC sur le Wi-Fi a changé (elle s'affiche en « Network URL » au lancement de Streamlit) | Mettre la nouvelle adresse dans `CLIENT_URL` du fichier `.env`, relancer l'application équipe et réimprimer les QR codes |
+
+## 10. Changer le mot de passe de PostgreSQL
+
+Le mot de passe de `.env` n'a servi qu'à la création de la base. Changer seulement `.env` coupe toutes les connexions : il faut d'abord changer le mot de passe dans PostgreSQL, puis écrire le même dans `.env`. Choisir des lettres, des chiffres, `-` et `_` (pas d'espace, ni `$`, `#` ou guillemets, que Docker Compose interprète).
+
+1. `docker exec -it menuscan_postgres psql -U menuscan -d menuscan_app` : l'invite devient `menuscan_app=#`.
+2. `\password menuscan` : taper le nouveau mot de passe deux fois (rien ne s'affiche, c'est normal), puis `\q`.
+3. `notepad .env` : remplacer la valeur de `POSTGRES_PASSWORD=` (sans guillemets), enregistrer.
+4. `python outils/verifier_poste.py` : 11 contrôles réussis sur 11. « password authentication failed » signifie que les deux mots de passe diffèrent.
+5. Relancer les deux applications, puis mettre à jour le mot de passe de la connexion DBeaver (clic droit, Edit Connection).

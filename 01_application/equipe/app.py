@@ -15,11 +15,7 @@ from commun.theme import e  # noqa: E402
 
 st.set_page_config(page_title="MenuScan TN · Équipe", page_icon=":material/storefront:", layout="wide")
 theme.appliquer()
-try:
-    db.moteur()
-except db.MigrationManquante as err:
-    st.error(str(err))
-    st.stop()
+db.verifier_connexion()  # message clair si la base ne répond pas (Docker arrêté) ou si une migration manque
 
 COOKIE = "menuscan_equipe"
 etat = st.session_state
@@ -64,6 +60,7 @@ else:
              st.Page("vues/menu.py", title="Menu", icon=":material/restaurant_menu:", url_path="menu")]
     if u["role"] == "gerant":
         pages.append(st.Page("vues/activite.py", title="Activité des tables", icon=":material/table_restaurant:", url_path="activite"))
+        pages.append(st.Page("vues/cloture.py", title="Clôture de la journée", icon=":material/point_of_sale:", url_path="cloture"))
         pages.append(st.Page("vues/qr_codes.py", title="Tables et QR codes", icon=":material/qr_code_2:", url_path="qr"))
     with st.sidebar:
         role = "Gérant" if u["role"] == "gerant" else "Serveur"

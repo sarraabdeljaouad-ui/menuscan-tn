@@ -58,10 +58,40 @@ def moteur():
     env = _lire_env()
     # URL.create échappe les caractères spéciaux du mot de passe (@, :, /, #...)
     url = URL.create("postgresql+psycopg2", username=env.get("POSTGRES_USER"), password=env.get("POSTGRES_PASSWORD"),
-                     host=env.get("POSTGRES_HOST", "localhost"), port=int(env.get("POSTGRES_PORT", "5440")), database="menuscan_app")
-    eng = create_engine(url, pool_pre_ping=True, connect_args={"options": "-c search_path=menuscan"})
+                     host=env.get("POSTGRES_HOST", "127.0.0.1"), port=int(env.get("POSTGRES_PORT", "5440")), database="menuscan_app")
+    # 127.0.0.1 plutôt que localhost : Windows essaie d'abord ::1 (IPv6). Délai de 10 s : un message clair plutôt qu'une attente sans fin.
+    eng = create_engine(url, pool_pre_ping=True, connect_args={"options": "-c search_path=menuscan", "connect_timeout": 10})
     _preparer(eng)
     return eng
+
+
+class BaseInjoignable(Exception):
+    pass
+
+
+def verifier_connexion(public=False):
+    """À appeler en tête de chaque application : affiche un message clair si PostgreSQL ne répond pas, puis arrête la page.
+    public=True (application client) : message pour le client, sans détail technique."""
+    try:
+        with moteur().connect() as c:  # aussi quand la base s'arrête pendant que l'application tourne
+            c.execute(text("SELECT 1"))
+    except MigrationManquante as err:
+        st.error(str(err))
+        st.stop()
+    except Exception as err:  # psycopg2.OperationalError le plus souvent : Docker arrêté ou bloqué, mauvais mot de passe
+        detail = str(err).strip().splitlines()[0] if str(err).strip() else type(err).__name__
+        if public:
+            st.error("Le menu est momentanément indisponible. Merci de prévenir le serveur. · القائمة غير متاحة حاليًا، يرجى إعلام النادل.")
+            if st.button("Réessayer · إعادة المحاولة", type="primary"):
+                st.rerun()
+            st.stop()
+        st.error("La base de données ne répond pas. Vérifier que Docker Desktop tourne (`docker ps`), puis relancer "
+                 "`python outils/verifier_poste.py`. Si `docker ps` répond « 500 Internal Server Error » : quitter Docker Desktop, "
+                 "lancer `wsl --shutdown`, rouvrir Docker Desktop, puis `docker compose up -d`.")
+        st.caption(f"Détail technique : {detail}")
+        if st.button("Réessayer", type="primary"):
+            st.rerun()
+        st.stop()
 
 
 def _preparer(eng):
@@ -69,7 +99,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article", "008_avis"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article", "008_avis", "009_cout_revient"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -572,6 +602,7 @@ def carte(etablissement_id):
     j = maintenant().date()
     return lire("""
         SELECT a.article_id, a.nom_article, a.description, a.date_ajout, a.date_retrait, c.categorie_id, c.nom_categorie, c.ordre_affichage,
+               a.cout_revient,
                p.prix_ttc,
                EXISTS (SELECT 1 FROM ruptures r WHERE r.article_id = a.article_id AND r.jour = :j) AS rupture,
                (a.date_retrait IS NOT NULL AND a.date_retrait <= :j) AS retire,
@@ -801,3 +832,54 @@ def commande_equipe(etablissement_id, table_id, panier, note=None):
     cid = passer_commande(sid, table_id, etablissement_id, panier, note, par_equipe=True)
     avancer(etablissement_id, cid)
     return cid
+
+
+# ---------- Clôture de la journée (gérant, lot 3) ----------
+
+def cloture(etablissement_id, jour):
+    """Bilan d'une journée, borné à maintenant (le jeu simulé contient des données futures)."""
+    debut = datetime.combine(jour, datetime.min.time())
+    fin = min(datetime.combine(jour, datetime.max.time()), maintenant())
+    p = dict(e=etablissement_id, d=debut, f=fin)
+    r = {}
+    r["reglements"] = lire("""SELECT mode_reglement, COUNT(*) AS n, SUM(montant_total_ttc) AS montant FROM commandes
+                              WHERE etablissement_id = :e AND date_heure_reglement BETWEEN :d AND :f
+                              GROUP BY mode_reglement ORDER BY montant DESC""", **p)
+    r["commandes"] = un("""SELECT COUNT(*) FILTER (WHERE statut_commande = 'servie') AS servies,
+                                  COALESCE(SUM(montant_total_ttc) FILTER (WHERE statut_commande = 'servie'), 0) AS chiffre,
+                                  COUNT(*) FILTER (WHERE statut_commande = 'annulee') AS annulees,
+                                  COALESCE(SUM(montant_total_ttc) FILTER (WHERE statut_commande = 'annulee'), 0) AS montant_annule,
+                                  COUNT(*) FILTER (WHERE statut_commande IN ('nouvelle', 'en_prepa', 'prete')) AS en_cours,
+                                  AVG(EXTRACT(EPOCH FROM date_heure_service - date_heure_commande) / 60)
+                                      FILTER (WHERE statut_commande = 'servie') AS delai
+                           FROM commandes WHERE etablissement_id = :e AND date_heure_commande BETWEEN :d AND :f""", **p)
+    r["a_encaisser"] = lire("""SELECT t.numero_table, COUNT(*) AS n, SUM(c.montant_total_ttc) AS montant FROM commandes c
+                               JOIN tables_salle t USING (table_id)
+                               WHERE c.etablissement_id = :e AND c.statut_commande = 'servie' AND c.date_heure_reglement IS NULL
+                                 AND c.date_heure_commande <= :f
+                               GROUP BY t.numero_table ORDER BY t.numero_table""", **p)
+    r["annulations"] = lire("""SELECT COALESCE(motif_annulation, 'non précisé') AS motif, COUNT(*) AS n FROM commandes
+                               WHERE etablissement_id = :e AND statut_commande = 'annulee' AND date_heure_commande BETWEEN :d AND :f
+                               GROUP BY 1 ORDER BY 2 DESC""", **p)
+    r["appels"] = un("""SELECT COUNT(*) AS n, AVG(EXTRACT(EPOCH FROM date_heure_prise - date_heure_appel) / 60) AS attente
+                        FROM appels WHERE etablissement_id = :e AND date_heure_appel BETWEEN :d AND :f""", **p)
+    r["avis"] = un("""SELECT COUNT(*) AS n, AVG(note) AS moyenne FROM avis WHERE etablissement_id = :e AND date_heure BETWEEN :d AND :f""", **p)
+    r["ruptures"] = lire("""SELECT a.nom_article FROM ruptures r JOIN articles a USING (article_id)
+                            WHERE a.etablissement_id = :e AND r.jour = :j ORDER BY 1""", e=etablissement_id, j=jour)
+    r["ventes"] = lire("""SELECT a.nom_article, c2.nom_categorie, SUM(l.quantite) AS quantite, SUM(l.montant_ligne_ttc) AS montant,
+                                 a.cout_revient, SUM(l.quantite * a.cout_revient) AS cout
+                          FROM lignes_commande l JOIN commandes c USING (commande_id) JOIN articles a ON a.article_id = l.article_id
+                          JOIN categories_menu c2 ON c2.categorie_id = a.categorie_id
+                          WHERE c.etablissement_id = :e AND c.statut_commande = 'servie' AND c.date_heure_commande BETWEEN :d AND :f
+                          GROUP BY a.article_id, a.nom_article, c2.nom_categorie, a.cout_revient ORDER BY montant DESC""", **p)
+    return r
+
+
+# ---------- Coût de revient (lot 3, migration 009) ----------
+
+def changer_cout(etablissement_id, article_id, cout):
+    """Coût de revient d'un article saisi par le gérant (None pour l'effacer)."""
+    with moteur().begin() as c:
+        if _article(c, etablissement_id, article_id):
+            c.execute(text("UPDATE articles SET cout_revient = :c, date_maj_cout = :j WHERE article_id = :a"),
+                      dict(c=None if cout is None else round(float(cout), 3), j=maintenant().date(), a=article_id))

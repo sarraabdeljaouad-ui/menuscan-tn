@@ -15,11 +15,7 @@ from commun.theme import BLEU, CLAIR, GRIS, MARINE, e, icone_categorie, prix  # 
 
 st.set_page_config(page_title="Menu · MenuScan TN", page_icon=":material/restaurant_menu:", layout="centered", initial_sidebar_state="collapsed")
 theme.appliquer()
-try:
-    db.moteur()
-except db.MigrationManquante as err:
-    st.error(str(err))
-    st.stop()
+db.verifier_connexion(public=True)  # message clair si la base ne répond pas (Docker arrêté) ou si une migration manque
 
 T = {
     "fr": dict(recherche="Rechercher un plat, une boisson…", panier="Voir le panier", ma_commande="Ma commande", envoyer="Envoyer la commande",

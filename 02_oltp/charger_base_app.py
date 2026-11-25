@@ -93,8 +93,8 @@ def controler(cur):
 
 def connecter():
     env = lire_env()
-    return psycopg2.connect(host=env.get("POSTGRES_HOST", "localhost"), port=env.get("POSTGRES_PORT", "5440"),
-                            user=env.get("POSTGRES_USER"), password=env.get("POSTGRES_PASSWORD"), dbname="menuscan_app")
+    return psycopg2.connect(host=env.get("POSTGRES_HOST", "127.0.0.1"), port=env.get("POSTGRES_PORT", "5440"),
+                            user=env.get("POSTGRES_USER"), password=env.get("POSTGRES_PASSWORD"), dbname="menuscan_app", connect_timeout=10)
 
 
 def main():

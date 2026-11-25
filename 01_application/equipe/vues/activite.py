@@ -14,8 +14,18 @@ STATUTS = {"nouvelle": "Nouvelle", "en_prepa": "En préparation", "prete": "Prê
 MODES = {"especes": "Espèces", "carte_bancaire": "Carte bancaire", "ticket_restaurant": "Ticket restaurant"}
 MOTIFS = {"serveur": "Serveur", "addition": "Addition", "eau": "Eau"}
 ANNULATIONS = {"article_indisponible": "Annulée : article indisponible"}
-# Format « localized » : nombres affichés selon la langue du navigateur (73,5 en français, et non 73.500, qui se lit 73 mille)
-ARGENT = st.column_config.NumberColumn(format="localized")
+
+
+def fr(d):
+    """Formateur à la française pour les tableaux : virgule décimale, tiret pour une case vide (au lieu de « None »).
+    Le tri des colonnes reste numérique : seul l'affichage change."""
+    def f(x):
+        return "–" if x is None or pd.isna(x) else f"{float(x):,.{d}f}".replace(",", " ").replace(".", ",")
+    return f
+
+
+def date_fr(fmt):
+    return lambda x: "–" if x is None or pd.isna(x) else pd.Timestamp(x).strftime(fmt)
 
 u = st.session_state.get("utilisateur")
 if not u or u["role"] != "gerant":
@@ -79,10 +89,9 @@ df = pd.DataFrame([{
     "Dernière commande": l["derniere"]} for l in lignes])
 st.markdown('<div class="titre" style="font-size:20px;margin-top:16px">Tables</div>', unsafe_allow_html=True)
 st.caption("Cliquez sur une ligne pour ouvrir l'historique de la table. Les colonnes se trient en cliquant sur leur titre.")
-sel = st.dataframe(df, hide_index=True, width="stretch", on_select="rerun", selection_mode="single-row", key="tableau_tables",
-                   column_config={
-                       "Chiffre (DT)": ARGENT, "Panier moyen (DT)": ARGENT, "Délai moyen (min)": ARGENT, "Note clients": ARGENT,
-                       "Dernière commande": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm")})
+sel = st.dataframe(df.style.format({"Chiffre (DT)": fr(3), "Panier moyen (DT)": fr(3), "Délai moyen (min)": fr(1), "Note clients": fr(1),
+                                    "Dernière commande": date_fr("%d/%m/%Y %H:%M")}, na_rep="–"),
+                   hide_index=True, width="stretch", placeholder="–", on_select="rerun", selection_mode="single-row", key="tableau_tables")
 rangs = sel.selection.rows
 if not rangs and len(lignes) == 1:
     rangs = [0]
@@ -114,9 +123,8 @@ with onglets[0]:
             "Avis": "★" * c["avis_note"] if c["avis_note"] else "",
             "Délai (min)": float(c["delai"]) if c["delai"] is not None else None, "Règlement": MODES.get(c["mode_reglement"], "À encaisser" if c["statut_commande"] == "servie" else ""),
             "Note": c["note"] or ANNULATIONS.get(c["motif_annulation"], c["motif_annulation"] or "")} for c in hist])
-        st.dataframe(h, hide_index=True, width="stretch", column_config={
-            "Heure": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm"),
-            "Montant (DT)": ARGENT, "Délai (min)": ARGENT})
+        st.dataframe(h.style.format({"Heure": date_fr("%d/%m/%Y %H:%M"), "Montant (DT)": fr(3), "Délai (min)": fr(0)}, na_rep="–"),
+                     hide_index=True, width="stretch", placeholder="–")
         if len(hist) == 300:
             st.caption("Les 300 commandes les plus récentes sont affichées : réduisez la période pour voir les plus anciennes.")
         st.download_button("Exporter en CSV", h.to_csv(index=False, sep=";").encode("utf-8-sig"),
@@ -131,10 +139,9 @@ with onglets[1]:
     else:
         st.dataframe(pd.DataFrame([{
             "Heure": a["date_heure_appel"], "Motif": MOTIFS.get(a["motif"], a["motif"]),
-            "Pris en charge": a["date_heure_prise"], "Attente (min)": float(a["attente"]) if a["attente"] is not None else None} for a in ap]),
-            hide_index=True, width="stretch", column_config={
-                "Heure": st.column_config.DatetimeColumn(format="DD/MM/YYYY HH:mm"),
-                "Pris en charge": st.column_config.DatetimeColumn(format="HH:mm")})
+            "Pris en charge": a["date_heure_prise"], "Attente (min)": float(a["attente"]) if a["attente"] is not None else None} for a in ap])
+            .style.format({"Heure": date_fr("%d/%m/%Y %H:%M"), "Pris en charge": date_fr("%H:%M"), "Attente (min)": fr(0)}, na_rep="–"),
+            hide_index=True, width="stretch", placeholder="–")
 with onglets[2]:
     if not avis:
         st.caption("Aucun avis sur la période. Les clients notent leur commande une fois servie.")

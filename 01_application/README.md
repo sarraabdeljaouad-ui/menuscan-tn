@@ -10,7 +10,7 @@ Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes va
 Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 008
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 009
 
 cd 01_application/client
 streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
@@ -53,7 +53,8 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 | Ouvrir ou fermer les commandes | Non | Oui |
 | Activité des tables : recherche, comparaison, historique, avis des clients, export CSV | Non | Oui |
 | Menu : mettre un article en rupture pour la journée | Oui | Oui |
-| Menu : changer un prix, une description, retirer, remettre ou ajouter un article | Non | Oui |
+| Menu : changer un prix, une description, un coût de revient, retirer, remettre ou ajouter un article | Non | Oui |
+| Clôture de la journée : encaissements par mode, servies, annulées, reste à encaisser, ventes et marges, export CSV | Non | Oui |
 | Tables et QR codes : ajouter, renuméroter, changer de zone ou de places, retirer ou remettre une table | Non | Oui |
 
 **Rester connecté :** après la connexion, l'appareil reste connecté, même après une actualisation ou la fermeture du navigateur, jusqu'au bouton « Se déconnecter ». La connexion expire seulement après 30 jours sans utilisation ; chaque ouverture de l'application relance ce délai. Le navigateur garde un jeton aléatoire dans un cookie ; la base n'en garde que l'empreinte SHA-256. Le gérant dispose d'un bouton « Déconnecter partout », qui déconnecte tous les appareils des comptes de son établissement (appareil perdu, départ d'un serveur).
@@ -68,6 +69,7 @@ Les droits sont vérifiés à chaque exécution de l'écran, pas seulement par l
 | Équipe | `/` | Accueil public |
 | Équipe | `/connexion` | Connexion |
 | Équipe | `/menu` | Serveur et gérant : articles de la carte par catégorie, recherche, interrupteur « Rupture » (l'article disparaît du menu client pour la journée). Gérant : bouton « Modifier » (prix, description, retrait), ajout d'un article, articles retirés à remettre, prix programmé affiché (« → 2,300 DT à partir du 25/11 ») |
+| Équipe | `/cloture` | Gérant seulement : choix de la journée (aujourd'hui par défaut, bornée à maintenant), encaissé et chiffre servi, panier moyen, annulations et motifs, délai de service, alerte « Reste à encaisser » par table, encaissements par mode de règlement, appels, avis, ruptures, ventes par article avec coût et marge quand le coût de revient est saisi, export CSV |
 | Équipe | `/activite` | Gérant seulement : période (aujourd'hui, 7 jours, 30 jours, mois en cours ou dates choisies), recherche par numéro ou par zone, tableau comparatif des tables (visites, commandes servies et annulées, chiffre, panier moyen, délai, appels), puis historique de la table choisie : indicateurs, commandes avec articles, statut, délai et règlement (export CSV), appels avec délai de prise en charge |
 | Équipe | `/qr` | Gérant seulement : un QR code par table, lien encodé, PNG par table et planche PDF à imprimer ; « ＋ Ajouter une table » (QR code affiché et téléchargeable tout de suite) ; crayon sur chaque carte pour changer le numéro, la zone ou les places, ou retirer la table du service ; tables retirées à remettre en service |
 | Équipe | `/tableau` | Gérant : ouverture des commandes, 5 indicateurs, appels, commandes en direct, meilleures ventes, plan de salle. Serveur : 4 compteurs (dont les tables à encaisser), appels, commandes en direct, plan de salle. Mise à jour toutes les 10 secondes |
@@ -116,7 +118,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 
 Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migrations 001 à 008, décisions D-24 à D-27)
+## Évolutions du modèle de données (migrations 001 à 009, décisions D-24 à D-28)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
@@ -134,7 +136,8 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - table `journal_prix` (migration 005) : changements de prix faits dans l'application ;
 - `tables_salle.date_retrait` (migration 006) : table retirée du service ;
 - `lignes_commande.options` et `etats_client.options` (migration 007) : préférences choisies par le client, par exemple « Sans sucre · Lait à part », affichées à l'équipe entre parenthèses ;
-- table `avis` (migration 008) : un avis au plus par commande servie (note de 1 à 5, commentaire), visible dans « Activité des tables » (colonne « Note clients » par table, étoiles dans l'historique, onglet « Avis » avec la note moyenne et les commentaires).
+- table `avis` (migration 008) : un avis au plus par commande servie (note de 1 à 5, commentaire), visible dans « Activité des tables » (colonne « Note clients » par table, étoiles dans l'historique, onglet « Avis » avec la note moyenne et les commentaires) ;
+- `articles.cout_revient` et `articles.date_maj_cout` (migration 009) : coût saisi par le gérant dans « Menu », bouton « Modifier ». Aucun coût n'est inventé : la colonne reste vide tant qu'il n'est pas saisi, et la marge ne s'affiche que pour les articles renseignés.
 
 Le menu client choisit les articles par leurs dates d'ajout et de retrait, et non par `statut_article`, qui est une photo à la date d'arrêté du jeu.
 
@@ -167,6 +170,7 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 - **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application.
 - **Adresse du client :** quiconque obtient l'adresse complète d'un client (avec `s=`), par exemple par une capture partagée, voit son panier et le suivi de sa commande pendant 4 heures. Il ne peut rien voir d'autre.
 - **Deuxième commande d'un même client :** elle ouvre une nouvelle session, qui commence par un événement `scan_qr` comme dans les données générées. Le nombre de scans est donc un peu surestimé quand un client commande plusieurs fois ; le lien entre ces sessions est gardé dans `etats_client`.
+- **Base injoignable :** si PostgreSQL ne répond pas dans les 10 secondes (Docker arrêté ou bloqué), l'équipe voit un message avec la marche à suivre et un bouton « Réessayer » ; le client voit « Le menu est momentanément indisponible ». Les connexions passent par `127.0.0.1` (Windows essaie sinon `::1` en premier).
 - **Mise à jour du thème :** après le remplacement d'un fichier de `commun/`, relancer les deux applications ; Streamlit ne recharge pas tout seul ce dossier.
 - **Activité des tables :** le détail des appels (motif, délai de prise en charge) n'existe que pour les appels passés depuis l'application ; les appels des données générées sont seulement comptés. L'historique affiche au plus les 300 commandes les plus récentes de la période.
 - **Retrait d'un article :** les commandes simulées après la date de retrait restent dans le jeu ; aucun contrôle ne porte sur ce point.
