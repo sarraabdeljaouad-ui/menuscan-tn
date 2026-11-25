@@ -22,6 +22,7 @@ vars:
   panne_fin: "2025-09-12 16:00:00"
   seuil_millimes: 1000               # un prix ou un montant >= 1 000 DT est un montant en millimes (DQ-33)
   fuseau: "Africa/Tunis"             # heure de Tunis, UTC+1 sans heure d'été (DQ-34)
+  fenetre_retard_jours: 5            # une commande envoyée dans les 5 derniers jours peut ne pas être encore reçue (DQ-35, D-32)
 
 models:
   menuscan:

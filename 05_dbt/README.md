@@ -1,6 +1,6 @@
 # 05_dbt : entrepôt de données (phase 4)
 
-**Auteure :** Sarra Abdeljaouad · **Date :** 25/11/2026 · **Tâches :** T4.1 (staging et quarantaine), T4.2 (intermediate), T4.3 (marts et snapshot) · **Outil :** dbt Core 1.12 (décisions D-20 et D-31)
+**Auteure :** Sarra Abdeljaouad · **Date :** 25/11/2026 · **Tâches :** T4.1 (staging et quarantaine), T4.2 (intermediate), T4.3 (marts et snapshot), T4.4 (tests DQ et validation) · **Outil :** dbt Core 1.12 (décisions D-20 et D-31)
 
 Ce dossier transforme la couche brute (`raw`, phase 3) en données propres. T4.1 livre le **staging**, qui nettoie chaque table, et la **quarantaine**, qui garde les lignes écartées. T4.2 livre l'étage **intermediate** : sessions reconstituées, totaux de commande recalculés, établissements dédoublonnés, horloges corrigées et MRR mensuel. T4.3 livre les **marts** : le modèle en étoile que lira Power BI, et un **snapshot** qui historise les établissements.
 
@@ -45,8 +45,9 @@ python 05_dbt/lancer_dbt.py debug
 | `build --select stg_commandes` | Ne construit et ne teste qu'un modèle |
 | `build --select prep_commandes+` | Un modèle et tout ce qui en dépend (le `+` après le nom) |
 | `docs generate` puis `docs serve` | Construit puis ouvre dans le navigateur la documentation du projet, avec le graphe de lignage. `Ctrl+C` pour arrêter |
+| `test --select "path:tests/dq"` | Lance seulement les 27 tests des règles DQ-01 à DQ-27 |
 
-Un `build` complet prend environ 30 secondes sur l'environnement de test (plus sur un portable). La dernière ligne doit être `Done. PASS=258 WARN=0 ERROR=0`.
+Un `build` complet prend environ 30 secondes sur l'environnement de test (plus sur un portable). La dernière ligne doit être `Done. PASS=285 WARN=0 ERROR=0`.
 
 **Si un test échoue**, dbt affiche `FAIL` et le nom du test. Pour voir la requête et les lignes fautives : `python 05_dbt/lancer_dbt.py test --select <nom_du_modèle> --store-failures`. Les lignes en erreur sont alors enregistrées dans le schéma `dbt_test__audit`.
 
@@ -77,6 +78,8 @@ raw (phase 3)  →  preparation.prep_*  →  staging.stg_*  →  intermediate.in
 | `seeds/` | `referentiels` | Table de correspondance des libellés (anglais, synonymes, casse) |
 | `macros/` | | Fonctions de nettoyage (`nettoyage.sql`), règles de rejet (`rejet.sql`), noms de référence, staging |
 | `tests/` | | Tests propres au projet : aucune ligne perdue, cohérence des sessions, pont du MRR, totaux des marts |
+| `tests/dq/` | | Un test par règle DQ-01 à DQ-27 (§ 6) |
+| `controler_entrepot.py` | | Mesure des anomalies retrouvées et comparaison avec la référence ; écrit `rapport_validation.md` |
 
 **Règle du projet : une ligne n'est jamais perdue.** Chaque ligne brute est soit en staging, soit en quarantaine, avec sa règle et son motif. Les tests `aucune_ligne_perdue` et `preparation_complete` le vérifient à chaque `build`.
 
@@ -162,7 +165,26 @@ Le modèle en étoile reprend celui du dossier de modélisation (phase 0). Les c
 - `dbt_valid_from` et `dbt_valid_to` sont les dates des lancements de dbt, pas les dates métier des changements. Les dates métier restent dans les abonnements (SCD2 de la source).
 - Testé sur l'environnement de test : un changement de formule simulé ferme l'ancienne version et en ouvre une nouvelle.
 
-## 6. Résultats vérifiés (25/11/2026, environnement de test)
+## 6. Tests DQ et validation (T4.4)
+
+**Tests DQ-01 à DQ-27.** Un test par règle du catalogue, dans `tests/dq/`, sur les modèles finaux (marts et intermediate). Chaque test renvoie les lignes en violation ; il passe s'il n'en renvoie aucune. Les 27 passent à 0 violation, avec trois périmètres à connaître :
+- **DQ-03 et DQ-13** ne portent pas sur les commandes dont une ligne est en quarantaine, ni, pour DQ-13, sur les sessions dont un événement est en quarantaine : leurs lignes valides sont incomplètes par construction.
+- **DQ-12 :** les 11 sessions dont la commande, envoyée entre le 27 et le 31/12/2026, n'est pas reçue (décision D-32) sont marquées `commande_non_recue` dans `fait_session` et comptées à part. Une commande non reçue hors des 5 derniers jours (variable `fenetre_retard_jours`) reste une violation.
+- Les tests ont été vérifiés en cassant exprès une valeur pour DQ-03, DQ-15, DQ-18 et DQ-26 : chacun a signalé l'erreur.
+
+**Contrôle final**, après `build` :
+
+```powershell
+python 05_dbt/controler_entrepot.py
+```
+
+Le script écrit `05_dbt/rapport_validation.md` :
+1. **Anomalies retrouvées (jalon J5)**, si le corrigé `solutions/anomalies_injectees.csv` est sur le poste (il n'est pas publié, décision D-16). Une anomalie est retrouvée si sa valeur est dans `qualite.corrections` ou sa ligne dans `qualite.quarantaine`.
+2. **Comparaison avec la référence** : chaque table de `donnees_reference/` est comparée, valeur par valeur, au modèle final qui lui correspond.
+
+**Documentation dbt :** `python 05_dbt/lancer_dbt.py docs generate`, puis `python 05_dbt/lancer_dbt.py docs serve`. Le site montre chaque modèle, ses colonnes, ses tests et le graphe de lignage de `raw` jusqu'aux marts. Il n'est pas versionné : le fichier généré contient le chemin complet du dossier du projet sur le poste. Sa publication est prévue en phase 9.
+
+## 7. Résultats vérifiés (25/11/2026, environnement de test)
 
 ```sql
 -- bilan par table et par règle
@@ -177,16 +199,17 @@ SELECT * FROM qualite.bilan_qualite WHERE nb_lignes > 0;
 | Valeurs corrigées | 13 788 : 12 266 en staging, 1 522 en intermediate (1 304 horloges, 212 totaux de commande, 6 fusions) |
 | Sessions | 296 166, identiques à la référence sauf 29 fins de session (horloges non corrigeables exactement) |
 | MRR HT fin d'année | 2 490 DT (2024), 5 125 DT (2025), 8 510 DT (2026), 265 établissements abonnés fin 2026 |
-| Tests dbt | 258 éléments, 0 erreur, dont 188 tests |
+| Tests dbt | 285 éléments, 0 erreur, dont 215 tests : 41 unicités, 52 valeurs obligatoires, 74 clés étrangères, 14 listes de valeurs, 34 tests propres au projet (dont les 27 règles DQ) |
+| Règles DQ-01 à DQ-27 | 0 violation |
 
 **Comparaison avec la couche de référence** (faite hors de dbt, avec le corrigé non publié) : après l'étage intermediate, les données sont identiques à la référence, valeur par valeur, sauf sur ces points :
 - ce que la source ne permet pas de retrouver : secondes des 1 067 dates au format français, 517 modes de règlement et 10 catégories vides, 18 horloges décalées restées dans l'ordre, 1 total de commande dont une ligne est en quarantaine ;
 - les lignes en quarantaine (15 dépenses, 120 lignes et 263 événements à identifiant inconnu, 240 lignes à quantité non positive) ;
 - les 11 commandes en retard non livrées (décision D-32).
 
-99,9 % des 31 718 anomalies injectées sont retrouvées (31 690). Les 28 autres : 9 noms de plats dont la valeur brute est déjà correcte, 18 horloges indétectables, 1 total de commande. La mesure officielle, demandée pour le jalon J5, sera faite en T4.4.
+**99,91 % des 31 718 anomalies injectées sont retrouvées (31 690)**, pour un critère J5 de 95 %. Les 28 autres : 9 noms de plats dont la valeur brute est déjà correcte, 18 horloges dont le décalage laisse l'événement dans l'ordre, 1 total de commande dont une ligne est en quarantaine. Détail : `rapport_validation.md`.
 
-## 7. Fichiers
+## 8. Fichiers
 
 | Fichier | Rôle |
 |---|---|

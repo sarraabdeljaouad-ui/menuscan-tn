@@ -6,7 +6,10 @@ select
     s.debut_session, s.fin_session, extract(epoch from (s.fin_session - s.debut_session))::integer as duree_secondes,
     s.appareil, s.langue, s.nb_evenements, s.nb_articles_vus,
     s.nb_articles_vus > 0 as a_vu_article, s.a_ajoute_panier, s.a_commande,
-    c.commande_id
+    c.commande_id,
+    -- commande envoyée juste avant l'arrêté et pas encore reçue dans les fichiers (décision D-32)
+    s.a_commande and c.commande_id is null
+        and s.debut_session::date > '{{ var("date_arrete") }}'::date - {{ var('fenetre_retard_jours') }} as commande_non_recue
 from {{ ref('int_sessions') }} s
 left join {{ ref('stg_abonnements') }} a
   on a.etablissement_id = s.etablissement_id and s.debut_session::date between a.date_debut and coalesce(a.date_fin, '9999-12-31')
