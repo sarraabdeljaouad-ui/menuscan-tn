@@ -30,6 +30,9 @@ models:
       preparation:
         +schema: preparation
         +materialized: table
+    intermediate:
+      +schema: intermediate
+      +materialized: table
     qualite:
       +schema: qualite
       +materialized: table

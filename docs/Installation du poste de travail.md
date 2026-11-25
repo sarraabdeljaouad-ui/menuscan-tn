@@ -154,7 +154,7 @@ Vérification, depuis la racine du dépôt :
 python 05_dbt/lancer_dbt.py debug
 ```
 
-La dernière ligne doit dire « All checks passed! ». La prise en main de dbt et toutes les commandes sont dans `05_dbt/README.md`. La base `menuscan_dwh` passe à environ 950 Mo après le premier `build`.
+La dernière ligne doit dire « All checks passed! ». La prise en main de dbt et toutes les commandes sont dans `05_dbt/README.md`. La base `menuscan_dwh` passe à environ 1 Go après le premier `build`.
 
 ## 7. Power BI Desktop
 

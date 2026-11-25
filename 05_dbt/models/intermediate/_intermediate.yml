@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: int_horodatages_corriges
+    description: "Événements dont l'horloge d'appareil a reculé (DQ-37) : horodatage source, horodatage corrigé, minutes ajoutées, voisins dans la session."
+    columns:
+      - name: evenement_id
+        data_tests: [unique, not_null]
+      - name: minutes_decalage
+        description: Nombre de minutes entières ajoutées pour replacer l'événement entre ses voisins.
+        data_tests: [not_null]
+  - name: int_evenements
+    description: "Événements valides (stg_evenements) avec l'horodatage corrigé (DQ-37). horloge_corrigee indique les événements recalés."
+    columns:
+      - name: evenement_id
+        data_tests: [unique, not_null]
+      - name: session_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_sessions')
+                field: session_id
+  - name: int_sessions
+    description: "Sessions reconstituées à partir des événements : début (scan), fin (dernier événement), appareil, langue, nombre d'articles vus, ajout au panier, commande, nombre d'événements."
+    columns:
+      - name: session_id
+        data_tests: [unique, not_null]
+      - name: etablissement_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_etablissements')
+                field: etablissement_id
+      - name: table_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_tables_salle')
+                field: table_id
+  - name: int_commandes
+    description: "Commandes avec le total, le nombre de lignes et le nombre d'articles recalculés depuis les lignes (DQ-03). Valeurs de la source gardées si une ligne est en quarantaine (lignes_completes = faux)."
+    columns:
+      - name: commande_id
+        data_tests: [unique, not_null]
+      - name: session_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_sessions')
+                field: session_id
+      - name: lignes_completes
+        description: Vrai si toutes les lignes de la commande sont en staging.
+      - name: total_recalcule
+        description: Vrai si le total, le nombre de lignes ou le nombre d'articles de la source a été corrigé.
+  - name: int_correspondance_etablissements
+    description: "Table de correspondance des doublons métier d'établissement (DQ-30) : ancien identifiant, identifiant gardé, motif."
+    columns:
+      - name: ancien_id
+        data_tests: [unique, not_null]
+      - name: nouvel_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_etablissements')
+                field: etablissement_id
+  - name: int_etablissements
+    description: "Établissements dédoublonnés : 403 établissements, sans les identifiants fusionnés (DQ-30)."
+    columns:
+      - name: etablissement_id
+        data_tests: [unique, not_null]
+  - name: int_mrr_mensuel
+    description: "MRR mensuel : une ligne par établissement et par mois. MRR = prix mensuel HT de l'abonnement actif le dernier jour du mois. Mouvement : nouveau, expansion, contraction, resiliation, reactivation, stable."
+    columns:
+      - name: etablissement_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_etablissements')
+                field: etablissement_id
+      - name: mois
+        data_tests: [not_null]
+      - name: mouvement
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['nouveau', 'expansion', 'contraction', 'resiliation', 'reactivation', 'stable']
+  - name: int_corrections
+    description: "Corrections de l'étage intermediate (DQ-03, DQ-30, DQ-37), reprises dans qualite.corrections."
