@@ -112,7 +112,7 @@ Connexion depuis DBeaver : hôte `localhost`, port `5440`, utilisateur et mot de
 
 ## 5. Charger la base applicative (phase 1)
 
-1. Télécharger `menuscan_dataset_v1.0.zip` depuis la page Releases du dépôt.
+1. Télécharger `menuscan_dataset_v1.1.zip` depuis la page Releases du dépôt (Release `v1.1-donnees`).
 2. Le décompresser **à la racine du dépôt** : on doit obtenir `menuscan-tn/menuscan_dataset/donnees_reference/`. Si Windows crée un dossier intermédiaire (`menuscan_dataset_v1.0/menuscan_dataset/`), déplacer `menuscan_dataset` d'un niveau. Le dossier est exclu de Git.
 3. Lancer le chargement, conteneur démarré et environnement Python activé :
 

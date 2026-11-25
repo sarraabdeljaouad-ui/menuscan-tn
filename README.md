@@ -46,7 +46,7 @@ flowchart LR
 |---|---|---|
 | 0. Cadrage | Dossier de cadrage, pilotage, analyse des sources, gouvernance des données, recette | Terminée (validée sans réserve le 24/11/2026) |
 | 1. Environnement et application | Docker, base applicative, applications client et équipe, QR codes ; extensions (lots 0 à 3 : service en salle, gestion du menu et des tables, avis, clôture de la journée) | Terminée (validée le 24/11/2026 ; extensions validées le 25/11/2026) |
-| 2. Données | Générateur et jeu de démonstration | Jeu de données livré |
+| 2. Données | Reproductibilité du générateur, jeu public v1.1, jeu de démonstration | En cours (T2.1 terminée le 25/11/2026) |
 | 3. Ingestion | Chargement des 124 fichiers bruts | À venir |
 | 4. Entrepôt dbt | Nettoyage, sessions, modèle en étoile, tests | À venir |
 | 5. Orchestration | DAG Airflow | À venir |

@@ -126,7 +126,8 @@ Cette phase montre d'où viennent les données.
 
 **But :** rendre le jeu de données utilisable par tous.
 
-- Ajouter le générateur au dépôt.
+- Relancer le générateur hors du dépôt public et prouver qu'il redonne exactement le même jeu (empreintes SHA-256). Son code sera publié en phase 9 : il contient les réponses que le dossier `solutions/` garde cachées (décisions D-16 et D-30).
+- Publier une version du jeu sans `solutions/` ni `generateur/`, avec les empreintes de chaque fichier.
 - Créer un jeu de démonstration (20 établissements sur 6 mois, format Parquet) pour tester le projet sans télécharger la Release.
 
 ### Phase 3 : Ingestion
@@ -187,6 +188,7 @@ La donnée produite par l'application revient l'améliorer.
 - Recette finale et PV de clôture du projet.
 - Démonstration, captures, synthèse d'une page en PDF.
 - README final.
+- Publication du code du générateur (décision D-30).
 
 ## 7. Les outils
 
@@ -194,7 +196,7 @@ Tous les outils sont gratuits ; tout tourne en local.
 
 | Outil | Rôle | Détail |
 |---|---|---|
-| Git et GitHub | Versionner et publier | Dépôt public ; jeu complet dans la Release `v1.0-donnees` |
+| Git et GitHub | Versionner et publier | Dépôt public ; jeu complet dans la Release `v1.1-donnees` (sans corrigés ni générateur) |
 | Python 3 | Langage principal | Générateur, ingestion, application, ML ; environnement virtuel `.venv` |
 | pandas, NumPy, PyArrow | Manipuler les données | CSV, JSON, Parquet, calculs |
 | Docker Desktop | Faire tourner les services | Conteneurs isolés et reproductibles |

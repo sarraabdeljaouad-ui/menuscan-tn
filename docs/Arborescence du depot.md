@@ -37,11 +37,9 @@ menuscan-tn/
 │   ├── controles_qualite.sql
 │   └── diagramme_er.png
 │
-├── 03_generateur/                ← phase 2 : génération des données
-│   ├── gen_part1.py … gen_part5_export.py
-│   ├── generer_menuscan.py
-│   ├── meta.py
-│   └── demo_data/                (jeu de démonstration en Parquet)
+├── 03_generateur/                ← phase 2 : jeu de démonstration ; phase 9 : code du générateur (décision D-30)
+│   ├── demo_data/                (jeu de démonstration en Parquet, phase 2)
+│   └── gen_part1.py … gen_part5_export.py, generer_menuscan.py, meta.py   (publiés en phase 9)
 │
 ├── 04_ingestion/                 ← phase 3 : chargement de la couche brute
 │   ├── chargeurs/                (CSV, CSV français, JSON compressé, JSON d'API)
