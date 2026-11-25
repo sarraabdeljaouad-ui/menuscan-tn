@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.4 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.5 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -125,6 +125,16 @@ Le script crée les 20 tables du schéma `menuscan` dans `menuscan_app`, les cha
 Pour tout recharger : `python 02_oltp/charger_base_app.py --reinitialiser`.
 
 Le chargement applique ensuite les migrations de `02_oltp/migrations/` (évolutions du modèle pour l'application). Sur une base chargée avant une migration, l'appliquer seule : `python 02_oltp/charger_base_app.py --migrer`. Pour relancer seulement les 23 contrôles qualité : `python 02_oltp/charger_base_app.py --controles`.
+
+### Charger la couche brute dans l'entrepôt (phase 3)
+
+Même jeu de données, conteneur démarré, environnement Python activé :
+
+```bash
+python 04_ingestion/ingerer.py
+```
+
+Le script charge les 124 fichiers de `menuscan_dataset/donnees_brutes/` dans le schéma `raw` de `menuscan_dwh`, sans rien corriger, et tient le journal `raw.chargements`. Une relance ne recharge que les fichiers modifiés. Prévoir environ 600 Mo d'espace pour la base. Détails : `04_ingestion/README.md`.
 
 ## 6. dbt
 
