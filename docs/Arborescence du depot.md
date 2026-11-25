@@ -38,7 +38,8 @@ menuscan-tn/
 │   └── diagramme_er.png
 │
 ├── 03_generateur/                ← phase 2 : jeu de démonstration ; phase 9 : code du générateur (décision D-30)
-│   ├── demo_data/                (jeu de démonstration en Parquet, phase 2)
+│   ├── README.md, creer_demo.py  (extraction de la démonstration, phase 2)
+│   ├── demo_data/                (jeu de démonstration en Parquet et manifeste, phase 2)
 │   └── gen_part1.py … gen_part5_export.py, generer_menuscan.py, meta.py   (publiés en phase 9)
 │
 ├── 04_ingestion/                 ← phase 3 : chargement de la couche brute

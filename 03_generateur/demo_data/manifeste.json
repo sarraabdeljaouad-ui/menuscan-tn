@@ -1,0 +1,135 @@
+{
+  "source": "Release v1.1-donnees, couche donnees_reference",
+  "graine": 2027,
+  "periode_activite": [
+    "2026-01-01",
+    "2026-06-30"
+  ],
+  "etablissements": [
+    "ETB0005",
+    "ETB0019",
+    "ETB0057",
+    "ETB0071",
+    "ETB0075",
+    "ETB0110",
+    "ETB0133",
+    "ETB0151",
+    "ETB0173",
+    "ETB0178",
+    "ETB0184",
+    "ETB0185",
+    "ETB0193",
+    "ETB0205",
+    "ETB0206",
+    "ETB0208",
+    "ETB0216",
+    "ETB0240",
+    "ETB0260",
+    "ETB0279"
+  ],
+  "formules": {
+    "ETB0005": "FRM02",
+    "ETB0019": "FRM03",
+    "ETB0057": "FRM02",
+    "ETB0071": "FRM01",
+    "ETB0075": "FRM01",
+    "ETB0110": "FRM01",
+    "ETB0133": "FRM02",
+    "ETB0151": "FRM01",
+    "ETB0173": "FRM03",
+    "ETB0178": "FRM01",
+    "ETB0184": "FRM03",
+    "ETB0185": "FRM02",
+    "ETB0193": "FRM02",
+    "ETB0205": "FRM02",
+    "ETB0206": "FRM01",
+    "ETB0208": "FRM02",
+    "ETB0216": "FRM02",
+    "ETB0240": "FRM03",
+    "ETB0260": "FRM03",
+    "ETB0279": "FRM01"
+  },
+  "parrains_mis_a_vide": 1,
+  "tables": {
+    "abonnements": {
+      "lignes": 23,
+      "sha256": "5f8a3eb20a8048b1bbd5c42770cdb02b587fc00b1ed3fc8debc2ef49b1ab6d0d"
+    },
+    "articles": {
+      "lignes": 527,
+      "sha256": "3b425d1a2f7ad59bafa02286745186d75d8773d9712cbcab82155f6954ea9f91"
+    },
+    "articles_prix_historique": {
+      "lignes": 736,
+      "sha256": "f52d14cab8b744b6df2747e99f3980720ed1033d3c61287fe91f7b864fac6bc3"
+    },
+    "campagnes_marketing": {
+      "lignes": 134,
+      "sha256": "3e8f543bd6e9a720b5fbfb14602c2944815a72705f6c0c02be1b5f45003c1062"
+    },
+    "canaux_acquisition": {
+      "lignes": 5,
+      "sha256": "814ee9e62c99b73cbb2a869fb4b9e2753b551a6eb482d60540da31d3ee19c065"
+    },
+    "categories_menu": {
+      "lignes": 135,
+      "sha256": "562071ce0a4d883b3410eade4661b6210cc045d2d975c18e65f370ccb86bbecb"
+    },
+    "commandes": {
+      "lignes": 3919,
+      "sha256": "02af2518c344210aba261b14c30513dd7153603d6e63551ea30ca6638e2f4c1d"
+    },
+    "dim_calendrier": {
+      "lignes": 1096,
+      "sha256": "308dcfd2996a48c9c3912adb81dd7df5675d0bce63723d4bcfdfc4f426e7ddf4"
+    },
+    "etablissements": {
+      "lignes": 20,
+      "sha256": "25c71228f7e427b24567691f6eb887735c75029cc9e303a12c9165cb322038f5"
+    },
+    "evenements": {
+      "lignes": 49995,
+      "sha256": "a12518dff0084a5763d9b8c4b1e6933960ee16450e66fed68730001ebf30959e"
+    },
+    "factures": {
+      "lignes": 254,
+      "sha256": "d02e9db4b68dd906e9092b31e7c4cc75e891fb257ef6748901e6562932177885"
+    },
+    "formules": {
+      "lignes": 3,
+      "sha256": "1bfcea95276dcdff4cd2b67435aeff7e3f76b8e83e5762f5aa3741e4ee8fdfc9"
+    },
+    "lignes_commande": {
+      "lignes": 8814,
+      "sha256": "37cf848f0fbea7ef849139eb90b250af87f049d846029289a6a4c9c45f42a427"
+    },
+    "marketing_depenses_quotidiennes": {
+      "lignes": 548,
+      "sha256": "c67248e5368f91102a6ee90ef90b9687b03397c35f2d7709bd984a9cbb9c987c"
+    },
+    "paiements": {
+      "lignes": 260,
+      "sha256": "8c1a40b96919067ad53edab84b1eebce235b0718008cd534d6e1610bda17746f"
+    },
+    "prospects": {
+      "lignes": 358,
+      "sha256": "b36f42b94a4790597ead8e3eb2bad1b330136e5bb6aaec5433c2bb03b152c2e1"
+    },
+    "ref_villes": {
+      "lignes": 8,
+      "sha256": "b87878d9a6f73511fb0c1578066758c793294c9f026d1b670bed775f320a5037"
+    },
+    "sessions": {
+      "lignes": 8717,
+      "sha256": "59a4c75c5f82eacd27d08404c885f2618888b8a6daf8d1193a56e3fdd23fa203"
+    },
+    "tables_salle": {
+      "lignes": 367,
+      "sha256": "7c13dbcabacd4945cd7ad7d3aad577102becc5a6a5d0a2460decb0b90014b6b1"
+    },
+    "tickets_support": {
+      "lignes": 75,
+      "sha256": "06b2cfbb041be8f280e0e53cc18310052a4ee713eb5363790fc343e1ee017ebc"
+    }
+  }
+}

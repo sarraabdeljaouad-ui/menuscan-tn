@@ -46,7 +46,7 @@ flowchart LR
 |---|---|---|
 | 0. Cadrage | Dossier de cadrage, pilotage, analyse des sources, gouvernance des données, recette | Terminée (validée sans réserve le 24/11/2026) |
 | 1. Environnement et application | Docker, base applicative, applications client et équipe, QR codes ; extensions (lots 0 à 3 : service en salle, gestion du menu et des tables, avis, clôture de la journée) | Terminée (validée le 24/11/2026 ; extensions validées le 25/11/2026) |
-| 2. Données | Reproductibilité du générateur, jeu public v1.1, jeu de démonstration | En cours (T2.1 terminée le 25/11/2026) |
+| 2. Données | Reproductibilité du générateur, jeu public v1.1, jeu de démonstration | Terminée (25/11/2026) |
 | 3. Ingestion | Chargement des 124 fichiers bruts | À venir |
 | 4. Entrepôt dbt | Nettoyage, sessions, modèle en étoile, tests | À venir |
 | 5. Orchestration | DAG Airflow | À venir |
@@ -57,9 +57,9 @@ flowchart LR
 
 ## Données
 
-- **Dans ce dépôt (phase 2) :** le jeu de démonstration (20 établissements sur 6 mois, au format Parquet) et le générateur.
+- **Dans ce dépôt (phase 2) :** le jeu de démonstration (20 établissements sur 6 mois, au format Parquet) dans `03_generateur/demo_data/`, et le script qui l'extrait. Le code du générateur sera publié en phase 9 (décision D-30).
 - **Jeu complet :** 403 établissements, 296 166 sessions, 1,6 million d'événements, 106 682 commandes, de 2024 à 2026. Il est disponible en téléchargement dans la page Releases du dépôt (fichier ZIP).
-- Le générateur recrée le jeu complet à l'identique : `python 03_generateur/generer_menuscan.py`.
+- Le générateur recrée le jeu complet à l'identique (relance vérifiée le 25/11/2026, note MS-DATA-NV2-001) ; son code sera publié en phase 9.
 
 ## Démarrage rapide
 
