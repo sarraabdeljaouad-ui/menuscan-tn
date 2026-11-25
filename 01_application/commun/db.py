@@ -53,7 +53,7 @@ def _lire_env():
     return env
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Connexion à la base de données…")
 def moteur():
     env = _lire_env()
     # URL.create échappe les caractères spéciaux du mot de passe (@, :, /, #...)
@@ -74,8 +74,10 @@ def _preparer(eng):
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
             c.execute(text(f"CREATE SEQUENCE IF NOT EXISTS {seq}"))
+            # Les identifiants ont une longueur fixe (préfixe + chiffres complétés de zéros) : leur plus grande valeur se lit
+            # dans l'index de la clé primaire, sans parcourir la table (1,6 million d'événements). Démarrage rapide, même à froid.
             c.execute(text(f"""SELECT setval('{seq}', GREATEST(
-                (SELECT COALESCE(MAX(CAST(SUBSTRING({col} FROM {len(pref) + 1}) AS BIGINT)), 0) FROM {table}),
+                COALESCE((SELECT CAST(SUBSTRING(MAX({col}) FROM {len(pref) + 1}) AS BIGINT) FROM {table}), 0),
                 (SELECT last_value FROM {seq}), 1))"""))
 
 
