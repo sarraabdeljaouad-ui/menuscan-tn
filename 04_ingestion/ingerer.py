@@ -15,6 +15,7 @@ Usage, depuis la racine du dépôt, environnement Python activé, Docker lancé 
 """
 import argparse
 import hashlib
+import os
 import io
 import csv
 import sys
@@ -57,6 +58,8 @@ TECHNIQUES = [("_lot_id", "BIGINT NOT NULL"), ("_fichier", "TEXT NOT NULL"), ("_
 
 
 def lire_env():
+    """Variables de connexion : fichier .env, puis variables d'environnement POSTGRES_* qui l'emportent
+    (dans les conteneurs Airflow, le serveur s'appelle postgres et écoute sur le port 5432)."""
     env = {}
     f = RACINE / ".env"
     if f.exists():
@@ -64,6 +67,7 @@ def lire_env():
             if "=" in ligne and not ligne.strip().startswith("#"):
                 k, v = ligne.split("=", 1)
                 env[k.strip()] = v.strip()
+    env.update({k: v for k, v in os.environ.items() if k.startswith("POSTGRES_")})
     return env
 
 

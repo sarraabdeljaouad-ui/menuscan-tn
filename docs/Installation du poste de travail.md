@@ -1,6 +1,6 @@
 # Installation du poste de travail
 
-**Référence :** MS-DATA-INS-001 · **Version :** 1.7 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-INS-001 · **Version :** 1.8 · **Date :** 26/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Ce guide prépare un poste Windows pour tout le projet. Les outils sont gratuits. PostgreSQL tourne dans Docker (décision D-17).
 
@@ -155,6 +155,17 @@ python 05_dbt/lancer_dbt.py debug
 ```
 
 La dernière ligne doit dire « All checks passed! ». La prise en main de dbt et toutes les commandes sont dans `05_dbt/README.md`. La base `menuscan_dwh` passe à environ 1 Go après le premier `build`.
+
+## 6 bis. Airflow (phase 5)
+
+Airflow tourne dans Docker, à côté de PostgreSQL. Il demande environ 16 Go de RAM sur le PC, dont la moitié est donnée par défaut à Docker Desktop.
+
+```powershell
+docker compose --profile airflow build
+docker compose --profile airflow up -d
+```
+
+Interface : http://localhost:8080. Sans `--profile airflow`, `docker compose up -d` démarre PostgreSQL seul, comme avant. Pas à pas et dépannage : `06_orchestration/README.md`.
 
 ## 7. Power BI Desktop
 

@@ -1,6 +1,6 @@
 # Arborescence du dépôt
 
-**Référence :** MS-DATA-ARB-001 · **Version :** 1.4 · **Date :** 25/11/2026 · **Auteure :** Sarra Abdeljaouad
+**Référence :** MS-DATA-ARB-001 · **Version :** 1.5 · **Date :** 26/11/2026 · **Auteure :** Sarra Abdeljaouad
 
 Le dépôt `menuscan-tn` suit les phases du projet : un dossier numéroté par phase, dans l'ordre de réalisation. Les dossiers des phases à venir sont créés au démarrage de chaque phase.
 
@@ -63,6 +63,9 @@ menuscan-tn/
 │   └── macros/                   (nettoyage, règles de rejet)
 │
 ├── 06_orchestration/             ← phase 5 : Airflow
+│   ├── Dockerfile                (Airflow 3.3.2 + environnement dbt séparé)
+│   ├── README.md                 (pas à pas et dépannage)
+│   ├── config/                   (création de la base airflow, adresse de connexion)
 │   └── dags/menuscan_chaine_complete.py
 │
 ├── 07_powerbi/                   ← phase 6 : rapports au format .pbip

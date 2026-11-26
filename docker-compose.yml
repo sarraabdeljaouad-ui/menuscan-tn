@@ -1,3 +1,35 @@
+# MenuScan TN : conteneurs du poste de travail.
+#   docker compose up -d                      -> PostgreSQL seul (application, entrepôt)
+#   docker compose --profile airflow up -d    -> PostgreSQL + Airflow (phase 5)
+# Airflow version allégée : LocalExecutor (ni Celery ni Redis), 3 conteneurs, métadonnées dans une base « airflow »
+# du conteneur PostgreSQL existant. Interface : http://localhost:8080 (accessible depuis ce PC seulement).
+
+x-airflow-commun: &airflow-commun
+  build: ./06_orchestration
+  image: menuscan-airflow:3.3.2
+  profiles: ["airflow"]
+  env_file: .env
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+    AIRFLOW__CORE__PARALLELISM: "4"
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: Africa/Tunis
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "True"     # pas de connexion : interface liée à 127.0.0.1
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:-menuscan-poste-local}
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: python /opt/airflow/config/url_base.py
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "True"
+    POSTGRES_HOST: postgres                                   # vus depuis les conteneurs, et non 127.0.0.1:5440
+    POSTGRES_PORT: "5432"
+  volumes:
+    - .:/opt/menuscan                                         # le dépôt : scripts, dbt, données
+    - ./06_orchestration/dags:/opt/airflow/dags
+    - ./06_orchestration/config:/opt/airflow/config
+    - ./06_orchestration/logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
 services:
   postgres:
     image: postgres:16
@@ -10,5 +42,46 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./02_oltp/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d menuscan_app"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  airflow-init:
+    <<: *airflow-commun
+    container_name: menuscan_airflow_init
+    command: ["bash", "-c", "python /opt/airflow/config/creer_base.py && airflow db migrate"]
+    restart: "no"
+
+  airflow-apiserver:
+    <<: *airflow-commun
+    container_name: menuscan_airflow_web
+    command: api-server
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-commun
+    container_name: menuscan_airflow_scheduler
+    command: scheduler
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-dag-processor:
+    <<: *airflow-commun
+    container_name: menuscan_airflow_dags
+    command: dag-processor
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
 volumes:
   pgdata:
