@@ -1,8 +1,8 @@
 # Rapport d'ingestion de la couche brute
 
-**Généré le :** 25/11/2026 à 14:48 par `04_ingestion/controler.py` · **Durée :** 10 s
+**Généré le :** 26/11/2026 à 14:21 par `04_ingestion/controler.py` · **Durée :** 20 s
 
-**Source :** `menuscan_dataset\donnees_brutes` · **Base :** `menuscan_dwh`, schéma `raw`
+**Source :** `menuscan_dataset/donnees_brutes` · **Base :** `menuscan_dwh`, schéma `raw`
 
 ## 1. Synthèse
 
@@ -83,5 +83,7 @@ Contrôle informatif : la couche brute contient volontairement des anomalies. Ce
 
 | Lot | Début | Chargés | Rechargés | Inchangés | En échec | Lignes écrites | Durée cumulée (s) |
 |---:|---|---:|---:|---:|---:|---:|---:|
-| 1 | 25/11/2026 14:32 | 124 | 0 | 0 | 0 | 2 015 451 | 47.4 |
-| 2 | 25/11/2026 14:33 | 0 | 0 | 124 | 0 | 0 | 0.1 |
+| 1 | 25/11/2026 13:32 | 124 | 0 | 0 | 0 | 2 015 451 | 47.4 |
+| 2 | 25/11/2026 13:33 | 0 | 0 | 124 | 0 | 0 | 0.1 |
+| 3 | 26/11/2026 14:17 | 0 | 0 | 124 | 0 | 0 | 0.1 |
+| 4 | 26/11/2026 14:21 | 0 | 0 | 124 | 0 | 0 | 0.1 |

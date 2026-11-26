@@ -5,7 +5,7 @@ Ordre des tâches (chacune attend la réussite de la précédente) :
 
 Chaque tâche lance le même script que celui qu'on lance à la main depuis la racine du dépôt :
 le DAG n'ajoute aucune logique de traitement, il enchaîne, journalise et s'arrête à la première erreur.
-Planification : tous les jours à 6 h, heure de Tunis. Un DAG est en pause à sa création : l'activer dans l'interface.
+Planification : tous les jours à minuit, heure de Tunis (la chaîne TuniShop tourne à 22 h sous SQL Server Agent). Un DAG est en pause à sa création : l'activer dans l'interface.
 Auteure : Sarra Abdeljaouad.
 """
 import os
@@ -27,7 +27,7 @@ def commande(script, *arguments):
 with DAG(
     dag_id="menuscan_chaine_complete",
     description="Ingestion, contrôle des volumes, dbt build, contrôle de l'entrepôt",
-    schedule="0 6 * * *",
+    schedule="0 0 * * *",
     start_date=pendulum.datetime(2026, 11, 1, tz="Africa/Tunis"),
     catchup=False,                     # pas de rattrapage des jours passés
     max_active_runs=1,                 # jamais deux chaînes en même temps sur la même base

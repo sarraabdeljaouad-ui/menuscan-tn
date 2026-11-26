@@ -49,7 +49,7 @@ flowchart LR
 | 2. Données | Reproductibilité du générateur, jeu public v1.1, jeu de démonstration | Terminée (25/11/2026) |
 | 3. Ingestion | Chargement des 124 fichiers bruts, contrôle des volumes | Terminée (validée le 25/11/2026) |
 | 4. Entrepôt dbt | Nettoyage, sessions, modèle en étoile, tests | Terminée (validée le 25/11/2026 : DQ-01 à DQ-27 à 0 violation, 99,91 % des anomalies retrouvées) |
-| 5. Orchestration | DAG Airflow | En cours (T5.1 terminée le 26/11/2026 : Airflow 3.3.2 et DAG de la chaîne complète) |
+| 5. Orchestration | DAG Airflow | En cours (T5.1 terminée ; T5.2, démonstration mois par mois, livrée le 26/11/2026) |
 | 6. Tableaux de bord | Rapports Startup et Établissement | À venir |
 | 7. Analyse et ML | Résiliation, sensibilité au prix, recommandations | À venir |
 | 8. Retour dans l'application | Scores et recommandations affichés | À venir |

@@ -66,7 +66,9 @@ menuscan-tn/
 │   ├── Dockerfile                (Airflow 3.3.2 + environnement dbt séparé)
 │   ├── README.md                 (pas à pas et dépannage)
 │   ├── config/                   (création de la base airflow, adresse de connexion)
-│   └── dags/menuscan_chaine_complete.py
+│   ├── dags/                     (chaîne quotidienne ; démonstration : menuscan_mois, menuscan_demo_36_mois)
+│   ├── demo/                     (livraison d'un mois, remise à zéro, comparaison des bases)
+│   └── rapport_demo.md           (résultat de la démonstration mois par mois)
 │
 ├── 07_powerbi/                   ← phase 6 : rapports au format .pbip
 │   ├── MenuScan_Startup.pbip

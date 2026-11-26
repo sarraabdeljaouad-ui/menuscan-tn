@@ -30,7 +30,7 @@ import pandas as pd
 import psycopg2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ingerer import RACINE, SOURCES, connexion, empreinte  # noqa: E402
+from ingerer import RACINE, SOURCES, connexion, empreinte, nom_base  # noqa: E402
 
 SEPARATEURS = {"csv": ",", "csv_fr": ";"}
 
@@ -174,7 +174,7 @@ def ecrire_rapport(chemin, source, volumes, rapprochement, lots, duree):
          "",
          f"**Généré le :** {datetime.now():%d/%m/%Y à %H:%M} par `04_ingestion/controler.py` · **Durée :** {duree:.0f} s",
          "",
-         f"**Source :** `{source.relative_to(RACINE) if source.is_relative_to(RACINE) else source}` · **Base :** `menuscan_dwh`, schéma `raw`",
+         f"**Source :** `{source.relative_to(RACINE) if source.is_relative_to(RACINE) else source}` · **Base :** `{nom_base()}`, schéma `raw`",
          "",
          "## 1. Synthèse",
          "",

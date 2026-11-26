@@ -42,6 +42,11 @@ models:
       +schema: qualite
       +materialized: table
 
+data_tests:
+  menuscan:
+    # error par défaut ; --vars '{severite_tests: warn}' pendant la démonstration mensuelle (données encore en transit)
+    +severity: "{{ var('severite_tests', 'error') }}"
+
 seeds:
   menuscan:
     +schema: referentiels

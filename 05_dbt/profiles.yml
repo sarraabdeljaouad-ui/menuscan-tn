@@ -9,7 +9,7 @@ menuscan:
       port: "{{ env_var('POSTGRES_PORT', '5440') | as_number }}"
       user: "{{ env_var('POSTGRES_USER', 'menuscan') }}"
       password: "{{ env_var('POSTGRES_PASSWORD') }}"
-      dbname: menuscan_dwh
+      dbname: "{{ env_var('MENUSCAN_DWH', 'menuscan_dwh') }}"   # autre base : démonstration mensuelle (phase 5)
       schema: staging
       threads: 4
       connect_timeout: 10

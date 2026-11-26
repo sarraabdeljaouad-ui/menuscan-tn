@@ -67,7 +67,8 @@ def moteur():
     e = os.environ
     # URL.create encode le mot de passe : il peut contenir @, !, : ou / sans casser l'adresse
     url = URL.create("postgresql+psycopg2", username=e["POSTGRES_USER"], password=e["POSTGRES_PASSWORD"],
-                     host=e.get("POSTGRES_HOST", "127.0.0.1"), port=int(e.get("POSTGRES_PORT", "5440")), database="menuscan_dwh")
+                     host=e.get("POSTGRES_HOST", "127.0.0.1"), port=int(e.get("POSTGRES_PORT", "5440")),
+                     database=e.get("MENUSCAN_DWH", "menuscan_dwh"))
     return create_engine(url, connect_args={"connect_timeout": 10})
 
 

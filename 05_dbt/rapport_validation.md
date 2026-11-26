@@ -1,6 +1,6 @@
 # Rapport de validation de l'entrepôt
 
-**Généré le :** 25/11/2026 à 21:39 par `05_dbt/controler_entrepot.py`, après `dbt build`.
+**Généré le :** 26/11/2026 à 14:24 par `05_dbt/controler_entrepot.py`, après `dbt build`.
 
 ## 1. Anomalies retrouvées (jalon J5)
 
@@ -44,6 +44,10 @@ Une anomalie est retrouvée si sa valeur a été corrigée pour sa règle (`qual
 | DQ-38 | champ_obligatoire_vide | commandes | 517 | 517 | 100,0 % |
 | DQ-38 | champ_obligatoire_vide | etablissements | 4 | 4 | 100,0 % |
 | DQ-38 | champ_obligatoire_vide | tickets_support | 10 | 10 | 100,0 % |
+
+*Corrigé absent de ce poste (non publié, décision D-16) : la mesure ci-dessus est celle du dernier poste qui l'avait.*
+
+*Corrigé absent de ce poste (non publié, décision D-16) : la mesure ci-dessus est celle du dernier poste qui l'avait.*
 
 *Corrigé absent de ce poste (non publié, décision D-16) : la mesure ci-dessus est celle du dernier poste qui l'avait.*
 

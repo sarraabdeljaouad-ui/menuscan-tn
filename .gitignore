@@ -14,6 +14,7 @@ solutions/
 
 # dbt
 05_dbt/target/
+05_dbt/target_demo/
 05_dbt/logs/
 05_dbt/dbt_packages/
 
