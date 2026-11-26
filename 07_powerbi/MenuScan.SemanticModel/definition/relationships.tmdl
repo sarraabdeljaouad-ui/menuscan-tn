@@ -1,0 +1,128 @@
+relationship fait_session_etablissement_id
+	fromColumn: fait_session.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_session_table_id
+	fromColumn: fait_session.table_id
+	toColumn: dim_table.table_id
+
+relationship fait_session_formule_id
+	fromColumn: fait_session.formule_id
+	toColumn: dim_formule.formule_id
+
+relationship fait_session_date_id
+	fromColumn: fait_session.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_session_heure
+	fromColumn: fait_session.heure
+	toColumn: dim_heure.heure
+
+relationship fait_commande_etablissement_id
+	fromColumn: fait_commande.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_commande_table_id
+	fromColumn: fait_commande.table_id
+	toColumn: dim_table.table_id
+
+relationship fait_commande_date_id
+	fromColumn: fait_commande.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_commande_heure
+	fromColumn: fait_commande.heure
+	toColumn: dim_heure.heure
+
+relationship fait_ligne_commande_etablissement_id
+	fromColumn: fait_ligne_commande.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_ligne_commande_table_id
+	fromColumn: fait_ligne_commande.table_id
+	toColumn: dim_table.table_id
+
+relationship fait_ligne_commande_prix_id
+	fromColumn: fait_ligne_commande.prix_id
+	toColumn: dim_article.prix_id
+
+relationship fait_ligne_commande_date_id
+	fromColumn: fait_ligne_commande.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_ligne_commande_heure
+	fromColumn: fait_ligne_commande.heure
+	toColumn: dim_heure.heure
+
+relationship fait_abonnement_mensuel_etablissement_id
+	fromColumn: fait_abonnement_mensuel.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_abonnement_mensuel_formule_id
+	fromColumn: fait_abonnement_mensuel.formule_id
+	toColumn: dim_formule.formule_id
+
+relationship fait_abonnement_mensuel_date_id
+	fromColumn: fait_abonnement_mensuel.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_facturation_etablissement_id
+	fromColumn: fait_facturation.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_facturation_formule_id
+	fromColumn: fait_facturation.formule_id
+	toColumn: dim_formule.formule_id
+
+relationship fait_facturation_date_id
+	fromColumn: fait_facturation.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_marketing_canal_id
+	fromColumn: fait_marketing.canal_id
+	toColumn: dim_canal.canal_id
+
+relationship fait_marketing_ville_id
+	fromColumn: fait_marketing.ville_id
+	toColumn: dim_ville.ville_id
+
+relationship fait_marketing_date_id
+	fromColumn: fait_marketing.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_prospect_canal_id
+	fromColumn: fait_prospect.canal_id
+	toColumn: dim_canal.canal_id
+
+relationship fait_prospect_ville_id
+	fromColumn: fait_prospect.ville_id
+	toColumn: dim_ville.ville_id
+
+relationship fait_prospect_date_id
+	fromColumn: fait_prospect.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_ticket_support_etablissement_id
+	fromColumn: fait_ticket_support.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_ticket_support_date_id
+	fromColumn: fait_ticket_support.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_vue_article_etablissement_id
+	fromColumn: fait_vue_article.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship fait_vue_article_prix_id
+	fromColumn: fait_vue_article.prix_id
+	toColumn: dim_article.prix_id
+
+relationship fait_vue_article_date_id
+	fromColumn: fait_vue_article.date_id
+	toColumn: dim_date.date_id
+
+relationship fait_vue_article_heure
+	fromColumn: fait_vue_article.heure
+	toColumn: dim_heure.heure
+

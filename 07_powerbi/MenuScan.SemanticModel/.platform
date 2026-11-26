@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "MenuScan"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "b59454f1-101d-c6e0-15d0-68a920453d3b"
+  }
+}

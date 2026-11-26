@@ -1,0 +1,357 @@
+cultureInfo fr-FR
+
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "dim_etablissement.trimestre_cohorte": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dim_etablissement",
+			          "ConceptualProperty": "trimestre_cohorte"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Cohorte": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dim_etablissement.nom_etablissement": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dim_etablissement",
+			          "ConceptualProperty": "nom_etablissement"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Établissement (Essentiel)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        },
+			        {
+			          "Établissement": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dim_etablissement.formule_actuelle": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dim_etablissement",
+			          "ConceptualProperty": "formule_actuelle"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Formule": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.k06_rétention_de_cohorte": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "K06 Rétention de cohorte"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Rétention": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.dépenses_marketing_ttc": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "Dépenses marketing TTC"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Dépense (DT)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.clics": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "Clics"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Clics": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.k11_coût_par_clic": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "K11 Coût par clic"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Coût par clic": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.k11_taux_de_clic": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "K11 Taux de clic"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Taux de clic": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.signatures_campagne": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "Signatures (campagne)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Signatures": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.k12_essentiel": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "K12 (Essentiel)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Sessions / table / jour (K12)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.sessions_essentiel": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "Sessions (Essentiel)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Sessions": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.tables_essentiel": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "Tables (Essentiel)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Tables": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.score_k19": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "Score K19"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Score": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_mesures.mrr_actuel_de_létablissement": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Mesures",
+			          "ConceptualProperty": "MRR actuel de l'établissement"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "MRR (DT HT)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fait_marketing.campagne_id": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fait_marketing",
+			          "ConceptualProperty": "campagne_id"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Campagne": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dim_canal.nom_canal": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dim_canal",
+			          "ConceptualProperty": "nom_canal"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Canal": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+

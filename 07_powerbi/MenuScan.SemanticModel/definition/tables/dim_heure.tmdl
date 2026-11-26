@@ -1,0 +1,43 @@
+table dim_heure
+	lineageTag: e3eda4dc-f993-450b-8887-c15d47a6fa0d
+
+	column heure
+		dataType: int64
+		lineageTag: ce2088da-3e36-463f-9a0a-9454e028c6cb
+		summarizeBy: none
+		sourceColumn: heure
+
+	column libelle
+		dataType: string
+		lineageTag: 07fdd05e-ed7b-4226-8af5-d52c6b6b0e26
+		summarizeBy: none
+		sourceColumn: libelle
+		sortByColumn: heure
+
+	column moment_journee
+		dataType: string
+		lineageTag: 41349cd9-836e-4767-8c9f-442f6cd0183e
+		summarizeBy: none
+		sourceColumn: moment_journee
+
+	column ordre_journee = MOD ( dim_heure[heure] - 6 + 24, 24 )
+		dataType: int64
+		formatString: 0
+		lineageTag: 6c53456d-897e-496e-8b50-8c0a87b28be6
+		summarizeBy: none
+
+	column libelle_court = FORMAT ( dim_heure[heure], "0" ) & " h"
+		dataType: string
+		lineageTag: 8da7b0bd-d1dd-469f-a309-e4cfd6da7d09
+		summarizeBy: none
+		sortByColumn: ordre_journee
+
+	partition dim_heure = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "dim_heure"]}[Data]
+				in
+					Donnees
+

@@ -1,0 +1,73 @@
+table fait_marketing
+	lineageTag: 0252e384-56a0-4336-8cdf-bd7bd3fa559c
+
+	column depense_id
+		dataType: string
+		lineageTag: f7c5e228-2ab3-4ed6-ba06-a1dce2847086
+		summarizeBy: none
+		sourceColumn: depense_id
+
+	column campagne_id
+		dataType: string
+		lineageTag: ea9bc9c5-6a81-4a58-96e5-0e2f8f76caa7
+		summarizeBy: none
+		sourceColumn: campagne_id
+
+	column canal_id
+		dataType: string
+		isHidden
+		lineageTag: dd976dba-4e80-4f23-9ffd-d8c4ec22e23a
+		summarizeBy: none
+		sourceColumn: canal_id
+
+	column ville_id
+		dataType: string
+		isHidden
+		lineageTag: 4f781b1d-455c-4607-9f59-c93065328c90
+		summarizeBy: none
+		sourceColumn: ville_id
+
+	column date_id
+		dataType: int64
+		isHidden
+		lineageTag: 7fef007f-5ef5-4d7d-b111-543e90926fdd
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column depense_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: a8f3d154-b937-4a62-a0a5-848c64a0bca3
+		summarizeBy: sum
+		sourceColumn: depense_ttc
+
+	column impressions
+		dataType: int64
+		formatString: #,0
+		lineageTag: f21d643e-a4e1-4be9-9353-2d61fd60e8bf
+		summarizeBy: sum
+		sourceColumn: impressions
+
+	column clics
+		dataType: int64
+		formatString: #,0
+		lineageTag: 5ea083d3-c44a-4037-a0d8-9276edf0d163
+		summarizeBy: sum
+		sourceColumn: clics
+
+	column nb_prospects
+		dataType: int64
+		formatString: #,0
+		lineageTag: 775b1ab1-6b3e-410c-bfa2-fca74cae1ee9
+		summarizeBy: sum
+		sourceColumn: nb_prospects
+
+	partition fait_marketing = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "fait_marketing"]}[Data]
+				in
+					Donnees
+

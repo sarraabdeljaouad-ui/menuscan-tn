@@ -1,0 +1,131 @@
+table fait_ligne_commande
+	lineageTag: bdeb208d-64ad-43a2-bd91-60d73ba22639
+
+	column ligne_id
+		dataType: string
+		lineageTag: 6edbe13b-b373-4652-a408-d51ce29f7305
+		summarizeBy: none
+		sourceColumn: ligne_id
+
+	column commande_id
+		dataType: string
+		lineageTag: 256673d0-51b1-4d0b-9db0-f9d18c54a3c0
+		summarizeBy: none
+		sourceColumn: commande_id
+
+	column session_id
+		dataType: string
+		lineageTag: 86fb409c-a3c1-4e37-a801-06961290568a
+		summarizeBy: none
+		sourceColumn: session_id
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		lineageTag: 196fa3d5-9f72-445c-ac25-a899975c3f7a
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column table_id
+		dataType: string
+		isHidden
+		lineageTag: 495a0945-2150-4c46-bd6a-933247ce16a5
+		summarizeBy: none
+		sourceColumn: table_id
+
+	column article_id
+		dataType: string
+		lineageTag: 6aaca669-d591-4c75-bd97-a32cf6c99b87
+		summarizeBy: none
+		sourceColumn: article_id
+
+	column prix_id
+		dataType: string
+		isHidden
+		lineageTag: b804805e-d404-4fda-89b8-9c133f5a31d6
+		summarizeBy: none
+		sourceColumn: prix_id
+
+	column date_id
+		dataType: int64
+		isHidden
+		lineageTag: d73884da-e855-422a-9ee2-37b7b7bd06ef
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column heure
+		dataType: int64
+		isHidden
+		lineageTag: d6635ca8-f67c-4419-a32d-9a35efd30c6b
+		summarizeBy: none
+		sourceColumn: heure
+
+	column statut_commande
+		dataType: string
+		lineageTag: bf7ce1cf-1c15-408e-88d9-c9a1dee91acc
+		summarizeBy: none
+		sourceColumn: statut_commande
+
+	column est_servie
+		dataType: boolean
+		lineageTag: f44c4967-efbd-4aed-af12-f1584326863c
+		summarizeBy: none
+		sourceColumn: est_servie
+
+	column quantite
+		dataType: int64
+		formatString: #,0
+		lineageTag: 97a0b50b-1d40-4683-936a-be7fd89eb907
+		summarizeBy: sum
+		sourceColumn: quantite
+
+	column prix_unitaire_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 276b56a2-fe71-4d7d-a9ce-0aaa3b0b4810
+		summarizeBy: sum
+		sourceColumn: prix_unitaire_ttc
+
+	column montant_ligne_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 881c4263-d981-41c1-ac5b-ae3bdba96f79
+		summarizeBy: sum
+		sourceColumn: montant_ligne_ttc
+
+	column prix_catalogue_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 0d9c5850-59c6-444e-a4a3-178102a1ea0b
+		summarizeBy: sum
+		sourceColumn: prix_catalogue_ttc
+
+	column prix_conforme
+		dataType: boolean
+		lineageTag: f14f72d8-f96d-4cee-957c-40c36a69415d
+		summarizeBy: none
+		sourceColumn: prix_conforme
+
+	column cout_matiere_estime_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 2e0b922f-231e-43e2-846d-a3cbbb7e970a
+		summarizeBy: sum
+		sourceColumn: cout_matiere_estime_ttc
+
+	column marge_brute_estimee_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 87b02dfe-3225-4018-b3e7-6b30465db156
+		summarizeBy: sum
+		sourceColumn: marge_brute_estimee_ttc
+
+	partition fait_ligne_commande = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "fait_ligne_commande"]}[Data]
+				in
+					Donnees
+

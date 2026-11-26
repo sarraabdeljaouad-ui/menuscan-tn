@@ -1,0 +1,136 @@
+table fait_session
+	lineageTag: bb489ca9-9db7-4b31-a9c1-4d834d6497a1
+
+	column session_id
+		dataType: string
+		lineageTag: 9acfc44d-0eb0-4c5a-bb2d-61def4e43324
+		summarizeBy: none
+		sourceColumn: session_id
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		lineageTag: 39adb174-fbc7-46a1-8dd2-c4c1b801fb19
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column table_id
+		dataType: string
+		isHidden
+		lineageTag: 46c3f994-396d-409a-ad00-e472c8c9e055
+		summarizeBy: none
+		sourceColumn: table_id
+
+	column formule_id
+		dataType: string
+		isHidden
+		lineageTag: ca974ab7-7fd5-4989-b510-61806b82e582
+		summarizeBy: none
+		sourceColumn: formule_id
+
+	column date_id
+		dataType: int64
+		isHidden
+		lineageTag: 9cdf607b-ac6d-4a22-99e2-b96a949e07e5
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column heure
+		dataType: int64
+		isHidden
+		lineageTag: 4fb77649-06bb-42e8-b4a5-24a882b78e07
+		summarizeBy: none
+		sourceColumn: heure
+
+	column debut_session
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3c35c215-1ec3-406f-bc64-e60fa50c9b6c
+		summarizeBy: none
+		sourceColumn: debut_session
+
+	column fin_session
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: fc9a3eec-3bea-49f6-b2dd-31d561a61bc3
+		summarizeBy: none
+		sourceColumn: fin_session
+
+	column duree_secondes
+		dataType: int64
+		formatString: #,0
+		lineageTag: c8c2c141-1e11-4ae4-84f1-894e26a29bf8
+		summarizeBy: sum
+		sourceColumn: duree_secondes
+
+	column appareil
+		dataType: string
+		lineageTag: 209e7094-76d5-410d-83c1-4ba1134dc693
+		summarizeBy: none
+		sourceColumn: appareil
+
+	column langue
+		dataType: string
+		lineageTag: a6beb366-3baf-4445-bef6-42fafeb9f4e1
+		summarizeBy: none
+		sourceColumn: langue
+
+	column nb_evenements
+		dataType: int64
+		formatString: #,0
+		lineageTag: 89c1e67f-74b9-43f5-a567-e13f0345219e
+		summarizeBy: sum
+		sourceColumn: nb_evenements
+
+	column nb_articles_vus
+		dataType: int64
+		formatString: #,0
+		lineageTag: d2e75794-c882-4fdd-8d97-1a35b269d3b9
+		summarizeBy: sum
+		sourceColumn: nb_articles_vus
+
+	column a_vu_menu
+		dataType: boolean
+		lineageTag: a80fd6b3-176a-4fd9-8dc9-2ddf5367e64c
+		summarizeBy: none
+		sourceColumn: a_vu_menu
+
+	column a_vu_article
+		dataType: boolean
+		lineageTag: a17fd215-7bfc-47a3-897d-8da2ce9aeaaf
+		summarizeBy: none
+		sourceColumn: a_vu_article
+
+	column a_ajoute_panier
+		dataType: boolean
+		lineageTag: c50ba3ab-6e65-47db-b6ec-e4adc54b6ac7
+		summarizeBy: none
+		sourceColumn: a_ajoute_panier
+
+	column a_commande
+		dataType: boolean
+		lineageTag: 11b3798f-2665-4bef-b55f-6ce9e416d132
+		summarizeBy: none
+		sourceColumn: a_commande
+
+	column commande_id
+		dataType: string
+		lineageTag: 3a8e210c-cca6-407c-b159-6a98f1f7c1d0
+		summarizeBy: none
+		sourceColumn: commande_id
+
+	column commande_non_recue
+		dataType: boolean
+		lineageTag: 63345d4a-11b6-477a-b541-aa1fd6354673
+		summarizeBy: none
+		sourceColumn: commande_non_recue
+
+	partition fait_session = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "fait_session"]}[Data]
+				in
+					Donnees
+

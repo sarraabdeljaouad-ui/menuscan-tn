@@ -1,0 +1,308 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 2435.6261601305378,
+            "y": 684.52573962931888
+          },
+          "nodeIndex": "_Mesures",
+          "nodeLineageTag": "f5b48378-fafc-431b-8f38-d4b5c5d957db",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1369.4075019267948,
+            "y": 16.709486276776374
+          },
+          "nodeIndex": "dim_article",
+          "nodeLineageTag": "162342f2-dcc1-4c10-b8ee-c98281832f43",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 266.83316950783569,
+            "y": 883.87965648660634
+          },
+          "nodeIndex": "dim_canal",
+          "nodeLineageTag": "f2567d93-1c98-445c-b54f-eb9a70d23bce",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 800.92913253940026,
+            "y": 561.96941813808382
+          },
+          "nodeIndex": "dim_date",
+          "nodeLineageTag": "00dc5ed8-866e-4e01-aa71-3656cea4aee1",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 958.51407830051107,
+            "y": 1043.7980627748314
+          },
+          "nodeIndex": "dim_etablissement",
+          "nodeLineageTag": "41ffb1e4-4071-4052-b11e-db2c2425bca5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2028.2278564559531,
+            "y": 0
+          },
+          "nodeIndex": "dim_formule",
+          "nodeLineageTag": "76dfcd89-81e6-4351-9ba9-846e6bb8b295",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 496.43046468325338,
+            "y": 24.222367213111283
+          },
+          "nodeIndex": "dim_heure",
+          "nodeLineageTag": "e3eda4dc-f993-450b-8887-c15d47a6fa0d",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1709.7241432995177,
+            "y": 674.73367174464715
+          },
+          "nodeIndex": "dim_table",
+          "nodeLineageTag": "8c51499a-482e-43fb-87fa-b12602c0f160",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 22.902675485235136,
+            "y": 993.3401326678312
+          },
+          "nodeIndex": "dim_ville",
+          "nodeLineageTag": "c8bf346c-5f83-4a18-93da-3b9522629366",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2843.0244638051217,
+            "y": 770.52573962931888
+          },
+          "nodeIndex": "Étapes commerciales",
+          "nodeLineageTag": "d17aeb62-0a14-4dd6-8f76-f1134c4d7aec",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3250.4227674797062,
+            "y": 770.52573962931888
+          },
+          "nodeIndex": "Étapes de session",
+          "nodeLineageTag": "dfe37580-2df0-4e8d-9115-4306517f92fb",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1790.1713675740061,
+            "y": 1046.2201961118803
+          },
+          "nodeIndex": "fait_abonnement_mensuel",
+          "nodeLineageTag": "fa55351a-54c0-4d3a-8379-da96e1ffcfd5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1196.570567182458,
+            "y": 471.42755616728135
+          },
+          "nodeIndex": "fait_commande",
+          "nodeLineageTag": "a4649247-7408-49b1-a2bb-320e9c935687",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1374.3427229372585,
+            "y": 788.64453163364362
+          },
+          "nodeIndex": "fait_facturation",
+          "nodeLineageTag": "7a3fd9fa-ffc0-4365-8a84-c297d599c4b1",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1612.3992118192054,
+            "y": 192.90502710789968
+          },
+          "nodeIndex": "fait_ligne_commande",
+          "nodeLineageTag": "bdeb208d-64ad-43a2-bd91-60d73ba22639",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 415.82864463674747,
+            "y": 406.05101184985881
+          },
+          "nodeIndex": "fait_marketing",
+          "nodeLineageTag": "0252e384-56a0-4336-8cdf-bd7bd3fa559c",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 511.51148803108367
+          },
+          "nodeIndex": "fait_prospect",
+          "nodeLineageTag": "df452ac4-556b-49ed-a64b-aea94323e3a8",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 21.928089754700181
+          },
+          "nodeIndex": "fait_session",
+          "nodeLineageTag": "bb489ca9-9db7-4b31-a9c1-4d834d6497a1",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1374.3427229372585,
+            "y": 1369.0514792586378
+          },
+          "nodeIndex": "fait_ticket_support",
+          "nodeLineageTag": "ed94113e-848d-426f-b1b2-624b011e4b71",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 953.57885729004727,
+            "y": 219.76339502732827
+          },
+          "nodeIndex": "fait_vue_article",
+          "nodeLineageTag": "2a1e8758-a174-4ca2-a537-61e880aaeff1",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3657.8210711542906,
+            "y": 770.52573962931888
+          },
+          "nodeIndex": "Mois écoulés",
+          "nodeLineageTag": "d8b5b1bc-b1f7-4b98-a391-7587223fa312",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4065.2193748288751,
+            "y": 770.52573962931888
+          },
+          "nodeIndex": "Pont MRR",
+          "nodeLineageTag": "8c2e8dbe-c9df-4106-9e26-dc0c2296f78c",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Toutes les tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Toutes les tables",
+  "defaultDiagram": "Toutes les tables"
+}

@@ -1,0 +1,144 @@
+table dim_article
+	lineageTag: 162342f2-dcc1-4c10-b8ee-c98281832f43
+
+	column prix_id
+		dataType: string
+		lineageTag: 7db1881c-c7e7-4b0c-96d1-b7dfe46d5664
+		summarizeBy: none
+		sourceColumn: prix_id
+
+	column article_id
+		dataType: string
+		lineageTag: 967f6f6c-2034-45c7-adba-419b491eed66
+		summarizeBy: none
+		sourceColumn: article_id
+
+	column etablissement_id
+		dataType: string
+		lineageTag: b01d4424-4809-4eda-83c1-5cb7d017d314
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column categorie_id
+		dataType: string
+		lineageTag: f9144ccc-6e68-402d-a298-6daa91b9b342
+		summarizeBy: none
+		sourceColumn: categorie_id
+
+	column nom_categorie
+		dataType: string
+		lineageTag: 76191ea7-200c-4f4d-9539-ea944d824b69
+		summarizeBy: none
+		sourceColumn: nom_categorie
+
+	column nom_article
+		dataType: string
+		lineageTag: 6362fd15-d721-4e19-9275-7d3f7650dd96
+		summarizeBy: none
+		sourceColumn: nom_article
+
+	column statut_article
+		dataType: string
+		lineageTag: aa9b12e0-0b23-4aab-a0e1-84e824064b87
+		summarizeBy: none
+		sourceColumn: statut_article
+
+	column date_ajout
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 3165fa4f-9632-4a31-8061-7902a7c33186
+		summarizeBy: none
+		sourceColumn: date_ajout
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column date_retrait
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b97e8bdc-b55e-43a8-bbbd-13178b59c379
+		summarizeBy: none
+		sourceColumn: date_retrait
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column valide_du
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: dec34bad-d7e5-4352-be0d-1c0963d23738
+		summarizeBy: none
+		sourceColumn: valide_du
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column valide_au
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: f780c430-3b12-40ea-83aa-1a0215920075
+		summarizeBy: none
+		sourceColumn: valide_au
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column prix_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: bc272f58-29f6-4d8a-958d-d424b0b5cb23
+		summarizeBy: sum
+		sourceColumn: prix_ttc
+
+		annotation SummarizationSetBy = Automatic
+
+	column motif_changement
+		dataType: string
+		lineageTag: ece9d09c-e05b-437b-bed5-6789eac0b28e
+		summarizeBy: none
+		sourceColumn: motif_changement
+
+	column est_prix_actuel
+		dataType: boolean
+		lineageTag: 097d811b-0a79-4444-91bc-70e549e33a0f
+		summarizeBy: none
+		sourceColumn: est_prix_actuel
+
+	column prix_precedent
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 836b3846-677e-4e7d-a7c7-d1b12ff4a6ac
+		summarizeBy: sum
+		sourceColumn: prix_precedent
+
+		annotation SummarizationSetBy = Automatic
+
+	column debut_version_precedente
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 61d1d304-0002-424c-b30e-6162e238a055
+		summarizeBy: none
+		sourceColumn: debut_version_precedente
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column taux_cout
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 476a6da9-e953-4739-9c02-0d6fe395a06e
+		summarizeBy: sum
+		sourceColumn: taux_cout
+
+		annotation SummarizationSetBy = Automatic
+
+	column statut_taux_cout
+		dataType: string
+		lineageTag: 24400a39-efb9-494a-a582-4539d5b8b871
+		summarizeBy: none
+		sourceColumn: statut_taux_cout
+
+	partition dim_article = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "dim_article"]}[Data]
+				in
+					Donnees
+

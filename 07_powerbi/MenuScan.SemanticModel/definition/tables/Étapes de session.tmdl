@@ -1,0 +1,22 @@
+table 'Étapes de session'
+	lineageTag: dfe37580-2df0-4e8d-9115-4306517f92fb
+
+	column etape
+		dataType: string
+		lineageTag: 1032bedd-b8ce-4f2a-a6c5-378d861900e0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [etape]
+		sortByColumn: ordre
+
+	column ordre
+		dataType: int64
+		lineageTag: bc6af740-7c1a-49b2-ba7b-9f5ab1d4b034
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ordre]
+
+	partition 'Étapes de session' = calculated
+		mode: import
+		source = DATATABLE ( "etape", STRING, "ordre", INTEGER, { { "Sessions (scans)", 1 }, { "Ajout au panier", 2 }, { "Commande envoyée", 3 } } )
+

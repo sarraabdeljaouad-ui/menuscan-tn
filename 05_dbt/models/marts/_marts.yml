@@ -314,3 +314,25 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_id
+  - name: fait_vue_article
+    description: "Fait vue d'article : fiches article ouvertes par établissement, article, jour et heure (vues et sessions)."
+    columns:
+      - name: prix_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_article')
+                field: prix_id
+      - name: etablissement_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_etablissement')
+                field: etablissement_id
+      - name: date_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id

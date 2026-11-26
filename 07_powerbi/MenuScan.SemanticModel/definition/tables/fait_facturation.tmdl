@@ -1,0 +1,175 @@
+table fait_facturation
+	lineageTag: 7a3fd9fa-ffc0-4365-8a84-c297d599c4b1
+
+	column facture_id
+		dataType: string
+		lineageTag: 22d0814f-1978-4ab9-bede-e1a17ef60f21
+		summarizeBy: none
+		sourceColumn: facture_id
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		lineageTag: 3625f97b-4169-4177-8802-593e8c3bb683
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column abonnement_id
+		dataType: string
+		lineageTag: 6d15d2d2-c4ab-4ab0-9a22-6cb8c68c7f7c
+		summarizeBy: none
+		sourceColumn: abonnement_id
+
+	column formule_id
+		dataType: string
+		isHidden
+		lineageTag: 8a3fb10f-532c-43aa-84df-994d68a8a136
+		summarizeBy: none
+		sourceColumn: formule_id
+
+	column type_facture
+		dataType: string
+		lineageTag: 1eb1eb6c-0cc4-4daf-8429-674b7a2c2534
+		summarizeBy: none
+		sourceColumn: type_facture
+
+	column date_id
+		dataType: int64
+		isHidden
+		lineageTag: 416f5fdf-4fc9-4c5c-ba7a-09bd7bf9807d
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column date_emission
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 572e0838-5880-4c95-a99b-13f4f7215fd4
+		summarizeBy: none
+		sourceColumn: date_emission
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column date_echeance
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: e38d0db3-2c79-4988-911d-07dc8a9a2031
+		summarizeBy: none
+		sourceColumn: date_echeance
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column periode_debut
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: c3e2e41c-7c68-4d1d-ba14-400bf121c3be
+		summarizeBy: none
+		sourceColumn: periode_debut
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column periode_fin
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8abc28af-2b63-4061-9c9a-e2c1acd5937a
+		summarizeBy: none
+		sourceColumn: periode_fin
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column montant_ht
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 6c2b7a78-3190-4c72-8b3f-c2997e517c87
+		summarizeBy: sum
+		sourceColumn: montant_ht
+
+	column remise_ht
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 1bd91228-7c0d-4439-b9ea-396cbbdec67a
+		summarizeBy: sum
+		sourceColumn: remise_ht
+
+	column motif_remise
+		dataType: string
+		lineageTag: a2581cbc-3d7c-4dbe-a02d-229960814a9d
+		summarizeBy: none
+		sourceColumn: motif_remise
+
+	column montant_net_ht
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 75a971a3-289b-4f5f-9def-45e3b7698c57
+		summarizeBy: sum
+		sourceColumn: montant_net_ht
+
+	column montant_tva
+		dataType: double
+		formatString: #,0.000
+		lineageTag: e5f35d1c-12d9-4f9c-be90-b73a80d9cb50
+		summarizeBy: sum
+		sourceColumn: montant_tva
+
+	column montant_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: fb0106c5-1fba-4030-a4ec-79162a7c5af3
+		summarizeBy: sum
+		sourceColumn: montant_ttc
+
+	column montant_encaisse_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: f2e1504e-eca5-41ca-9bd5-f3a1b2236f40
+		summarizeBy: sum
+		sourceColumn: montant_encaisse_ttc
+
+	column date_paiement
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 30b74cd3-535f-4a9a-8146-4785a144d97f
+		summarizeBy: none
+		sourceColumn: date_paiement
+
+	column mode_paiement
+		dataType: string
+		lineageTag: fe1564fd-298d-4e6a-985f-3771cce76112
+		summarizeBy: none
+		sourceColumn: mode_paiement
+
+	column nb_tentatives
+		dataType: int64
+		formatString: #,0
+		lineageTag: f1e9aaa3-eaaa-4417-a1be-3fdc5d6e911f
+		summarizeBy: sum
+		sourceColumn: nb_tentatives
+
+	column nb_echecs
+		dataType: int64
+		formatString: #,0
+		lineageTag: 74130f30-9fbb-44e6-ae59-cd0ef92c449e
+		summarizeBy: sum
+		sourceColumn: nb_echecs
+
+	column jours_retard
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4f11025a-71f9-484b-a68b-162307d238b0
+		summarizeBy: sum
+		sourceColumn: jours_retard
+
+	column statut_facture
+		dataType: string
+		lineageTag: 581525c8-fa59-4a23-8070-701c3ca92c3e
+		summarizeBy: none
+		sourceColumn: statut_facture
+
+	partition fait_facturation = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "fait_facturation"]}[Data]
+				in
+					Donnees
+

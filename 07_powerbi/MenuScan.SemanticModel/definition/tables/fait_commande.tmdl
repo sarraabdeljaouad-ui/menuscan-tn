@@ -1,0 +1,124 @@
+table fait_commande
+	lineageTag: a4649247-7408-49b1-a2bb-320e9c935687
+
+	column commande_id
+		dataType: string
+		lineageTag: cfb1346d-0c07-47af-8d4b-f26af81504d7
+		summarizeBy: none
+		sourceColumn: commande_id
+
+	column session_id
+		dataType: string
+		lineageTag: 4968bae8-8283-40d2-9dd8-5938d6df07dd
+		summarizeBy: none
+		sourceColumn: session_id
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		lineageTag: 3f84c859-6257-4076-adb9-ce35d668c772
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column table_id
+		dataType: string
+		isHidden
+		lineageTag: 29833ebc-cbf9-40b7-b570-6b43c45a3621
+		summarizeBy: none
+		sourceColumn: table_id
+
+	column date_id
+		dataType: int64
+		isHidden
+		lineageTag: 21286d3a-0715-4710-a0ba-a11820788471
+		summarizeBy: none
+		sourceColumn: date_id
+
+	column heure
+		dataType: int64
+		isHidden
+		lineageTag: ce6ae034-39e5-4ff1-9c55-c0d1db346a63
+		summarizeBy: none
+		sourceColumn: heure
+
+	column date_heure_commande
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 23752e02-5404-4a85-a6b1-e7fd3a7e60e2
+		summarizeBy: none
+		sourceColumn: date_heure_commande
+
+	column date_heure_service
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 75a8e543-7afb-4af6-bd77-882d5cfad3dd
+		summarizeBy: none
+		sourceColumn: date_heure_service
+
+	column delai_service_minutes
+		dataType: int64
+		formatString: #,0
+		lineageTag: 430bf8c3-cdc8-47a9-a47e-f5677aa5334d
+		summarizeBy: sum
+		sourceColumn: delai_service_minutes
+
+	column statut_commande
+		dataType: string
+		lineageTag: 006be476-5a88-42e2-8792-c13da25829f4
+		summarizeBy: none
+		sourceColumn: statut_commande
+
+	column est_servie
+		dataType: boolean
+		lineageTag: 56b81ccc-f856-4dab-a5cd-edcbef7167c0
+		summarizeBy: none
+		sourceColumn: est_servie
+
+	column mode_reglement
+		dataType: string
+		lineageTag: 520b654e-67cc-4841-b800-83c05a1fb509
+		summarizeBy: none
+		sourceColumn: mode_reglement
+
+	column motif_annulation
+		dataType: string
+		lineageTag: 180f477a-fa58-4ac4-abc2-821883673802
+		summarizeBy: none
+		sourceColumn: motif_annulation
+
+	column nb_lignes
+		dataType: int64
+		formatString: #,0
+		lineageTag: a4cf255e-0c5f-4a6a-91da-15ee5e6baf92
+		summarizeBy: sum
+		sourceColumn: nb_lignes
+
+	column nb_articles
+		dataType: int64
+		formatString: #,0
+		lineageTag: 04d77311-9df6-4335-9e39-34cded82b8e9
+		summarizeBy: sum
+		sourceColumn: nb_articles
+
+	column montant_total_ttc
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 772803ec-52a1-440d-b79e-d92ef4a7920e
+		summarizeBy: sum
+		sourceColumn: montant_total_ttc
+
+	column lignes_completes
+		dataType: boolean
+		lineageTag: c0d2c6f9-f00d-41a5-815c-079b6ba11b29
+		summarizeBy: none
+		sourceColumn: lignes_completes
+
+	partition fait_commande = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "marts", Item = "fait_commande"]}[Data]
+				in
+					Donnees
+

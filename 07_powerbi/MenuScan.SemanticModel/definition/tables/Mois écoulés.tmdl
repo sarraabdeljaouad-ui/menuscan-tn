@@ -1,0 +1,22 @@
+table 'Mois écoulés'
+	lineageTag: d8b5b1bc-b1f7-4b98-a391-7587223fa312
+
+	column libelle
+		dataType: string
+		lineageTag: 8bf1e34a-cf36-4173-b55a-ddc629c6807c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [libelle]
+		sortByColumn: mois
+
+	column mois
+		dataType: int64
+		lineageTag: 6076e207-324c-4cd1-a0cd-429ac48ac99e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [mois]
+
+	partition 'Mois écoulés' = calculated
+		mode: import
+		source = DATATABLE ( "libelle", STRING, "mois", INTEGER, { { "M0", 0 }, { "M3", 3 }, { "M6", 6 }, { "M9", 9 }, { "M12", 12 }, { "M18", 18 }, { "M24", 24 } } )
+
