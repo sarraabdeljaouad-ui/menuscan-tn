@@ -61,8 +61,10 @@ models:
                 to: ref('dim_etablissement')
                 field: etablissement_id
   - name: dim_article
-    description: "Dimension article à prix historisés (SCD2) : une ligne par article et par période de prix."
+    description: "Dimension article à prix historisés (SCD2) : une ligne par article et par période de prix ; taux de coût de la catégorie (hypothèse, A-16)."
     columns:
+      - name: taux_cout
+        data_tests: [not_null]
       - name: prix_id
         data_tests: [unique, not_null]
       - name: etablissement_id

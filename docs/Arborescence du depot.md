@@ -18,7 +18,7 @@ menuscan-tn/
 │
 ├── 00_cadrage/                   ← phase 0
 │   ├── 1-Cadrage et besoins métier/        (6 documents Word)
-│   ├── 2-Organisation et pilotage/         (plan de management, registre, classeur)
+│   ├── 2-Organisation et pilotage/         (plan de management, registre, classeur, demandes de changement)
 │   ├── 3-Analyse des données sources/      (notebook, cartographie, audit, plan d'intégration)
 │   ├── 4-Gouvernance des données/          (référentiel, qualité, modélisation, modèles)
 │   └── 6-Validation de la phase 0/         (recette, rapport, PV)

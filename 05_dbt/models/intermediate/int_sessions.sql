@@ -16,6 +16,7 @@ select
     max(horodatage) as fin_session,
     min(appareil) as appareil,
     min(langue) as langue,
+    bool_or(type_evenement = 'vue_menu') as a_vu_menu,
     count(*) filter (where type_evenement = 'vue_article') as nb_articles_vus,
     bool_or(type_evenement = 'ajout_panier') as a_ajoute_panier,
     bool_or(type_evenement = 'commande_envoyee') as a_commande,

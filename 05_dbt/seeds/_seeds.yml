@@ -18,3 +18,25 @@ seeds:
         description: Valeur de référence.
         data_tests:
           - not_null
+  - name: taux_cout_categorie
+    description: >
+      Taux de coût des matières par catégorie de plat (action A-16, décision D-28) : part du prix de vente TTC
+      consacrée aux ingrédients. Ce sont des hypothèses tirées de repères publiés pour la restauration (sources
+      américaines, consultées le 26/11/2026), et non des coûts réels de MenuScan ou de ses clients. Le taux s'applique
+      au prix TTC affiché : le taux de TVA de la consommation sur place n'a pas été confirmé. Une catégorie sans
+      source est marquée « hypothèse sans source ».
+    config:
+      column_types: {categorie: text, taux_cout: numeric, taux_bas: numeric, taux_haut: numeric, statut: text,
+                     source: text, url: text, consulte_le: date, justification: text}
+    columns:
+      - name: categorie
+        description: Nom de la catégorie de menu (les 20 catégories du jeu de données).
+        data_tests: [unique, not_null]
+      - name: taux_cout
+        description: Taux central retenu (milieu de la fourchette de la source).
+        data_tests: [not_null]
+      - name: statut
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['hypothèse', 'hypothèse sans source']
