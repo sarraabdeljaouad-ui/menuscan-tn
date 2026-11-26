@@ -1,6 +1,6 @@
 # Démonstration mensuelle : comparaison avec l'entrepôt chargé d'un coup
 
-**Généré le :** 26/11/2026 à 16:15 par `06_orchestration/demo/comparer_bases.py`.
+**Généré le :** 26/11/2026 à 16:08 par `06_orchestration/demo/comparer_bases.py`.
 
 Base `menuscan_demo` (36 mois livrés un par un) comparée à `menuscan_dwh` (36 mois chargés d'un coup), table par table : nombre de lignes et empreinte MD5 du contenu complet.
 

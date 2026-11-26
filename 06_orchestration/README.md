@@ -146,4 +146,14 @@ Docker n'est pas disponible sur l'environnement de test : la même architecture 
 | Exécution de 6 h (déclenchée à l'activation) et exécution manuelle | 5 tâches sur 5 réussies, chacune ; `dbt_build` : `Done. PASS=285 WARN=0 ERROR=0` |
 | Mémoire (`docker stats`, pendant `dbt_build`) | Airflow : 1,0 Go pour les 3 conteneurs ; PostgreSQL : 1,35 Go ; limite de Docker : 5,8 Go |
 
+### Démonstration mois par mois sur le poste de travail
+
+| Vérification | Résultat |
+|---|---|
+| `menuscan_demo_36_mois` | 38 tâches sur 38 réussies, en 44 min 21 (45 s par mois au début, 3 min 15 au dernier mois : le volume grandit avec l'activité) |
+| `menuscan_mois` | 36 exécutions réussies, dans l'ordre des mois ; dernier mois : `dbt_build` en 2 min 45, tests bloquants |
+| Comparaison finale | 20 tables sur 20 identiques à `menuscan_dwh` (`rapport_demo.md`) |
+
+**Erreurs corrigées :** l'heure des rapports écrits par les conteneurs était en UTC (ajout de `TZ: Africa/Tunis`).
+
 **Erreur corrigée au premier démarrage :** l'adresse de la base produite par `config/url_base.py` finissait par un saut de ligne, qu'Airflow gardait dans le nom de la base (`airflow\n`, introuvable) ; corrigé par `print(..., end="")`, vérifié avant et après sur l'environnement de test.

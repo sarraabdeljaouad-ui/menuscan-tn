@@ -14,6 +14,7 @@ x-airflow-commun: &airflow-commun
     AIRFLOW__CORE__LOAD_EXAMPLES: "False"
     AIRFLOW__CORE__PARALLELISM: "4"
     AIRFLOW__CORE__DEFAULT_TIMEZONE: Africa/Tunis
+    TZ: Africa/Tunis                                          # heure des rapports écrits par les scripts (sinon UTC)
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
     AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "True"     # pas de connexion : interface liée à 127.0.0.1
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:-menuscan-poste-local}
