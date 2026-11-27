@@ -96,3 +96,68 @@ def panel(avec_mois_a_scorer: bool = False):
     df["satisfaction_6m"] = df["somme_notes_6m"] / df["nb_notes_6m"]
     df["part_factures_retard_6m"] = (df["factures_retard_6m"] / df["factures_6m"]).fillna(0)
     return df.drop(columns=["somme_notes_6m", "nb_notes_6m", "sessions_formule_commande_3m"])
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Data mining (T7.3)
+# ---------------------------------------------------------------------------------------------------------------
+SQL_LIGNES_SERVIES = """
+select l.commande_id, l.etablissement_id, d.date, l.article_id, a.nom_article, a.nom_categorie, l.quantite
+from marts.fait_ligne_commande l
+join marts.dim_date d using (date_id)
+join marts.dim_article a on a.prix_id = l.prix_id
+where l.est_servie
+"""
+
+
+def lignes_servies() -> pd.DataFrame:
+    """Une ligne par article de commande servie, avec le nom du plat et sa catégorie (paniers des règles d'association)."""
+    df = chargement.lire(SQL_LIGNES_SERVIES)
+    df["date"] = pd.to_datetime(df["date"])
+    df["annee"] = df["date"].dt.year
+    return df
+
+
+SQL_VERSIONS_PRIX = """
+select article_id, etablissement_id, nom_categorie, nom_article, date_ajout, date_retrait,
+       valide_du, valide_au, prix_ttc, prix_precedent, motif_changement
+from marts.dim_article
+"""
+SQL_VENTES_ARTICLE_MOIS = """
+select l.article_id, date_trunc('month', d.date)::date as mois, sum(l.quantite) as q
+from marts.fait_ligne_commande l join marts.dim_date d using (date_id)
+where l.est_servie group by 1, 2
+"""
+
+
+def versions_prix() -> pd.DataFrame:
+    """Versions de prix des articles (SCD2 de dim_article)."""
+    v = chargement.lire(SQL_VERSIONS_PRIX)
+    for c in ["date_ajout", "date_retrait", "valide_du", "valide_au"]:
+        v[c] = pd.to_datetime(v[c])
+    return v
+
+
+def panel_prix(versions: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Une ligne par article proposé et par mois : prix en vigueur le 15 du mois et quantité vendue (zéros compris).
+
+    Un article compte pour un mois s'il était à la carte du premier au dernier jour du mois. On ne garde que les
+    cellules (établissement x catégorie x mois) qui ont au moins une vente : une cellule sans vente ne dit rien
+    sur la répartition entre articles.
+    """
+    v = versions_prix() if versions is None else versions
+    ventes = chargement.lire(SQL_VENTES_ARTICLE_MOIS)
+    ventes["mois"] = pd.to_datetime(ventes["mois"])
+    q = ventes.set_index(["article_id", "mois"])["q"]
+    morceaux = []
+    for m in pd.date_range(temporal_split.DEBUT_DONNEES, temporal_split.MOIS_A_SCORER, freq="MS"):
+        j = m + pd.Timedelta(days=14)
+        fin = m + pd.offsets.MonthEnd(0)
+        actif = ((v["valide_du"] <= j) & (v["valide_au"].isna() | (v["valide_au"] >= j))
+                 & (v["date_ajout"] <= m) & (v["date_retrait"].isna() | (v["date_retrait"] > fin)))
+        morceaux.append(v.loc[actif, ["article_id", "etablissement_id", "nom_categorie", "nom_article", "prix_ttc"]]
+                        .assign(mois=m))
+    p = pd.concat(morceaux, ignore_index=True)
+    p["q"] = q.reindex(pd.MultiIndex.from_frame(p[["article_id", "mois"]])).fillna(0).to_numpy()
+    p["cellule"] = p["etablissement_id"] + "|" + p["nom_categorie"] + "|" + p["mois"].dt.strftime("%Y-%m")
+    return p[p.groupby("cellule")["q"].transform("sum") > 0].reset_index(drop=True)

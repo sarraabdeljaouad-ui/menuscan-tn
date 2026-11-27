@@ -37,3 +37,5 @@ Thumbs.db
 **/.pbi/
 07_powerbi/**/diagramLayout.json
 07_powerbi/**/definition/cultures/
+
+.vscode/

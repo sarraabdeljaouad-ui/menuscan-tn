@@ -1,5 +1,15 @@
 # Historique des versions · 08_analyse_ml
 
+## 0.3 (27/11/2026)
+
+- T7.3 : `02_data_mining/01_regles_association` (EF-12) et `02_sensibilite_prix` (EF-11).
+- Module `data_mining.py` : lift ajusté par établissement et test de Poisson ; élasticité par Poisson conditionnelle et bootstrap.
+- `features.py` : `lignes_servies`, `versions_prix`, `panel_prix`.
+- Run MLflow `retenu_test_2026` : paramètre `variables` ajouté, comme pour les candidats.
+- README : procédure pour lancer et arrêter MLflow sous Windows.
+- Preuve `04_livrables/machine_learning/P01_MLflow_comparaison_runs.png`.
+- 12 tests (3 nouveaux sur `data_mining.py`).
+
 ## 0.2 (27/11/2026)
 
 - T7.2 : `03_machine_learning/01_preparation_datasets_ml` (jeu figé et dictionnaire) et `02_prediction_resiliation` (K19).

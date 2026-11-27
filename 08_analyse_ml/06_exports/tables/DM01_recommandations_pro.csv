@@ -1,0 +1,750 @@
+﻿etablissement_id;plat;rang;plat_recommande;motif
+ETB0003;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0003;Jus d'orange;2;Ojja merguez;règle catégorie
+ETB0003;Jus d'orange;3;Petit-déjeuner continental;règle catégorie
+ETB0003;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0003;Jus de fraise;2;Ojja merguez;règle catégorie
+ETB0003;Jus de fraise;3;Petit-déjeuner continental;règle catégorie
+ETB0003;Smoothie;1;Ojja merguez;règle catégorie
+ETB0003;Smoothie;2;Petit-déjeuner tunisien;règle catégorie
+ETB0003;Smoothie;3;Petit-déjeuner continental;règle catégorie
+ETB0003;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0003;Petit-déjeuner continental;2;Jus de fraise;règle catégorie
+ETB0003;Petit-déjeuner continental;3;Smoothie;règle catégorie
+ETB0003;Omelette;1;Jus de fraise;règle catégorie
+ETB0003;Omelette;2;Smoothie;règle catégorie
+ETB0003;Omelette;3;Jus d'orange;règle catégorie
+ETB0003;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0003;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0003;Petit-déjeuner tunisien;3;Smoothie;règle catégorie
+ETB0003;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0003;Ojja merguez;2;Jus de fraise;règle catégorie
+ETB0003;Ojja merguez;3;Smoothie;règle catégorie
+ETB0019;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0019;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0019;Milk-shake;1;Petit-déjeuner continental;règle catégorie
+ETB0019;Milk-shake;2;Ojja merguez;règle catégorie
+ETB0019;Milk-shake;3;Petit-déjeuner tunisien;règle catégorie
+ETB0019;Jus de citron;1;Petit-déjeuner continental;règle catégorie
+ETB0019;Jus de citron;2;Ojja merguez;règle catégorie
+ETB0019;Jus de citron;3;Petit-déjeuner tunisien;règle catégorie
+ETB0019;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0019;Jus de fraise;2;Petit-déjeuner continental;règle catégorie
+ETB0019;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0019;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0019;Ojja merguez;2;Milk-shake;règle catégorie
+ETB0019;Ojja merguez;3;Jus de fraise;règle catégorie
+ETB0019;Petit-déjeuner tunisien;1;Jus de fraise;règle plat
+ETB0019;Petit-déjeuner tunisien;2;Milk-shake;règle catégorie
+ETB0019;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
+ETB0019;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0019;Petit-déjeuner continental;2;Milk-shake;règle catégorie
+ETB0019;Petit-déjeuner continental;3;Jus de fraise;règle catégorie
+ETB0023;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0023;Jus d'orange;2;Ojja merguez;règle catégorie
+ETB0023;Jus d'orange;3;Omelette;règle catégorie
+ETB0023;Smoothie;1;Petit-déjeuner tunisien;règle catégorie
+ETB0023;Smoothie;2;Ojja merguez;règle catégorie
+ETB0023;Smoothie;3;Omelette;règle catégorie
+ETB0023;Milk-shake;1;Petit-déjeuner tunisien;règle catégorie
+ETB0023;Milk-shake;2;Ojja merguez;règle catégorie
+ETB0023;Milk-shake;3;Omelette;règle catégorie
+ETB0023;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0023;Jus de fraise;2;Ojja merguez;règle catégorie
+ETB0023;Jus de fraise;3;Omelette;règle catégorie
+ETB0023;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0023;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0023;Petit-déjeuner tunisien;3;Milk-shake;règle catégorie
+ETB0023;Omelette;1;Milk-shake;règle catégorie
+ETB0023;Omelette;2;Jus de fraise;règle catégorie
+ETB0023;Omelette;3;Smoothie;règle catégorie
+ETB0023;Ojja merguez;1;Milk-shake;règle catégorie
+ETB0023;Ojja merguez;2;Jus de fraise;règle catégorie
+ETB0023;Ojja merguez;3;Smoothie;règle catégorie
+ETB0024;Infusion verveine;1;Cheesecake;règle catégorie
+ETB0024;Infusion verveine;2;Tarte au citron;règle catégorie
+ETB0024;Infusion verveine;3;Mille-feuille;règle catégorie
+ETB0024;Thé rouge;1;Cheesecake;règle catégorie
+ETB0024;Thé rouge;2;Tarte au citron;règle catégorie
+ETB0024;Thé rouge;3;Mille-feuille;règle catégorie
+ETB0024;Thé vert;1;Cheesecake;règle catégorie
+ETB0024;Thé vert;2;Tarte au citron;règle catégorie
+ETB0024;Thé vert;3;Mille-feuille;règle catégorie
+ETB0024;Cheesecake;1;Thé vert;règle catégorie
+ETB0024;Cheesecake;2;Thé rouge;règle catégorie
+ETB0024;Cheesecake;3;Infusion verveine;règle catégorie
+ETB0024;Mille-feuille;1;Thé vert;règle catégorie
+ETB0024;Mille-feuille;2;Thé rouge;règle catégorie
+ETB0024;Mille-feuille;3;Infusion verveine;règle catégorie
+ETB0024;Makroudh;1;Thé vert;règle catégorie
+ETB0024;Makroudh;2;Thé rouge;règle catégorie
+ETB0024;Makroudh;3;Infusion verveine;règle catégorie
+ETB0024;Tarte au citron;1;Thé vert;règle catégorie
+ETB0024;Tarte au citron;2;Thé rouge;règle catégorie
+ETB0024;Tarte au citron;3;Infusion verveine;règle catégorie
+ETB0026;Burger classique;1;Salade verte;règle plat
+ETB0026;Burger classique;2;Frites;règle plat
+ETB0026;Burger classique;3;Frites fromage;règle catégorie
+ETB0026;Cheeseburger;1;Frites;règle plat
+ETB0026;Cheeseburger;2;Frites fromage;règle catégorie
+ETB0026;Cheeseburger;3;Salade verte;règle catégorie
+ETB0026;Burger poulet;1;Salade verte;règle plat
+ETB0026;Burger poulet;2;Frites fromage;règle plat
+ETB0026;Burger poulet;3;Frites;règle catégorie
+ETB0026;Frites;1;Cheeseburger;règle plat
+ETB0026;Frites;2;Burger classique;règle plat
+ETB0026;Frites;3;Salade verte;règle plat
+ETB0026;Salade verte;1;Burger poulet;règle plat
+ETB0026;Salade verte;2;Burger classique;règle plat
+ETB0026;Salade verte;3;Frites;règle plat
+ETB0026;Frites fromage;1;Burger poulet;règle plat
+ETB0026;Frites fromage;2;Burger classique;règle catégorie
+ETB0026;Frites fromage;3;Cheeseburger;règle catégorie
+ETB0044;Burger poulet;1;Salade verte;règle plat
+ETB0044;Burger poulet;2;Frites fromage;règle plat
+ETB0044;Burger poulet;3;Frites;règle catégorie
+ETB0044;Burger classique;1;Salade verte;règle plat
+ETB0044;Burger classique;2;Frites;règle plat
+ETB0044;Burger classique;3;Frites fromage;règle catégorie
+ETB0044;Cheeseburger;1;Frites;règle plat
+ETB0044;Cheeseburger;2;Frites fromage;règle catégorie
+ETB0044;Cheeseburger;3;Salade verte;règle catégorie
+ETB0044;Salade verte;1;Burger poulet;règle plat
+ETB0044;Salade verte;2;Burger classique;règle plat
+ETB0044;Salade verte;3;Frites;règle plat
+ETB0044;Frites;1;Cheeseburger;règle plat
+ETB0044;Frites;2;Burger classique;règle plat
+ETB0044;Frites;3;Salade verte;règle plat
+ETB0044;Frites fromage;1;Burger poulet;règle plat
+ETB0044;Frites fromage;2;Burger classique;règle catégorie
+ETB0044;Frites fromage;3;Cheeseburger;règle catégorie
+ETB0044;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0044;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0046;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0046;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0046;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0046;Jus de fraise;2;Petit-déjeuner continental;règle catégorie
+ETB0046;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0046;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0046;Jus d'orange;2;Petit-déjeuner continental;règle catégorie
+ETB0046;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0046;Smoothie;1;Petit-déjeuner continental;règle catégorie
+ETB0046;Smoothie;2;Petit-déjeuner tunisien;règle catégorie
+ETB0046;Smoothie;3;Ojja merguez;règle catégorie
+ETB0046;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0046;Ojja merguez;2;Jus de fraise;règle catégorie
+ETB0046;Ojja merguez;3;Jus d'orange;règle catégorie
+ETB0046;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0046;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0046;Petit-déjeuner tunisien;3;Smoothie;règle catégorie
+ETB0046;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0046;Petit-déjeuner continental;2;Jus de fraise;règle catégorie
+ETB0046;Petit-déjeuner continental;3;Jus d'orange;règle catégorie
+ETB0058;Infusion verveine;1;Makroudh;règle catégorie
+ETB0058;Infusion verveine;2;Baklawa;règle catégorie
+ETB0058;Infusion verveine;3;Kaak warka;règle catégorie
+ETB0058;Thé vert;1;Makroudh;règle catégorie
+ETB0058;Thé vert;2;Baklawa;règle catégorie
+ETB0058;Thé vert;3;Kaak warka;règle catégorie
+ETB0058;Cheesecake;1;Infusion verveine;règle catégorie
+ETB0058;Cheesecake;2;Thé vert;règle catégorie
+ETB0058;Kaak warka;1;Infusion verveine;règle catégorie
+ETB0058;Kaak warka;2;Thé vert;règle catégorie
+ETB0058;Tarte au citron;1;Infusion verveine;règle catégorie
+ETB0058;Tarte au citron;2;Thé vert;règle catégorie
+ETB0058;Makroudh;1;Infusion verveine;règle catégorie
+ETB0058;Makroudh;2;Thé vert;règle catégorie
+ETB0058;Mille-feuille;1;Infusion verveine;règle catégorie
+ETB0058;Mille-feuille;2;Thé vert;règle catégorie
+ETB0058;Baklawa;1;Infusion verveine;règle catégorie
+ETB0058;Baklawa;2;Thé vert;règle catégorie
+ETB0061;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0061;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0061;Milk-shake;1;Omelette;règle catégorie
+ETB0061;Milk-shake;2;Petit-déjeuner tunisien;règle catégorie
+ETB0061;Milk-shake;3;Petit-déjeuner continental;règle catégorie
+ETB0061;Smoothie;1;Omelette;règle catégorie
+ETB0061;Smoothie;2;Petit-déjeuner tunisien;règle catégorie
+ETB0061;Smoothie;3;Petit-déjeuner continental;règle catégorie
+ETB0061;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0061;Petit-déjeuner continental;2;Milk-shake;règle catégorie
+ETB0061;Petit-déjeuner continental;3;Smoothie;règle catégorie
+ETB0061;Omelette;1;Milk-shake;règle catégorie
+ETB0061;Omelette;2;Smoothie;règle catégorie
+ETB0061;Petit-déjeuner tunisien;1;Milk-shake;règle catégorie
+ETB0061;Petit-déjeuner tunisien;2;Smoothie;règle catégorie
+ETB0061;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0061;Ojja merguez;2;Milk-shake;règle catégorie
+ETB0061;Ojja merguez;3;Smoothie;règle catégorie
+ETB0067;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0067;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0067;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0067;Jus d'orange;2;Petit-déjeuner continental;règle catégorie
+ETB0067;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0067;Smoothie;1;Petit-déjeuner continental;règle catégorie
+ETB0067;Smoothie;2;Ojja merguez;règle catégorie
+ETB0067;Smoothie;3;Petit-déjeuner tunisien;règle catégorie
+ETB0067;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0067;Jus de fraise;2;Petit-déjeuner continental;règle catégorie
+ETB0067;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0067;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0067;Petit-déjeuner continental;2;Jus d'orange;règle catégorie
+ETB0067;Petit-déjeuner continental;3;Jus de fraise;règle catégorie
+ETB0067;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0067;Ojja merguez;2;Jus d'orange;règle catégorie
+ETB0067;Ojja merguez;3;Jus de fraise;règle catégorie
+ETB0067;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0067;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0067;Petit-déjeuner tunisien;3;Smoothie;règle catégorie
+ETB0072;Thé vert;1;Makroudh;règle catégorie
+ETB0072;Thé vert;2;Kaak warka;règle catégorie
+ETB0072;Thé vert;3;Cheesecake;règle catégorie
+ETB0072;Infusion verveine;1;Makroudh;règle catégorie
+ETB0072;Infusion verveine;2;Kaak warka;règle catégorie
+ETB0072;Infusion verveine;3;Cheesecake;règle catégorie
+ETB0072;Thé rouge;1;Makroudh;règle catégorie
+ETB0072;Thé rouge;2;Kaak warka;règle catégorie
+ETB0072;Thé rouge;3;Cheesecake;règle catégorie
+ETB0072;Makroudh;1;Thé rouge;règle catégorie
+ETB0072;Makroudh;2;Infusion verveine;règle catégorie
+ETB0072;Makroudh;3;Thé vert;règle catégorie
+ETB0072;Cheesecake;1;Thé rouge;règle catégorie
+ETB0072;Cheesecake;2;Infusion verveine;règle catégorie
+ETB0072;Cheesecake;3;Thé vert;règle catégorie
+ETB0072;Kaak warka;1;Thé rouge;règle catégorie
+ETB0072;Kaak warka;2;Infusion verveine;règle catégorie
+ETB0072;Kaak warka;3;Thé vert;règle catégorie
+ETB0072;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0072;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0073;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0073;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0077;Smoothie;1;Ojja merguez;règle catégorie
+ETB0077;Smoothie;2;Omelette;règle catégorie
+ETB0077;Jus d'orange;1;Ojja merguez;règle catégorie
+ETB0077;Jus d'orange;2;Omelette;règle catégorie
+ETB0077;Jus de fraise;1;Ojja merguez;règle catégorie
+ETB0077;Jus de fraise;2;Omelette;règle catégorie
+ETB0077;Jus de citron;1;Ojja merguez;règle catégorie
+ETB0077;Jus de citron;2;Omelette;règle catégorie
+ETB0077;Omelette;1;Jus d'orange;règle catégorie
+ETB0077;Omelette;2;Smoothie;règle catégorie
+ETB0077;Omelette;3;Jus de fraise;règle catégorie
+ETB0077;Ojja merguez;1;Jus d'orange;règle catégorie
+ETB0077;Ojja merguez;2;Smoothie;règle catégorie
+ETB0077;Ojja merguez;3;Jus de fraise;règle catégorie
+ETB0087;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0087;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0087;Milk-shake;1;Petit-déjeuner tunisien;règle catégorie
+ETB0087;Milk-shake;2;Omelette;règle catégorie
+ETB0087;Milk-shake;3;Ojja merguez;règle catégorie
+ETB0087;Omelette;1;Milk-shake;règle catégorie
+ETB0087;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0087;Petit-déjeuner continental;2;Milk-shake;règle catégorie
+ETB0087;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0087;Ojja merguez;2;Milk-shake;règle catégorie
+ETB0087;Petit-déjeuner tunisien;1;Milk-shake;règle catégorie
+ETB0090;Burger poulet;1;Salade verte;règle plat
+ETB0090;Burger poulet;2;Frites fromage;règle plat
+ETB0090;Burger poulet;3;Frites;règle catégorie
+ETB0090;Burger classique;1;Salade verte;règle plat
+ETB0090;Burger classique;2;Frites;règle plat
+ETB0090;Burger classique;3;Frites fromage;règle catégorie
+ETB0090;Cheeseburger;1;Frites;règle plat
+ETB0090;Cheeseburger;2;Salade verte;règle catégorie
+ETB0090;Cheeseburger;3;Frites fromage;règle catégorie
+ETB0090;Frites;1;Cheeseburger;règle plat
+ETB0090;Frites;2;Burger classique;règle plat
+ETB0090;Frites;3;Salade verte;règle plat
+ETB0090;Frites fromage;1;Burger poulet;règle plat
+ETB0090;Frites fromage;2;Burger classique;règle catégorie
+ETB0090;Frites fromage;3;Cheeseburger;règle catégorie
+ETB0090;Salade verte;1;Burger poulet;règle plat
+ETB0090;Salade verte;2;Burger classique;règle plat
+ETB0090;Salade verte;3;Frites;règle plat
+ETB0101;Burger poulet;1;Salade verte;règle plat
+ETB0101;Burger poulet;2;Frites fromage;règle plat
+ETB0101;Burger poulet;3;Frites;règle catégorie
+ETB0101;Burger classique;1;Salade verte;règle plat
+ETB0101;Burger classique;2;Frites;règle plat
+ETB0101;Burger classique;3;Frites fromage;règle catégorie
+ETB0101;Cheeseburger;1;Frites;règle plat
+ETB0101;Cheeseburger;2;Salade verte;règle catégorie
+ETB0101;Cheeseburger;3;Frites fromage;règle catégorie
+ETB0101;Salade verte;1;Burger poulet;règle plat
+ETB0101;Salade verte;2;Burger classique;règle plat
+ETB0101;Salade verte;3;Frites;règle plat
+ETB0101;Frites fromage;1;Burger poulet;règle plat
+ETB0101;Frites fromage;2;Burger classique;règle catégorie
+ETB0101;Frites fromage;3;Cheeseburger;règle catégorie
+ETB0101;Frites;1;Cheeseburger;règle plat
+ETB0101;Frites;2;Burger classique;règle plat
+ETB0101;Frites;3;Salade verte;règle plat
+ETB0101;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0101;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0112;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0112;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0117;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0117;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0117;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0117;Jus de fraise;2;Petit-déjeuner continental;règle catégorie
+ETB0117;Jus de fraise;3;Omelette;règle catégorie
+ETB0117;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0117;Jus d'orange;2;Petit-déjeuner continental;règle catégorie
+ETB0117;Jus d'orange;3;Omelette;règle catégorie
+ETB0117;Milk-shake;1;Petit-déjeuner tunisien;règle catégorie
+ETB0117;Milk-shake;2;Petit-déjeuner continental;règle catégorie
+ETB0117;Milk-shake;3;Omelette;règle catégorie
+ETB0117;Jus de citron;1;Petit-déjeuner tunisien;règle catégorie
+ETB0117;Jus de citron;2;Petit-déjeuner continental;règle catégorie
+ETB0117;Jus de citron;3;Omelette;règle catégorie
+ETB0117;Smoothie;1;Petit-déjeuner tunisien;règle catégorie
+ETB0117;Smoothie;2;Petit-déjeuner continental;règle catégorie
+ETB0117;Smoothie;3;Omelette;règle catégorie
+ETB0117;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0117;Ojja merguez;2;Jus de citron;règle catégorie
+ETB0117;Ojja merguez;3;Jus de fraise;règle catégorie
+ETB0117;Omelette;1;Jus de citron;règle catégorie
+ETB0117;Omelette;2;Jus de fraise;règle catégorie
+ETB0117;Omelette;3;Jus d'orange;règle catégorie
+ETB0117;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0117;Petit-déjeuner continental;2;Jus de citron;règle catégorie
+ETB0117;Petit-déjeuner continental;3;Jus de fraise;règle catégorie
+ETB0117;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0117;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0117;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
+ETB0118;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0118;Jus de fraise;2;Ojja merguez;règle catégorie
+ETB0118;Jus de fraise;3;Omelette;règle catégorie
+ETB0118;Jus de citron;1;Ojja merguez;règle catégorie
+ETB0118;Jus de citron;2;Omelette;règle catégorie
+ETB0118;Jus de citron;3;Petit-déjeuner tunisien;règle catégorie
+ETB0118;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0118;Jus d'orange;2;Ojja merguez;règle catégorie
+ETB0118;Jus d'orange;3;Omelette;règle catégorie
+ETB0118;Milk-shake;1;Ojja merguez;règle catégorie
+ETB0118;Milk-shake;2;Omelette;règle catégorie
+ETB0118;Milk-shake;3;Petit-déjeuner tunisien;règle catégorie
+ETB0118;Smoothie;1;Ojja merguez;règle catégorie
+ETB0118;Smoothie;2;Omelette;règle catégorie
+ETB0118;Smoothie;3;Petit-déjeuner tunisien;règle catégorie
+ETB0118;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0118;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0118;Petit-déjeuner tunisien;3;Milk-shake;règle catégorie
+ETB0118;Ojja merguez;1;Jus d'orange;règle catégorie
+ETB0118;Ojja merguez;2;Milk-shake;règle catégorie
+ETB0118;Ojja merguez;3;Jus de fraise;règle catégorie
+ETB0118;Omelette;1;Jus d'orange;règle catégorie
+ETB0118;Omelette;2;Milk-shake;règle catégorie
+ETB0118;Omelette;3;Jus de fraise;règle catégorie
+ETB0124;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0124;Jus d'orange;2;Omelette;règle catégorie
+ETB0124;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0124;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0124;Jus de fraise;2;Omelette;règle catégorie
+ETB0124;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0124;Jus de citron;1;Petit-déjeuner tunisien;règle catégorie
+ETB0124;Jus de citron;2;Omelette;règle catégorie
+ETB0124;Jus de citron;3;Ojja merguez;règle catégorie
+ETB0124;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0124;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0124;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
+ETB0124;Ojja merguez;1;Jus de fraise;règle catégorie
+ETB0124;Ojja merguez;2;Jus d'orange;règle catégorie
+ETB0124;Ojja merguez;3;Jus de citron;règle catégorie
+ETB0124;Omelette;1;Jus de fraise;règle catégorie
+ETB0124;Omelette;2;Jus d'orange;règle catégorie
+ETB0124;Omelette;3;Jus de citron;règle catégorie
+ETB0133;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0133;Jus de fraise;2;Omelette;règle catégorie
+ETB0133;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0133;Smoothie;1;Petit-déjeuner tunisien;règle catégorie
+ETB0133;Smoothie;2;Omelette;règle catégorie
+ETB0133;Smoothie;3;Ojja merguez;règle catégorie
+ETB0133;Milk-shake;1;Petit-déjeuner tunisien;règle catégorie
+ETB0133;Milk-shake;2;Omelette;règle catégorie
+ETB0133;Milk-shake;3;Ojja merguez;règle catégorie
+ETB0133;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0133;Jus d'orange;2;Omelette;règle catégorie
+ETB0133;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0133;Jus de citron;1;Petit-déjeuner tunisien;règle catégorie
+ETB0133;Jus de citron;2;Omelette;règle catégorie
+ETB0133;Jus de citron;3;Ojja merguez;règle catégorie
+ETB0133;Ojja merguez;1;Jus de fraise;règle catégorie
+ETB0133;Ojja merguez;2;Jus d'orange;règle catégorie
+ETB0133;Ojja merguez;3;Jus de citron;règle catégorie
+ETB0133;Omelette;1;Jus de fraise;règle catégorie
+ETB0133;Omelette;2;Jus d'orange;règle catégorie
+ETB0133;Omelette;3;Jus de citron;règle catégorie
+ETB0133;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0133;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0133;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
+ETB0171;Jus de citron;1;Petit-déjeuner continental;règle catégorie
+ETB0171;Jus de citron;2;Petit-déjeuner tunisien;règle catégorie
+ETB0171;Jus de citron;3;Omelette;règle catégorie
+ETB0171;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0171;Jus de fraise;2;Petit-déjeuner continental;règle catégorie
+ETB0171;Jus de fraise;3;Omelette;règle catégorie
+ETB0171;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0171;Jus d'orange;2;Petit-déjeuner continental;règle catégorie
+ETB0171;Jus d'orange;3;Omelette;règle catégorie
+ETB0171;Smoothie;1;Petit-déjeuner continental;règle catégorie
+ETB0171;Smoothie;2;Petit-déjeuner tunisien;règle catégorie
+ETB0171;Smoothie;3;Omelette;règle catégorie
+ETB0171;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0171;Petit-déjeuner continental;2;Jus de citron;règle catégorie
+ETB0171;Petit-déjeuner continental;3;Jus de fraise;règle catégorie
+ETB0171;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0171;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0171;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
+ETB0171;Omelette;1;Jus de citron;règle catégorie
+ETB0171;Omelette;2;Jus de fraise;règle catégorie
+ETB0171;Omelette;3;Jus d'orange;règle catégorie
+ETB0171;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0171;Ojja merguez;2;Jus de citron;règle catégorie
+ETB0171;Ojja merguez;3;Jus de fraise;règle catégorie
+ETB0184;Infusion verveine;1;Mille-feuille;règle catégorie
+ETB0184;Infusion verveine;2;Cheesecake;règle catégorie
+ETB0184;Infusion verveine;3;Baklawa;règle catégorie
+ETB0184;Thé rouge;1;Mille-feuille;règle catégorie
+ETB0184;Thé rouge;2;Cheesecake;règle catégorie
+ETB0184;Thé rouge;3;Baklawa;règle catégorie
+ETB0184;Mille-feuille;1;Infusion verveine;règle catégorie
+ETB0184;Mille-feuille;2;Thé rouge;règle catégorie
+ETB0184;Cheesecake;1;Infusion verveine;règle catégorie
+ETB0184;Cheesecake;2;Thé rouge;règle catégorie
+ETB0184;Baklawa;1;Infusion verveine;règle catégorie
+ETB0184;Baklawa;2;Thé rouge;règle catégorie
+ETB0184;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0184;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0186;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0186;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0186;Jus d'orange;1;Omelette;règle catégorie
+ETB0186;Jus d'orange;2;Ojja merguez;règle catégorie
+ETB0186;Jus d'orange;3;Petit-déjeuner continental;règle catégorie
+ETB0186;Jus de citron;1;Omelette;règle catégorie
+ETB0186;Jus de citron;2;Ojja merguez;règle catégorie
+ETB0186;Jus de citron;3;Petit-déjeuner continental;règle catégorie
+ETB0186;Smoothie;1;Omelette;règle catégorie
+ETB0186;Smoothie;2;Ojja merguez;règle catégorie
+ETB0186;Smoothie;3;Petit-déjeuner continental;règle catégorie
+ETB0186;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0186;Ojja merguez;2;Jus de citron;règle catégorie
+ETB0186;Ojja merguez;3;Smoothie;règle catégorie
+ETB0186;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0186;Petit-déjeuner continental;2;Jus de citron;règle catégorie
+ETB0186;Petit-déjeuner continental;3;Smoothie;règle catégorie
+ETB0186;Omelette;1;Jus de citron;règle catégorie
+ETB0186;Omelette;2;Smoothie;règle catégorie
+ETB0186;Omelette;3;Jus d'orange;règle catégorie
+ETB0188;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0188;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0216;Cheeseburger;1;Frites;règle plat
+ETB0216;Cheeseburger;2;Frites fromage;règle catégorie
+ETB0216;Cheeseburger;3;Salade verte;règle catégorie
+ETB0216;Burger poulet;1;Salade verte;règle plat
+ETB0216;Burger poulet;2;Frites fromage;règle plat
+ETB0216;Burger poulet;3;Frites;règle catégorie
+ETB0216;Burger classique;1;Salade verte;règle plat
+ETB0216;Burger classique;2;Frites;règle plat
+ETB0216;Burger classique;3;Frites fromage;règle catégorie
+ETB0216;Frites;1;Cheeseburger;règle plat
+ETB0216;Frites;2;Burger classique;règle plat
+ETB0216;Frites;3;Salade verte;règle plat
+ETB0216;Salade verte;1;Burger poulet;règle plat
+ETB0216;Salade verte;2;Burger classique;règle plat
+ETB0216;Salade verte;3;Frites;règle plat
+ETB0216;Frites fromage;1;Burger poulet;règle plat
+ETB0216;Frites fromage;2;Burger classique;règle catégorie
+ETB0216;Frites fromage;3;Cheeseburger;règle catégorie
+ETB0228;Infusion verveine;1;Makroudh;règle catégorie
+ETB0228;Infusion verveine;2;Tarte au citron;règle catégorie
+ETB0228;Infusion verveine;3;Cheesecake;règle catégorie
+ETB0228;Thé rouge;1;Makroudh;règle catégorie
+ETB0228;Thé rouge;2;Tarte au citron;règle catégorie
+ETB0228;Thé rouge;3;Cheesecake;règle catégorie
+ETB0228;Thé vert;1;Makroudh;règle catégorie
+ETB0228;Thé vert;2;Tarte au citron;règle catégorie
+ETB0228;Thé vert;3;Cheesecake;règle catégorie
+ETB0228;Kaak warka;1;Thé vert;règle catégorie
+ETB0228;Kaak warka;2;Thé rouge;règle catégorie
+ETB0228;Kaak warka;3;Infusion verveine;règle catégorie
+ETB0228;Makroudh;1;Thé vert;règle catégorie
+ETB0228;Makroudh;2;Thé rouge;règle catégorie
+ETB0228;Makroudh;3;Infusion verveine;règle catégorie
+ETB0228;Cheesecake;1;Thé vert;règle catégorie
+ETB0228;Cheesecake;2;Thé rouge;règle catégorie
+ETB0228;Cheesecake;3;Infusion verveine;règle catégorie
+ETB0228;Tarte au citron;1;Thé vert;règle catégorie
+ETB0228;Tarte au citron;2;Thé rouge;règle catégorie
+ETB0228;Tarte au citron;3;Infusion verveine;règle catégorie
+ETB0237;Jus de citron;1;Ojja merguez;règle catégorie
+ETB0237;Jus de citron;2;Petit-déjeuner continental;règle catégorie
+ETB0237;Jus de citron;3;Omelette;règle catégorie
+ETB0237;Milk-shake;1;Ojja merguez;règle catégorie
+ETB0237;Milk-shake;2;Petit-déjeuner continental;règle catégorie
+ETB0237;Milk-shake;3;Omelette;règle catégorie
+ETB0237;Jus d'orange;1;Ojja merguez;règle catégorie
+ETB0237;Jus d'orange;2;Petit-déjeuner continental;règle catégorie
+ETB0237;Jus d'orange;3;Omelette;règle catégorie
+ETB0237;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0237;Petit-déjeuner continental;2;Jus d'orange;règle catégorie
+ETB0237;Petit-déjeuner continental;3;Milk-shake;règle catégorie
+ETB0237;Omelette;1;Jus d'orange;règle catégorie
+ETB0237;Omelette;2;Milk-shake;règle catégorie
+ETB0237;Omelette;3;Jus de citron;règle catégorie
+ETB0237;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0237;Ojja merguez;2;Jus d'orange;règle catégorie
+ETB0237;Ojja merguez;3;Milk-shake;règle catégorie
+ETB0240;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0240;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0251;Cheeseburger;1;Frites;règle plat
+ETB0251;Cheeseburger;2;Frites fromage;règle catégorie
+ETB0251;Cheeseburger;3;Salade verte;règle catégorie
+ETB0251;Burger classique;1;Salade verte;règle plat
+ETB0251;Burger classique;2;Frites;règle plat
+ETB0251;Burger classique;3;Frites fromage;règle catégorie
+ETB0251;Burger poulet;1;Salade verte;règle plat
+ETB0251;Burger poulet;2;Frites fromage;règle plat
+ETB0251;Burger poulet;3;Frites;règle catégorie
+ETB0251;Frites;1;Cheeseburger;règle plat
+ETB0251;Frites;2;Burger classique;règle plat
+ETB0251;Frites;3;Salade verte;règle plat
+ETB0251;Salade verte;1;Burger poulet;règle plat
+ETB0251;Salade verte;2;Burger classique;règle plat
+ETB0251;Salade verte;3;Frites;règle plat
+ETB0251;Frites fromage;1;Burger poulet;règle plat
+ETB0251;Frites fromage;2;Cheeseburger;règle catégorie
+ETB0251;Frites fromage;3;Burger classique;règle catégorie
+ETB0251;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0251;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0260;Infusion verveine;1;Mille-feuille;règle catégorie
+ETB0260;Infusion verveine;2;Tarte au citron;règle catégorie
+ETB0260;Infusion verveine;3;Cheesecake;règle catégorie
+ETB0260;Thé rouge;1;Mille-feuille;règle catégorie
+ETB0260;Thé rouge;2;Tarte au citron;règle catégorie
+ETB0260;Thé rouge;3;Cheesecake;règle catégorie
+ETB0260;Kaak warka;1;Infusion verveine;règle catégorie
+ETB0260;Kaak warka;2;Thé rouge;règle catégorie
+ETB0260;Tarte au citron;1;Infusion verveine;règle catégorie
+ETB0260;Tarte au citron;2;Thé rouge;règle catégorie
+ETB0260;Cheesecake;1;Infusion verveine;règle catégorie
+ETB0260;Cheesecake;2;Thé rouge;règle catégorie
+ETB0260;Mille-feuille;1;Infusion verveine;règle catégorie
+ETB0260;Mille-feuille;2;Thé rouge;règle catégorie
+ETB0260;Baklawa;1;Infusion verveine;règle catégorie
+ETB0260;Baklawa;2;Thé rouge;règle catégorie
+ETB0260;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0260;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0268;Thé vert;1;Makroudh;règle catégorie
+ETB0268;Thé vert;2;Cheesecake;règle catégorie
+ETB0268;Thé vert;3;Tarte au citron;règle catégorie
+ETB0268;Thé rouge;1;Makroudh;règle catégorie
+ETB0268;Thé rouge;2;Cheesecake;règle catégorie
+ETB0268;Thé rouge;3;Tarte au citron;règle catégorie
+ETB0268;Baklawa;1;Thé vert;règle catégorie
+ETB0268;Baklawa;2;Thé rouge;règle catégorie
+ETB0268;Tarte au citron;1;Thé vert;règle catégorie
+ETB0268;Tarte au citron;2;Thé rouge;règle catégorie
+ETB0268;Makroudh;1;Thé vert;règle catégorie
+ETB0268;Makroudh;2;Thé rouge;règle catégorie
+ETB0268;Cheesecake;1;Thé vert;règle catégorie
+ETB0268;Cheesecake;2;Thé rouge;règle catégorie
+ETB0268;Mille-feuille;1;Thé vert;règle catégorie
+ETB0268;Mille-feuille;2;Thé rouge;règle catégorie
+ETB0268;Kaak warka;1;Thé vert;règle catégorie
+ETB0268;Kaak warka;2;Thé rouge;règle catégorie
+ETB0273;Infusion verveine;1;Cheesecake;règle catégorie
+ETB0273;Infusion verveine;2;Mille-feuille;règle catégorie
+ETB0273;Infusion verveine;3;Kaak warka;règle catégorie
+ETB0273;Thé vert;1;Cheesecake;règle catégorie
+ETB0273;Thé vert;2;Mille-feuille;règle catégorie
+ETB0273;Thé vert;3;Kaak warka;règle catégorie
+ETB0273;Thé rouge;1;Cheesecake;règle catégorie
+ETB0273;Thé rouge;2;Mille-feuille;règle catégorie
+ETB0273;Thé rouge;3;Kaak warka;règle catégorie
+ETB0273;Cheesecake;1;Thé vert;règle catégorie
+ETB0273;Cheesecake;2;Infusion verveine;règle catégorie
+ETB0273;Cheesecake;3;Thé rouge;règle catégorie
+ETB0273;Baklawa;1;Thé vert;règle catégorie
+ETB0273;Baklawa;2;Infusion verveine;règle catégorie
+ETB0273;Baklawa;3;Thé rouge;règle catégorie
+ETB0273;Kaak warka;1;Thé vert;règle catégorie
+ETB0273;Kaak warka;2;Infusion verveine;règle catégorie
+ETB0273;Kaak warka;3;Thé rouge;règle catégorie
+ETB0273;Mille-feuille;1;Thé vert;règle catégorie
+ETB0273;Mille-feuille;2;Infusion verveine;règle catégorie
+ETB0273;Mille-feuille;3;Thé rouge;règle catégorie
+ETB0273;Makroudh;1;Thé vert;règle catégorie
+ETB0273;Makroudh;2;Infusion verveine;règle catégorie
+ETB0273;Makroudh;3;Thé rouge;règle catégorie
+ETB0273;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0273;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0274;Milk-shake;1;Petit-déjeuner continental;règle catégorie
+ETB0274;Milk-shake;2;Ojja merguez;règle catégorie
+ETB0274;Milk-shake;3;Omelette;règle catégorie
+ETB0274;Jus de citron;1;Petit-déjeuner continental;règle catégorie
+ETB0274;Jus de citron;2;Ojja merguez;règle catégorie
+ETB0274;Jus de citron;3;Omelette;règle catégorie
+ETB0274;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0274;Petit-déjeuner continental;2;Milk-shake;règle catégorie
+ETB0274;Petit-déjeuner continental;3;Jus de citron;règle catégorie
+ETB0274;Omelette;1;Milk-shake;règle catégorie
+ETB0274;Omelette;2;Jus de citron;règle catégorie
+ETB0274;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0274;Ojja merguez;2;Milk-shake;règle catégorie
+ETB0274;Ojja merguez;3;Jus de citron;règle catégorie
+ETB0276;Smoothie;1;Omelette;règle catégorie
+ETB0276;Smoothie;2;Ojja merguez;règle catégorie
+ETB0276;Smoothie;3;Petit-déjeuner tunisien;règle catégorie
+ETB0276;Milk-shake;1;Omelette;règle catégorie
+ETB0276;Milk-shake;2;Ojja merguez;règle catégorie
+ETB0276;Milk-shake;3;Petit-déjeuner tunisien;règle catégorie
+ETB0276;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0276;Jus d'orange;2;Omelette;règle catégorie
+ETB0276;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0276;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0276;Jus de fraise;2;Omelette;règle catégorie
+ETB0276;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0276;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0276;Petit-déjeuner continental;2;Jus de fraise;règle catégorie
+ETB0276;Petit-déjeuner continental;3;Jus d'orange;règle catégorie
+ETB0276;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0276;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0276;Petit-déjeuner tunisien;3;Smoothie;règle catégorie
+ETB0276;Omelette;1;Jus de fraise;règle catégorie
+ETB0276;Omelette;2;Jus d'orange;règle catégorie
+ETB0276;Omelette;3;Smoothie;règle catégorie
+ETB0276;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0276;Ojja merguez;2;Jus de fraise;règle catégorie
+ETB0276;Ojja merguez;3;Jus d'orange;règle catégorie
+ETB0330;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0330;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0349;Burger poulet;1;Frites fromage;règle plat
+ETB0349;Burger poulet;2;Frites;règle catégorie
+ETB0349;Cheeseburger;1;Frites;règle plat
+ETB0349;Cheeseburger;2;Frites fromage;règle catégorie
+ETB0349;Burger classique;1;Frites;règle plat
+ETB0349;Burger classique;2;Frites fromage;règle catégorie
+ETB0349;Frites;1;Cheeseburger;règle plat
+ETB0349;Frites;2;Burger classique;règle plat
+ETB0349;Frites;3;Burger poulet;règle catégorie
+ETB0349;Frites fromage;1;Burger poulet;règle plat
+ETB0349;Frites fromage;2;Burger classique;règle catégorie
+ETB0349;Frites fromage;3;Cheeseburger;règle catégorie
+ETB0349;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0349;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0359;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0359;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0359;Smoothie;1;Petit-déjeuner continental;règle catégorie
+ETB0359;Smoothie;2;Ojja merguez;règle catégorie
+ETB0359;Smoothie;3;Petit-déjeuner tunisien;règle catégorie
+ETB0359;Milk-shake;1;Petit-déjeuner continental;règle catégorie
+ETB0359;Milk-shake;2;Ojja merguez;règle catégorie
+ETB0359;Milk-shake;3;Petit-déjeuner tunisien;règle catégorie
+ETB0359;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0359;Jus d'orange;2;Petit-déjeuner continental;règle catégorie
+ETB0359;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0359;Jus de citron;1;Petit-déjeuner continental;règle catégorie
+ETB0359;Jus de citron;2;Ojja merguez;règle catégorie
+ETB0359;Jus de citron;3;Petit-déjeuner tunisien;règle catégorie
+ETB0359;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0359;Jus de fraise;2;Petit-déjeuner continental;règle catégorie
+ETB0359;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0359;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0359;Petit-déjeuner continental;2;Jus de citron;règle catégorie
+ETB0359;Petit-déjeuner continental;3;Smoothie;règle catégorie
+ETB0359;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0359;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0359;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
+ETB0359;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0359;Ojja merguez;2;Jus de citron;règle catégorie
+ETB0359;Ojja merguez;3;Smoothie;règle catégorie
+ETB0368;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0368;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0368;Smoothie;1;Omelette;règle catégorie
+ETB0368;Smoothie;2;Ojja merguez;règle catégorie
+ETB0368;Smoothie;3;Petit-déjeuner continental;règle catégorie
+ETB0368;Jus de citron;1;Omelette;règle catégorie
+ETB0368;Jus de citron;2;Ojja merguez;règle catégorie
+ETB0368;Jus de citron;3;Petit-déjeuner continental;règle catégorie
+ETB0368;Milk-shake;1;Omelette;règle catégorie
+ETB0368;Milk-shake;2;Ojja merguez;règle catégorie
+ETB0368;Milk-shake;3;Petit-déjeuner continental;règle catégorie
+ETB0368;Petit-déjeuner tunisien;1;Jus de citron;règle catégorie
+ETB0368;Petit-déjeuner tunisien;2;Milk-shake;règle catégorie
+ETB0368;Petit-déjeuner tunisien;3;Smoothie;règle catégorie
+ETB0368;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0368;Petit-déjeuner continental;2;Jus de citron;règle catégorie
+ETB0368;Petit-déjeuner continental;3;Milk-shake;règle catégorie
+ETB0368;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0368;Ojja merguez;2;Jus de citron;règle catégorie
+ETB0368;Ojja merguez;3;Milk-shake;règle catégorie
+ETB0368;Omelette;1;Jus de citron;règle catégorie
+ETB0368;Omelette;2;Milk-shake;règle catégorie
+ETB0368;Omelette;3;Smoothie;règle catégorie
+ETB0376;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0376;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0376;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0376;Jus de fraise;2;Ojja merguez;règle catégorie
+ETB0376;Jus de fraise;3;Petit-déjeuner continental;règle catégorie
+ETB0376;Smoothie;1;Ojja merguez;règle catégorie
+ETB0376;Smoothie;2;Petit-déjeuner continental;règle catégorie
+ETB0376;Smoothie;3;Petit-déjeuner tunisien;règle catégorie
+ETB0376;Jus de citron;1;Ojja merguez;règle catégorie
+ETB0376;Jus de citron;2;Petit-déjeuner continental;règle catégorie
+ETB0376;Jus de citron;3;Petit-déjeuner tunisien;règle catégorie
+ETB0376;Petit-déjeuner tunisien;1;Jus de fraise;règle plat
+ETB0376;Petit-déjeuner tunisien;2;Jus de citron;règle catégorie
+ETB0376;Petit-déjeuner tunisien;3;Smoothie;règle catégorie
+ETB0376;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0376;Petit-déjeuner continental;2;Jus de fraise;règle catégorie
+ETB0376;Petit-déjeuner continental;3;Jus de citron;règle catégorie
+ETB0376;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0376;Ojja merguez;2;Jus de fraise;règle catégorie
+ETB0376;Ojja merguez;3;Jus de citron;règle catégorie
+ETB0382;Cheeseburger;1;Frites;règle plat
+ETB0382;Cheeseburger;2;Salade verte;règle catégorie
+ETB0382;Burger classique;1;Salade verte;règle plat
+ETB0382;Burger classique;2;Frites;règle plat
+ETB0382;Burger poulet;1;Salade verte;règle plat
+ETB0382;Burger poulet;2;Frites;règle catégorie
+ETB0382;Frites;1;Cheeseburger;règle plat
+ETB0382;Frites;2;Burger classique;règle plat
+ETB0382;Frites;3;Salade verte;règle plat
+ETB0382;Salade verte;1;Burger poulet;règle plat
+ETB0382;Salade verte;2;Burger classique;règle plat
+ETB0382;Salade verte;3;Frites;règle plat
+ETB0382;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0382;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0388;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0388;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0395;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0395;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0397;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0397;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0399;Eau minérale 1 L;1;Thé glacé;règle plat
+ETB0399;Thé glacé;1;Eau minérale 1 L;règle plat
+ETB0399;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
+ETB0399;Jus de fraise;2;Ojja merguez;règle catégorie
+ETB0399;Jus de fraise;3;Petit-déjeuner continental;règle catégorie
+ETB0399;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
+ETB0399;Jus d'orange;2;Ojja merguez;règle catégorie
+ETB0399;Jus d'orange;3;Petit-déjeuner continental;règle catégorie
+ETB0399;Smoothie;1;Ojja merguez;règle catégorie
+ETB0399;Smoothie;2;Petit-déjeuner tunisien;règle catégorie
+ETB0399;Smoothie;3;Petit-déjeuner continental;règle catégorie
+ETB0399;Milk-shake;1;Ojja merguez;règle catégorie
+ETB0399;Milk-shake;2;Petit-déjeuner tunisien;règle catégorie
+ETB0399;Milk-shake;3;Petit-déjeuner continental;règle catégorie
+ETB0399;Jus de citron;1;Ojja merguez;règle catégorie
+ETB0399;Jus de citron;2;Petit-déjeuner tunisien;règle catégorie
+ETB0399;Jus de citron;3;Petit-déjeuner continental;règle catégorie
+ETB0399;Petit-déjeuner continental;1;Ojja merguez;règle plat
+ETB0399;Petit-déjeuner continental;2;Milk-shake;règle catégorie
+ETB0399;Petit-déjeuner continental;3;Smoothie;règle catégorie
+ETB0399;Ojja merguez;1;Petit-déjeuner continental;règle plat
+ETB0399;Ojja merguez;2;Milk-shake;règle catégorie
+ETB0399;Ojja merguez;3;Smoothie;règle catégorie
+ETB0399;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
+ETB0399;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
+ETB0399;Petit-déjeuner tunisien;3;Milk-shake;règle catégorie
