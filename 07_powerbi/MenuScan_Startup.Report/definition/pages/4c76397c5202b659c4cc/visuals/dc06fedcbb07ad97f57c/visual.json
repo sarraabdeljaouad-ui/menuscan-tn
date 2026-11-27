@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "dc06fedcbb07ad97f57c",
   "position": {
-    "x": 436,
+    "x": 16,
     "y": 510,
     "z": 1025,
     "height": 196,
@@ -23,11 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "nom_canal"
+                  "Property": "formule_actuelle"
                 }
               },
-              "queryRef": "dim_etablissement.nom_canal",
-              "nativeQueryRef": "nom_canal",
+              "queryRef": "dim_etablissement.formule_actuelle",
+              "nativeQueryRef": "formule_actuelle",
               "active": true
             }
           ]
@@ -50,63 +50,7 @@
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "_Mesures"
-                  }
-                },
-                "Property": "Résiliations"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
-    },
-    "objects": {
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1D4ED8'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -218,7 +162,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Résiliations par canal'"
+                  "Value": "'Résiliations par formule'"
                 }
               }
             },
@@ -250,6 +194,45 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D4ED8'"
+                    }
+                  }
                 }
               }
             }

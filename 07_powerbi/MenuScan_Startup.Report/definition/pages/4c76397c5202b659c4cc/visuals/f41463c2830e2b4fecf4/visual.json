@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "f41463c2830e2b4fecf4",
   "position": {
-    "x": 336,
+    "x": 176,
     "y": 58,
     "z": 1011,
     "height": 50,
@@ -23,12 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "formule_actuelle"
+                  "Property": "trimestre_cohorte"
                 }
               },
-              "queryRef": "dim_etablissement.formule_actuelle",
-              "nativeQueryRef": "formule_actuelle",
-              "active": true
+              "queryRef": "dim_etablissement.trimestre_cohorte",
+              "nativeQueryRef": "trimestre_cohorte"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Formule'"
+                  "Value": "'Cohorte'"
                 }
               }
             }

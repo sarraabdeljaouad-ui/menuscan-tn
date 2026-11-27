@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "79f0e31f9980cc81d9d8",
   "position": {
-    "x": 496,
+    "x": 336,
     "y": 58,
     "z": 1012,
     "height": 50,
@@ -23,12 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "nom_canal"
+                  "Property": "formule_actuelle"
                 }
               },
-              "queryRef": "dim_etablissement.nom_canal",
-              "nativeQueryRef": "nom_canal",
-              "active": true
+              "queryRef": "dim_etablissement.formule_actuelle",
+              "nativeQueryRef": "formule_actuelle"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Canal'"
+                  "Value": "'Formule'"
                 }
               }
             }

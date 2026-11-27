@@ -2,14 +2,7 @@ role 'Gérant démo'
 	modelPermission: read
 
 	tablePermission dim_etablissement = dim_etablissement[etablissement_id] = "ETB0003"
-
 	tablePermission dim_article = dim_article[etablissement_id] = "ETB0003"
-
 	tablePermission dim_table = dim_table[etablissement_id] = "ETB0003"
-
 	tablePermission fait_marketing = FALSE ()
-
 	tablePermission fait_prospect = FALSE ()
-
-	annotation PBI_Id = eeeb6f29b7b34a14b2fea1a9dceb2f63
-

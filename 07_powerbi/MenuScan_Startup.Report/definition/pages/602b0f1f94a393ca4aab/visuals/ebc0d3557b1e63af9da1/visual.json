@@ -1,16 +1,16 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "ebc0d3557b1e63af9da1",
   "position": {
-    "x": 852,
+    "x": 428,
     "y": 210,
     "z": 1026,
-    "height": 290,
+    "height": 240,
     "width": 412,
     "tabOrder": 1026
   },
   "visual": {
-    "visualType": "scatterChart",
+    "visualType": "clusteredColumnChart",
     "query": {
       "queryState": {
         "Category": {
@@ -32,7 +32,7 @@
             }
           ]
         },
-        "X": {
+        "Y": {
           "projections": [
             {
               "field": {
@@ -46,62 +46,11 @@
                 }
               },
               "queryRef": "_Mesures.K09 CAC",
-              "nativeQueryRef": "K09 CAC",
-              "active": true
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Mesures"
-                    }
-                  },
-                  "Property": "K10 Valeur vie client par canal"
-                }
-              },
-              "queryRef": "_Mesures.K10 Valeur vie client par canal",
-              "nativeQueryRef": "K10 Valeur vie client par canal"
+              "nativeQueryRef": "K09 CAC"
             }
           ]
         }
       }
-    },
-    "objects": {
-      "categoryLabels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1D4ED8'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -213,7 +162,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'CAC et valeur vie client par canal'"
+                  "Value": "'CAC par canal (K09)'"
                 }
               }
             },
@@ -251,7 +200,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Un point par canal : en haut à gauche, le canal le plus rentable'"
+                  "Value": "'DT TTC par établissement signé · bleu : le plus bas, orange : le plus haut'"
                 }
               }
             },
@@ -273,6 +222,59 @@
                 }
               }
             }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_Mesures"
+                        }
+                      },
+                      "Property": "Couleur CAC"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ]
           }
         }
       ]

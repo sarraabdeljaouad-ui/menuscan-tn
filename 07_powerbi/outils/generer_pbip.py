@@ -309,7 +309,7 @@ def bandeau(page, titre, droite, pages, actif):
                                                 "transparency": lit("0D")}}],
                  "border": [{"properties": {"show": lit("true"), "color": couleur(BLANC), "radius": lit("6D")}}]})
     textbox(page, 56, 10, 344, 32, titre, 13, BLANC, True)
-    largeur = 160
+    largeur = min(160, (1070 - 404) // len(pages) - 6)
     x0 = 404
     for i, (pid, nom) in enumerate(pages):
         est_actif = pid == actif
@@ -317,7 +317,8 @@ def bandeau(page, titre, droite, pages, actif):
             "visualType": "actionButton",
             "objects": {
                 "text": [{"properties": {"show": lit("true")}},
-                         {"properties": {"text": txt(nom), "fontSize": lit("10D"),
+                         {"properties": {"text": txt(nom if largeur >= 150 else nom.split(" · ")[-1]),
+                                         "fontSize": lit("10D"),
                                          "fontColor": couleur(BANDEAU if est_actif else BLANC),
                                          "horizontalAlignment": txt("center")}, "selector": {"id": "default"}}],
                 "icon": [{"properties": {"show": lit("false")}}],
@@ -378,6 +379,8 @@ def visuel(page, e):
         objets["labels"] = [{"properties": lab}]
     if vtype == "scatterChart" and e.get("etiquettes"):
         objets["categoryLabels"] = [{"properties": {"show": lit("true")}}]
+    if vtype == "tableEx" and e.get("totaux") is False:
+        objets["total"] = [{"properties": {"totals": lit("false")}}]
     if vtype == "pivotTable":
         objets["subTotals"] = [{"properties": {"rowSubtotals": lit("false"), "columnSubtotals": lit("false")}}]
     if e.get("couleur_categorie"):

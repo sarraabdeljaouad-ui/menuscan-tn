@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "bf21808b8d9c1905ea03",
   "position": {
-    "x": 16,
-    "y": 510,
+    "x": 828,
+    "y": 210,
     "z": 1026,
-    "height": 196,
-    "width": 616,
+    "height": 290,
+    "width": 436,
     "tabOrder": 1026
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "waterfallChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_formule"
+                      "Entity": "Pont MRR"
                     }
                   },
-                  "Property": "nom_formule"
+                  "Property": "etape"
                 }
               },
-              "queryRef": "dim_formule.nom_formule",
-              "nativeQueryRef": "nom_formule",
+              "queryRef": "Pont MRR.etape",
+              "nativeQueryRef": "etape",
               "active": true
             }
           ]
@@ -42,14 +42,32 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "K02 MRR"
+                  "Property": "Pont MRR valeur"
                 }
               },
-              "queryRef": "_Mesures.K02 MRR",
-              "nativeQueryRef": "K02 MRR"
+              "queryRef": "_Mesures.Pont MRR valeur",
+              "nativeQueryRef": "Pont MRR valeur"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Pont MRR"
+                  }
+                },
+                "Property": "etape"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": false
       }
     },
     "visualContainerObjects": {
@@ -162,7 +180,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'MRR par formule (DT HT)'"
+                  "Value": "'Mouvements de MRR (K04)'"
                 }
               }
             },
@@ -193,7 +211,37 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Mesures"
+                    }
+                  },
+                  "Property": "Texte variation MRR"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#64748B'"
+                    }
+                  }
                 }
               }
             }
@@ -208,31 +256,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1D4ED8'"
-                    }
-                  }
+                  "Value": "false"
                 }
               }
             }

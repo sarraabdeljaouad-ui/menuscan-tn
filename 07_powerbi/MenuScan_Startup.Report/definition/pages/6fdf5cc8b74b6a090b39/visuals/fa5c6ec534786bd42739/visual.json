@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "fa5c6ec534786bd42739",
   "position": {
-    "x": 496,
+    "x": 336,
     "y": 58,
     "z": 1012,
     "height": 50,
@@ -20,15 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_formule"
+                      "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "nom_formule"
+                  "Property": "type_etablissement"
                 }
               },
-              "queryRef": "dim_formule.nom_formule",
-              "nativeQueryRef": "nom_formule",
-              "active": true
+              "queryRef": "dim_etablissement.type_etablissement",
+              "nativeQueryRef": "type_etablissement"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Formule'"
+                  "Value": "'Type'"
                 }
               }
             }

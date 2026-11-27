@@ -2,18 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "8633e84c59d900d6fbfd",
   "position": {
-    "x": 16,
-    "y": 510,
+    "x": 668,
+    "y": 210,
     "z": 1024,
-    "height": 196,
-    "width": 408,
+    "height": 290,
+    "width": 596,
     "tabOrder": 1024
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "pivotTable",
     "query": {
       "queryState": {
-        "Category": {
+        "Rows": {
           "projections": [
             {
               "field": {
@@ -23,16 +23,34 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "formule_actuelle"
+                  "Property": "trimestre_cohorte"
                 }
               },
-              "queryRef": "dim_etablissement.formule_actuelle",
-              "nativeQueryRef": "formule_actuelle",
-              "active": true
+              "queryRef": "dim_etablissement.trimestre_cohorte",
+              "nativeQueryRef": "trimestre_cohorte",
+              "displayName": "Cohorte"
             }
           ]
         },
-        "Y": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mois écoulés"
+                    }
+                  },
+                  "Property": "libelle"
+                }
+              },
+              "queryRef": "Mois écoulés.libelle",
+              "nativeQueryRef": "libelle"
+            }
+          ]
+        },
+        "Values": {
           "projections": [
             {
               "field": {
@@ -42,11 +60,12 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Résiliations"
+                  "Property": "K06 Rétention de cohorte"
                 }
               },
-              "queryRef": "_Mesures.Résiliations",
-              "nativeQueryRef": "Résiliations"
+              "queryRef": "_Mesures.K06 Rétention de cohorte",
+              "nativeQueryRef": "K06 Rétention de cohorte",
+              "displayName": "Rétention"
             }
           ]
         }
@@ -162,7 +181,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Résiliations par formule'"
+                  "Value": "'Rétention par cohorte de mise en service (K06)'"
                 }
               }
             },
@@ -193,7 +212,32 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Part des établissements encore actifs n mois après leur mise en service'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#64748B'"
+                    }
+                  }
                 }
               }
             }
@@ -202,40 +246,71 @@
       ]
     },
     "objects": {
-      "labels": [
+      "subTotals": [
         {
           "properties": {
-            "show": {
+            "rowSubtotals": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
-            "labelDisplayUnits": {
+            "columnSubtotals": {
               "expr": {
                 "Literal": {
-                  "Value": "1D"
+                  "Value": "false"
                 }
               }
             }
           }
         }
       ],
-      "dataPoint": [
+      "values": [
         {
           "properties": {
-            "fill": {
+            "backColor": {
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#1D4ED8'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_Mesures"
+                        }
+                      },
+                      "Property": "Couleur cohorte"
+                    }
+                  }
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_Mesures"
+                        }
+                      },
+                      "Property": "Couleur texte cohorte"
                     }
                   }
                 }
               }
             }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "_Mesures.K06 Rétention de cohorte"
           }
         }
       ]

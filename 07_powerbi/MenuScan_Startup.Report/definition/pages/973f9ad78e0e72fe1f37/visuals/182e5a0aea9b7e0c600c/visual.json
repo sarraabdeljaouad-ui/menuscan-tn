@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "182e5a0aea9b7e0c600c",
   "position": {
-    "x": 768,
+    "x": 16,
     "y": 210,
     "z": 1021,
     "height": 496,
-    "width": 496,
+    "width": 740,
     "tabOrder": 1021
   },
   "visual": {
@@ -28,7 +28,22 @@
               },
               "queryRef": "dim_etablissement.nom_etablissement",
               "nativeQueryRef": "nom_etablissement",
-              "displayName": "Établissement (Essentiel)"
+              "displayName": "Établissement"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_etablissement"
+                    }
+                  },
+                  "Property": "formule_actuelle"
+                }
+              },
+              "queryRef": "dim_etablissement.formule_actuelle",
+              "nativeQueryRef": "formule_actuelle",
+              "displayName": "Formule"
             },
             {
               "field": {
@@ -38,12 +53,12 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "K12 (Essentiel)"
+                  "Property": "Score K19"
                 }
               },
-              "queryRef": "_Mesures.K12 (Essentiel)",
-              "nativeQueryRef": "K12 (Essentiel)",
-              "displayName": "Sessions / table / jour (K12)"
+              "queryRef": "_Mesures.Score K19",
+              "nativeQueryRef": "Score K19",
+              "displayName": "Score"
             },
             {
               "field": {
@@ -53,27 +68,12 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Sessions (Essentiel)"
+                  "Property": "MRR actuel de l'établissement"
                 }
               },
-              "queryRef": "_Mesures.Sessions (Essentiel)",
-              "nativeQueryRef": "Sessions (Essentiel)",
-              "displayName": "Sessions"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Mesures"
-                    }
-                  },
-                  "Property": "Tables (Essentiel)"
-                }
-              },
-              "queryRef": "_Mesures.Tables (Essentiel)",
-              "nativeQueryRef": "Tables (Essentiel)",
-              "displayName": "Tables"
+              "queryRef": "_Mesures.MRR actuel de l'établissement",
+              "nativeQueryRef": "MRR actuel de l'établissement",
+              "displayName": "MRR (DT HT)"
             }
           ]
         }
@@ -88,12 +88,13 @@
                     "Entity": "_Mesures"
                   }
                 },
-                "Property": "K12 (Essentiel)"
+                "Property": "MRR actuel de l'établissement"
               }
             },
             "direction": "Descending"
           }
-        ]
+        ],
+        "isDefaultSort": false
       }
     },
     "visualContainerObjects": {
@@ -206,7 +207,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Candidats à la formule Commande'"
+                  "Value": "'Établissements à risque de résiliation (K19)'"
                 }
               }
             },
@@ -244,7 +245,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tri par usage du QR code : plus le menu est consulté, plus la commande a de chances d''être utilisée'"
+                  "Value": "'Mise en page seulement : les scores viendront du modèle de la phase 7 (jalon J8)'"
                 }
               }
             },
@@ -263,6 +264,21 @@
                       "Value": "'#64748B'"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

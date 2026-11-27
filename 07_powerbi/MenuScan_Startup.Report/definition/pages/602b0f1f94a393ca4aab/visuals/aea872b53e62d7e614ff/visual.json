@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "aea872b53e62d7e614ff",
   "position": {
-    "x": 428,
+    "x": 16,
     "y": 210,
     "z": 1025,
-    "height": 290,
-    "width": 412,
+    "height": 240,
+    "width": 400,
     "tabOrder": 1025
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_canal"
+                      "Entity": "Étapes commerciales"
                     }
                   },
-                  "Property": "nom_canal"
+                  "Property": "etape"
                 }
               },
-              "queryRef": "dim_canal.nom_canal",
-              "nativeQueryRef": "nom_canal",
+              "queryRef": "Étapes commerciales.etape",
+              "nativeQueryRef": "etape",
               "active": true
             }
           ]
@@ -42,14 +42,32 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "K09 CAC"
+                  "Property": "Prospects par étape"
                 }
               },
-              "queryRef": "_Mesures.K09 CAC",
-              "nativeQueryRef": "K09 CAC"
+              "queryRef": "_Mesures.Prospects par étape",
+              "nativeQueryRef": "Prospects par étape"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Étapes commerciales"
+                  }
+                },
+                "Property": "etape"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": false
       }
     },
     "visualContainerObjects": {
@@ -162,7 +180,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'CAC par canal (K09)'"
+                  "Value": "'Entonnoir commercial (K07)'"
                 }
               }
             },
@@ -199,8 +217,13 @@
             },
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'DT TTC par établissement signé · bleu : le plus bas, orange : le plus haut'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Mesures"
+                    }
+                  },
+                  "Property": "Texte prospects"
                 }
               }
             },
@@ -254,27 +277,13 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "_Mesures"
-                        }
-                      },
-                      "Property": "Couleur CAC"
+                    "Literal": {
+                      "Value": "'#1D4ED8'"
                     }
                   }
                 }
               }
             }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ]
           }
         }
       ]

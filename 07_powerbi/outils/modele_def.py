@@ -82,7 +82,7 @@ DATATABLE (
     ("Étapes de session", [("etape", "string"), ("ordre", "int64")], ("etape", "ordre"), """
 DATATABLE (
     "etape", STRING, "ordre", INTEGER,
-    { { "Sessions (scans)", 1 }, { "Ajout au panier", 2 }, { "Commande envoyée", 3 } }
+    { { "Scans", 1 }, { "Panier", 2 }, { "Commande", 3 } }
 )"""),
 ]
 
@@ -521,9 +521,9 @@ CALCULATE ( COUNTROWS ( dim_table ), TREATAS ( VALUES ( dim_etablissement[etabli
     ("5. Activité en salle", "Texte CA servi détail", None, '"TTC, commandes servies"'),
     ("5. Activité en salle", "Texte K14", None, f'{_fmt("[K14 Panier moyen]", DT)} & " DT"'),
     ("5. Activité en salle", "Texte K14 détail", None, '"TTC par commande servie"'),
-    ("5. Activité en salle", "Texte K15", None, _fmt("[K15 Taux d'annulation]", '"0.00 %"')),
+    ("5. Activité en salle", "Texte K15", None, _fmt("COALESCE ( [K15 Taux d'annulation], 0 )", '"0.00 %"')),
     ("5. Activité en salle", "Texte K15 détail", None,
-     'FORMAT ( CALCULATE ( [Commandes], fait_commande[statut_commande] = "annulee" ), "#,0" ) & " commandes annulées"'),
+     'FORMAT ( COALESCE ( CALCULATE ( [Commandes], fait_commande[statut_commande] = "annulee" ), 0 ), "#,0" ) & " commandes annulées"'),
     ("5. Activité en salle", "Texte commandes par table", None, _fmt("[Commandes servies par table]", '"#,0.0"')),
     ("5. Activité en salle", "Texte commandes par table détail", None,
      'FORMAT ( [Tables de l\'établissement], "#,0" ) & " tables"'),
@@ -544,7 +544,11 @@ CONCATENATEX (
 CALCULATE ( DISTINCTCOUNT ( fait_ligne_commande[commande_id] ), fait_ligne_commande[est_servie] = TRUE () )"""),
     ("8. Menu et marge", "Conversion de la fiche", "0.0 %", "DIVIDE ( [Commandes de l'article], [Vues de fiche] )"),
     ("8. Menu et marge", "Prix TTC actuel", "#,0.000", """
-CALCULATE ( MAX ( dim_article[prix_ttc] ), dim_article[est_prix_actuel] = TRUE () )"""),
+CALCULATE (
+    MAX ( dim_article[prix_ttc] ),
+    dim_article[est_prix_actuel] = TRUE (),
+    TREATAS ( VALUES ( dim_etablissement[etablissement_id] ), dim_article[etablissement_id] )
+)"""),
     ("8. Menu et marge", "Couleur article", None, f"""
 VAR arts = ALLSELECTED ( dim_article[nom_article] )
 VAR vues_moy = AVERAGEX ( arts, [Vues de fiche] )
@@ -654,9 +658,11 @@ RETURN "hors Ramadan → Ramadan (" & FORMAT ( DIVIDE ( r, h ) - 1, "+0 %;-0 %" 
     ("9. Saisonnalité", "Texte été", None, """
 VAR e = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "ete" )
 VAR n = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "normale" )
-RETURN
-    "Été : " & FORMAT ( e, "#,0.00" ) & " commandes par jour · période normale : " & FORMAT ( n, "#,0.00" )
-        & " (" & FORMAT ( DIVIDE ( e, n ) - 1, "+0 %;-0 %" ) & ")\""""),
+RETURN FORMAT ( DIVIDE ( e, n ) - 1, "+0 %;-0 %" ) & " par jour en été\""""),
+    ("9. Saisonnalité", "Texte été détail", None, """
+VAR e = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "ete" )
+VAR n = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "normale" )
+RETURN "commandes par jour : " & FORMAT ( e, "#,0.0" ) & " en été, " & FORMAT ( n, "#,0.0" ) & " en période normale\""""),
     # ---- établissement : prix
     ("8. Menu et marge", "Prix moyen pratiqué", "#,0.000", """
 DIVIDE ( SUM ( fait_ligne_commande[montant_ligne_ttc] ), SUM ( fait_ligne_commande[quantite] ) )"""),
@@ -664,18 +670,20 @@ DIVIDE ( SUM ( fait_ligne_commande[montant_ligne_ttc] ), SUM ( fait_ligne_comman
 VAR p = SELECTEDVALUE ( dim_article[prix_precedent] )
 RETURN
     IF (
-        HASONEVALUE ( dim_article[prix_id] ) && NOT ISBLANK ( p ),
+        NOT ISBLANK ( [Fenêtre (jours)] ),
         DIVIDE ( SELECTEDVALUE ( dim_article[prix_ttc] ) - p, p )
     )"""),
-    ("8. Menu et marge", "Fenêtre (jours)", "0", """
+    ("8. Menu et marge", "Fenêtre brute (jours)", "0", """
 VAR d = SELECTEDVALUE ( dim_article[valide_du] )
 VAR prec = SELECTEDVALUE ( dim_article[debut_version_precedente] )
 VAR arrete = CALCULATE ( MAX ( dim_date[date] ), REMOVEFILTERS ( dim_date ) )
 VAR fin = COALESCE ( SELECTEDVALUE ( dim_article[valide_au] ), arrete )
 RETURN
     IF (
-        HASONEVALUE ( dim_article[prix_id] ) && NOT ISBLANK ( prec ),
-        MIN ( 30, MIN ( DATEDIFF ( prec, d, DAY ), DATEDIFF ( d, fin, DAY ) + 1 ) )
+        HASONEVALUE ( dim_article[prix_id] ) && NOT ISBLANK ( prec )
+            && SELECTEDVALUE ( dim_article[etablissement_id] ) IN VALUES ( dim_etablissement[etablissement_id] ),
+        VAR w = MIN ( 60, MIN ( DATEDIFF ( prec, d, DAY ), DATEDIFF ( d, fin, DAY ) + 1 ) )
+        RETURN IF ( w >= 14, w )
     )"""),
 ]
 for _nom, _sens in [("avant", "avant"), ("après", "apres")]:
@@ -683,7 +691,7 @@ for _nom, _sens in [("avant", "avant"), ("après", "apres")]:
               else "dim_date[date] >= d && dim_date[date] < d + w")
     MESURES.append(("8. Menu et marge", f"Quantités {_nom} le changement", "#,0", f"""
 VAR d = SELECTEDVALUE ( dim_article[valide_du] )
-VAR w = [Fenêtre (jours)]
+VAR w = [Fenêtre brute (jours)]
 VAR a = SELECTEDVALUE ( dim_article[article_id] )
 RETURN
     IF (
@@ -697,6 +705,10 @@ RETURN
         )
     )"""))
 MESURES += [
+    ("8. Menu et marge", "Fenêtre (jours)", "0", """
+VAR w = [Fenêtre brute (jours)]
+RETURN
+    IF ( NOT ISBLANK ( w ) && [Quantités avant le changement] + [Quantités après le changement] > 0, w )"""),
     ("8. Menu et marge", "Prix avant → après", None, """
 IF (
     NOT ISBLANK ( [Hausse de prix] ),
@@ -736,4 +748,98 @@ RETURN AVERAGEX ( lignes, DIVIDE ( dim_article[prix_ttc] - dim_article[prix_prec
     ("8. Menu et marge", "Texte sensibilité détail", None, '"modèle de la phase 7 (EF-11)"'),
     ("8. Menu et marge", "Titre prix et quantités", None, """
 "Prix et quantités par article : " & IF ( HASONEVALUE ( dim_article[nom_article] ), SELECTEDVALUE ( dim_article[nom_article] ), "choisir un article" )"""),
+]
+
+# ------------------------------------------------------------------ recette T6.4 : valeurs attendues (SQL sur menuscan_dwh, 26/11/2026)
+# (code, indicateur, filtre, attendu, tolérance, expression DAX)
+_A26 = "dim_date[annee] = 2026"
+RECETTE = [
+    ("R01", "K01 Établissements actifs", "31/12/2026", 265, 0, "[K01 Établissements actifs]"),
+    ("R02", "K02 MRR (DT HT)", "31/12/2026", 8510, 0, "[K02 MRR]"),
+    ("R03", "K02 MRR (DT HT)", "31/12/2025", 5125, 0, "CALCULATE ( [K02 MRR], dim_date[annee] = 2025 )"),
+    ("R04", "K03 ARR (DT HT)", "31/12/2026", 102120, 0, "[K03 ARR]"),
+    ("R05", "K04 MRR nouveau", "2026", 4990, 0, f"CALCULATE ( [K04 MRR nouveau], {_A26} )"),
+    ("R06", "K04 MRR expansion", "2026", 520, 0, f"CALCULATE ( [K04 MRR expansion], {_A26} )"),
+    ("R07", "K04 MRR contraction", "2026", -20, 0, f"CALCULATE ( [K04 MRR contraction], {_A26} )"),
+    ("R08", "K04 MRR perdu", "2026", -2105, 0, f"CALCULATE ( [K04 MRR perdu], {_A26} )"),
+    ("R09", "Résiliations", "2026", 76, 0, f"CALCULATE ( [Résiliations], {_A26} )"),
+    ("R10", "K05 Taux de résiliation mensuel", "2026", 0.0309194, 0.00005,
+     f"CALCULATE ( [K05 Taux de résiliation mensuel], {_A26} )"),
+    ("R11", "K06 Rétention à 12 mois", "cohorte T1 2025", 0.6296296, 0.00005,
+     "CALCULATE ( [K06 Rétention de cohorte], 'Mois écoulés'[mois] = 12, dim_etablissement[trimestre_cohorte] = \"T1 2025\" )"),
+    ("R12", "K07 Taux de conversion des prospects", "2024-2026", 0.1794301, 0.00005,
+     "[K07 Taux de conversion des prospects]"),
+    ("R13", "K08 Délai de signature médian (j)", "2024-2026", 18, 0, "[K08 Délai de signature médian]"),
+    ("R14", "K09 CAC Parrainage", "2024-2026", 15.3571429, 0.0005,
+     'CALCULATE ( [K09 CAC], dim_canal[nom_canal] = "Parrainage" )'),
+    ("R15", "K09 CAC Salons professionnels", "2024-2026", 110.5263158, 0.0005,
+     'CALCULATE ( [K09 CAC], dim_canal[nom_canal] = "Salons professionnels" )'),
+    ("R16", "K10 Valeur vie client", "2026", 1025.74, 0.05, f"CALCULATE ( [K10 Valeur vie client], {_A26} )"),
+    ("R17", "K11 Coût par clic", "2026", 0.1164094, 0.00005, f"CALCULATE ( [K11 Coût par clic], {_A26} )"),
+    ("R18", "K11 Taux de clic", "2026", 0.0153677, 0.00005, f"CALCULATE ( [K11 Taux de clic], {_A26} )"),
+    ("R19", "K12 Sessions par table et par jour", "2026", 0.1281513, 0.00005,
+     f"CALCULATE ( [K12 Sessions par table et par jour], {_A26} )"),
+    ("R20", "K13 Taux de commande", "formule Commande", 0.5999430, 0.00005,
+     'CALCULATE ( [K13 Taux de commande], dim_formule[nom_formule] = "Commande" )'),
+    ("R21", "K13 Taux de commande", "formule Pro", 0.6654206, 0.00005,
+     'CALCULATE ( [K13 Taux de commande], dim_formule[nom_formule] = "Pro" )'),
+    ("R22", "K14 Panier moyen (DT TTC)", "2024-2026", 23.4379617, 0.00005, "[K14 Panier moyen]"),
+    ("R23", "K15 Taux d'annulation", "2024-2026", 0.0303738, 0.00005, "[K15 Taux d'annulation]"),
+    ("R24", "Commandes", "2026", 64977, 0, f"CALCULATE ( [Commandes], {_A26} )"),
+    ("R25", "CA des commandes servies (DT TTC)", "2026", 1467087.921, 0.001,
+     f"CALCULATE ( [CA commandes servies TTC], {_A26} )"),
+    ("R26", "K16 Facturé (DT HT)", "2026", 103760, 0.001, f"CALCULATE ( [K16 Facturé HT], {_A26} )"),
+    ("R27", "K16 Encaissé (DT TTC)", "2026", 122439.1, 0.001, f"CALCULATE ( [K16 Encaissé TTC], {_A26} )"),
+    ("R28", "K17 Factures payées en retard", "2026", 0.0987230, 0.00005,
+     f"CALCULATE ( [K17 Taux de factures payées en retard], {_A26} )"),
+    ("R29", "K17 Factures impayées", "2026", 25, 0, f"CALCULATE ( [K17 Factures impayées], {_A26} )"),
+    ("R30", "K18 Délai de résolution médian (h)", "2024-2026", 5.6, 0.00005, "[K18 Délai de résolution médian (h)]"),
+    ("R31", "K18 Satisfaction moyenne", "2024-2026", 3.9239130, 0.00005, "[K18 Satisfaction moyenne]"),
+    ("R32", "K20 Étape 1 Article consulté", "formule Commande", 0.8664309, 0.00005,
+     'CALCULATE ( [K20 Étape 1 Article consulté], dim_formule[nom_formule] = "Commande" )'),
+    ("R33", "K20 Étape 2 Panier", "formule Commande", 0.6797388, 0.00005,
+     'CALCULATE ( [K20 Étape 2 Panier], dim_formule[nom_formule] = "Commande" )'),
+    ("R34", "K21 Marge brute estimée (DT TTC)", "2026", 1093756.116, 0.001,
+     f"CALCULATE ( [K21 Marge brute estimée TTC], {_A26} )"),
+    ("R35", "K21 Taux de coût estimé", "2026", 0.2533099, 0.00005, f"CALCULATE ( [K21 Taux de coût estimé], {_A26} )"),
+    ("R36", "K22 Nombre de vedettes", "2026", 1078, 0, f"CALCULATE ( [K22 Nombre de vedettes], {_A26} )"),
+    ("R37", "K22 Nombre de chevaux de labour", "2026", 1487, 0,
+     f"CALCULATE ( [K22 Nombre de chevaux de labour], {_A26} )"),
+    ("R38", "K22 Nombre d'énigmes", "2026", 1006, 0, f"CALCULATE ( [K22 Nombre d'énigmes], {_A26} )"),
+    ("R39", "K22 Nombre de poids morts", "2026", 1123, 0, f"CALCULATE ( [K22 Nombre de poids morts], {_A26} )"),
+    ("R40", "K23 Part du soir en Ramadan", "2024-2026", 0.9177434, 0.00005, "[K23 Part du soir en Ramadan]"),
+    ("R41", "K23 Part du soir hors Ramadan", "2024-2026", 0.3331768, 0.00005, "[K23 Part du soir hors Ramadan]"),
+]
+
+
+def _ch(s):
+    return '"' + s.replace('"', '""') + '"'
+
+
+TABLES_CALCULEES.append((
+    "Recette", [("code", "string"), ("indicateur", "string"), ("filtre", "string"), ("attendu", "double"),
+                ("tolerance", "double")], None,
+    'DATATABLE ( "code", STRING, "indicateur", STRING, "filtre", STRING, "attendu", DOUBLE, "tolerance", DOUBLE, { '
+    + ", ".join(f"{{ {_ch(c)}, {_ch(i)}, {_ch(f)}, {a}, {t} }}" for c, i, f, a, t, _ in RECETTE) + " } )"))
+
+MESURES += [
+    ("10. Recette", "Recette valeur", "#,0.0000", "SWITCH (\n    SELECTEDVALUE ( Recette[code] ),\n"
+     + ",\n".join(f'    "{c}", {e}' for c, *_, e in RECETTE) + "\n)"),
+    ("10. Recette", "Recette attendu", "#,0.0000", "SELECTEDVALUE ( Recette[attendu] )"),
+    ("10. Recette", "Recette écart", "#,0.0000", """
+IF ( HASONEVALUE ( Recette[code] ), [Recette valeur] - [Recette attendu] )"""),
+    ("10. Recette", "Recette statut", None, """
+VAR v = [Recette valeur]
+RETURN
+    IF (
+        HASONEVALUE ( Recette[code] ),
+        IF ( ISBLANK ( v ), "ABSENT", IF ( ABS ( v - [Recette attendu] ) <= SELECTEDVALUE ( Recette[tolerance] ) + 1E-9, "OK", "ÉCART" ) )
+    )"""),
+    ("10. Recette", "Couleur statut", None, f"""
+SWITCH ( [Recette statut], "OK", "#DCFCE7", "ÉCART", "#FEE2E2", "ABSENT", "#FEF3C7" )"""),
+    ("10. Recette", "Texte recette", None, """
+VAR ok = COUNTROWS ( FILTER ( VALUES ( Recette[code] ), [Recette statut] = "OK" ) )
+RETURN FORMAT ( ok, "0" ) & " / " & FORMAT ( COUNTROWS ( Recette ), "0" ) & " contrôles conformes\""""),
+    ("10. Recette", "Texte recette détail", None,
+     '"valeurs attendues calculées en SQL sur menuscan_dwh le 26/11/2026"'),
 ]

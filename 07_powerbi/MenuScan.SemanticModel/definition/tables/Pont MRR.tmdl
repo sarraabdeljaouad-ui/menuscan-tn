@@ -1,9 +1,7 @@
 table 'Pont MRR'
-	lineageTag: 8c2e8dbe-c9df-4106-9e26-dc0c2296f78c
 
 	column etape
 		dataType: string
-		lineageTag: 14b9f2aa-e4da-4847-a39c-634012a9075d
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [etape]
@@ -11,7 +9,6 @@ table 'Pont MRR'
 
 	column ordre
 		dataType: int64
-		lineageTag: bff2b706-c3dc-4ae9-9c13-7c2f6a2294aa
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [ordre]
@@ -19,4 +16,3 @@ table 'Pont MRR'
 	partition 'Pont MRR' = calculated
 		mode: import
 		source = DATATABLE ( "etape", STRING, "ordre", INTEGER, { { "MRR de départ", 1 }, { "Nouveaux", 2 }, { "Expansion", 3 }, { "Contraction", 4 }, { "Pertes", 5 } } )
-

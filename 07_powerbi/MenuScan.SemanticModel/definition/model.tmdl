@@ -2,15 +2,8 @@ model Model
 	culture: fr-FR
 	defaultPowerBIDataSourceVersion: powerBI_V3
 	sourceQueryCulture: fr-FR
-	dataAccessOptions
-		legacyRedirects
-		returnErrorValuesAsNull
 
-annotation __PBI_TimeIntelligenceEnabled = 0
-
-annotation PBI_QueryOrder = ["dim_date","dim_heure","dim_etablissement","dim_table","dim_article","dim_formule","dim_canal","dim_ville","fait_session","fait_commande","fait_ligne_commande","fait_abonnement_mensuel","fait_facturation","fait_marketing","fait_prospect","fait_ticket_support","fait_vue_article","Serveur","Base"]
-
-annotation PBI_ProTooling = ["DevMode"]
+	annotation __PBI_TimeIntelligenceEnabled = 0
 
 ref table dim_date
 ref table dim_heure
@@ -33,9 +26,7 @@ ref table 'Pont MRR'
 ref table 'Mois écoulés'
 ref table 'Étapes commerciales'
 ref table 'Étapes de session'
-ref table _Mesures
+ref table Recette
+ref table '_Mesures'
 
 ref role 'Gérant démo'
-
-ref cultureInfo fr-FR
-

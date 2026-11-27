@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "2f28655b03224c680741",
   "position": {
-    "x": 176,
+    "x": 16,
     "y": 58,
     "z": 1010,
     "height": 50,
@@ -23,12 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "formule_actuelle"
+                  "Property": "ville"
                 }
               },
-              "queryRef": "dim_etablissement.formule_actuelle",
-              "nativeQueryRef": "formule_actuelle",
-              "active": true
+              "queryRef": "dim_etablissement.ville",
+              "nativeQueryRef": "ville"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Formule'"
+                  "Value": "'Ville'"
                 }
               }
             }

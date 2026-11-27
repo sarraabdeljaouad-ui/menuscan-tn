@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "fecc7640f2095a95c583",
   "position": {
-    "x": 176,
+    "x": 16,
     "y": 58,
     "z": 1010,
     "height": 50,
@@ -20,15 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_canal"
+                      "Entity": "dim_date"
                     }
                   },
-                  "Property": "nom_canal"
+                  "Property": "annee"
                 }
               },
-              "queryRef": "dim_canal.nom_canal",
-              "nativeQueryRef": "nom_canal",
-              "active": true
+              "queryRef": "dim_date.annee",
+              "nativeQueryRef": "annee"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Canal'"
+                  "Value": "'Période'"
                 }
               }
             }

@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "f616ba0366c52617a096",
   "position": {
-    "x": 176,
+    "x": 16,
     "y": 58,
     "z": 1010,
     "height": 50,
@@ -20,15 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_etablissement"
+                      "Entity": "dim_date"
                     }
                   },
-                  "Property": "ville"
+                  "Property": "annee"
                 }
               },
-              "queryRef": "dim_etablissement.ville",
-              "nativeQueryRef": "ville",
-              "active": true
+              "queryRef": "dim_date.annee",
+              "nativeQueryRef": "annee"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Ville'"
+                  "Value": "'Période'"
                 }
               }
             }

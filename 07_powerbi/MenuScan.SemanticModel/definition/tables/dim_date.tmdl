@@ -1,10 +1,8 @@
 table dim_date
-	lineageTag: 00dc5ed8-866e-4e01-aa71-3656cea4aee1
 	dataCategory: Time
 
 	column date_id
 		dataType: int64
-		lineageTag: 5429b621-8433-43bc-9818-a660ddf5d2e8
 		summarizeBy: none
 		sourceColumn: date_id
 
@@ -12,36 +10,29 @@ table dim_date
 		dataType: dateTime
 		isKey
 		formatString: Short Date
-		lineageTag: f2bae595-c9a7-4948-9332-9728a4d5aa29
 		summarizeBy: none
 		sourceColumn: date
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column annee
 		dataType: int64
 		formatString: 0
-		lineageTag: dedbb922-c829-44b9-8348-e8090e987f91
 		summarizeBy: none
 		sourceColumn: annee
 
 	column trimestre
 		dataType: int64
 		formatString: 0
-		lineageTag: 5f6afb75-ee79-44d9-addc-c2024b3ba87a
 		summarizeBy: none
 		sourceColumn: trimestre
 
 	column mois
 		dataType: int64
 		formatString: 0
-		lineageTag: 74226f2d-c103-4474-8ea1-978d2b780911
 		summarizeBy: none
 		sourceColumn: mois
 
 	column nom_mois
 		dataType: string
-		lineageTag: 18df1167-b467-40d4-b31f-f2132a1f1fc2
 		summarizeBy: none
 		sourceColumn: nom_mois
 		sortByColumn: mois
@@ -49,79 +40,65 @@ table dim_date
 	column premier_jour_mois
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 47f763d8-92bb-4c4a-9593-5367d03315b6
 		summarizeBy: none
 		sourceColumn: premier_jour_mois
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column annee_mois
 		dataType: string
-		lineageTag: b638529a-3c9d-4ff9-aa3d-89039843ba6a
 		summarizeBy: none
 		sourceColumn: annee_mois
 
 	column semaine_iso
 		dataType: int64
 		formatString: 0
-		lineageTag: 0ac38674-a495-4748-8e3e-beb6d5f94ee1
 		summarizeBy: none
 		sourceColumn: semaine_iso
 
 	column jour_semaine
 		dataType: int64
 		formatString: 0
-		lineageTag: 5fabcf40-a98f-4105-bea7-5e11ba04e2c8
 		summarizeBy: none
 		sourceColumn: jour_semaine
 
 	column nom_jour
 		dataType: string
-		lineageTag: ea1c6779-e76e-40d9-be4c-cdb0156f18d7
 		summarizeBy: none
 		sourceColumn: nom_jour
 		sortByColumn: jour_semaine
 
 	column est_weekend
 		dataType: boolean
-		lineageTag: 06d377b9-46c0-43e4-be14-419427071828
 		summarizeBy: none
 		sourceColumn: est_weekend
 
 	column est_jour_ferie
 		dataType: boolean
-		lineageTag: 1977b5b1-5a81-403c-90a9-079f62325116
 		summarizeBy: none
 		sourceColumn: est_jour_ferie
 
 	column nom_jour_ferie
 		dataType: string
-		lineageTag: f92c70b5-2043-4f2f-884b-148c1b4a734d
 		summarizeBy: none
 		sourceColumn: nom_jour_ferie
 
 	column est_ramadan
 		dataType: boolean
-		lineageTag: 4bff1256-2826-43af-b75d-efd4f5756963
 		summarizeBy: none
 		sourceColumn: est_ramadan
 
 	column periode_activite
 		dataType: string
-		lineageTag: 2302e793-19fc-49ae-b76b-9a7bebac8686
 		summarizeBy: none
 		sourceColumn: periode_activite
 
 	column jour_court = UPPER ( LEFT ( dim_date[nom_jour], 1 ) ) & MID ( dim_date[nom_jour], 2, 2 )
 		dataType: string
-		lineageTag: fbb4e747-7323-4611-a082-e763b831c52e
 		summarizeBy: none
 		sortByColumn: jour_semaine
 
 	column debut_semaine = dim_date[date] - WEEKDAY ( dim_date[date], 2 ) + 1
 		dataType: dateTime
 		formatString: dd/MM/yyyy
-		lineageTag: f81399ef-23b9-4d3b-9694-2129e699a9c8
 		summarizeBy: none
 
 	partition dim_date = m
@@ -132,4 +109,3 @@ table dim_date
 					Donnees = Source{[Schema = "marts", Item = "dim_date"]}[Data]
 				in
 					Donnees
-

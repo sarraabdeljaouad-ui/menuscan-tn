@@ -1,10 +1,3 @@
 expression Serveur = "localhost:5440" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
-	lineageTag: bd045623-ba6a-45b7-92d5-c2f6702f2172
-
-	annotation PBI_ResultType = Text
 
 expression Base = "menuscan_dwh" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
-	lineageTag: 02983e12-b5c7-44c1-992b-91d2f733fda8
-
-	annotation PBI_ResultType = Text
-

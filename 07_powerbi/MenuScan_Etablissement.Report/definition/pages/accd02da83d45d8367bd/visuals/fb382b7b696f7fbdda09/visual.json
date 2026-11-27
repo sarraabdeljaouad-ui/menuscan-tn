@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "fb382b7b696f7fbdda09",
   "position": {
-    "x": 848,
-    "y": 210,
+    "x": 16,
+    "y": 516,
     "z": 1022,
-    "height": 400,
-    "width": 416,
+    "height": 190,
+    "width": 820,
     "tabOrder": 1022
   },
   "visual": {
@@ -23,11 +23,12 @@
                       "Entity": "dim_heure"
                     }
                   },
-                  "Property": "libelle_court"
+                  "Property": "heure"
                 }
               },
-              "queryRef": "dim_heure.libelle_court",
-              "nativeQueryRef": "libelle_court",
+              "queryRef": "dim_heure.heure",
+              "nativeQueryRef": "heure",
+              "displayName": "Heure",
               "active": true
             }
           ]
@@ -66,24 +67,6 @@
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "dim_heure"
-                  }
-                },
-                "Property": "libelle_court"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ],
-        "isDefaultSort": false
       }
     },
     "visualContainerObjects": {
@@ -234,7 +217,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Part des commandes servies de chaque heure'"
+                  "Value": "'Part des commandes servies de chaque heure (0 à 23 h)'"
                 }
               }
             },

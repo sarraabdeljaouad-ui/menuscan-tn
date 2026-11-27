@@ -1,58 +1,38 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "9735f758f4d58f8edcbf",
   "position": {
-    "x": 668,
+    "x": 16,
     "y": 210,
     "z": 1023,
     "height": 290,
-    "width": 596,
+    "width": 640,
     "tabOrder": 1023
   },
   "visual": {
-    "visualType": "pivotTable",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
-        "Columns": {
+        "Category": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Mois écoulés"
+                      "Entity": "dim_date"
                     }
                   },
-                  "Property": "libelle"
+                  "Property": "annee_mois"
                 }
               },
-              "queryRef": "Mois écoulés.libelle",
-              "nativeQueryRef": "libelle",
+              "queryRef": "dim_date.annee_mois",
+              "nativeQueryRef": "annee_mois",
               "active": true
             }
           ]
         },
-        "Rows": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_etablissement"
-                    }
-                  },
-                  "Property": "trimestre_cohorte"
-                }
-              },
-              "queryRef": "dim_etablissement.trimestre_cohorte",
-              "nativeQueryRef": "trimestre_cohorte",
-              "active": true,
-              "displayName": "Cohorte"
-            }
-          ]
-        },
-        "Values": {
+        "Y": {
           "projections": [
             {
               "field": {
@@ -62,86 +42,33 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "K06 Rétention de cohorte"
+                  "Property": "K05 Taux de résiliation mensuel"
                 }
               },
-              "queryRef": "_Mesures.K06 Rétention de cohorte",
-              "nativeQueryRef": "K06 Rétention de cohorte",
-              "displayName": "Rétention"
+              "queryRef": "_Mesures.K05 Taux de résiliation mensuel",
+              "nativeQueryRef": "K05 Taux de résiliation mensuel"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_date"
+                  }
+                },
+                "Property": "annee_mois"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": false
       }
-    },
-    "objects": {
-      "subTotals": [
-        {
-          "properties": {
-            "rowSubtotals": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "columnSubtotals": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "values": [
-        {
-          "properties": {
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "_Mesures"
-                        }
-                      },
-                      "Property": "Couleur cohorte"
-                    }
-                  }
-                }
-              }
-            },
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "_Mesures"
-                        }
-                      },
-                      "Property": "Couleur texte cohorte"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "_Mesures.K06 Rétention de cohorte"
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -253,7 +180,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Rétention par cohorte de mise en service (K06)'"
+                  "Value": "'Taux de résiliation mensuel (K05)'"
                 }
               }
             },
@@ -290,8 +217,13 @@
             },
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'Part des établissements encore actifs n mois après leur mise en service'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Mesures"
+                    }
+                  },
+                  "Property": "Texte moyenne K05"
                 }
               }
             },
@@ -308,6 +240,38 @@
                   "expr": {
                     "Literal": {
                       "Value": "'#64748B'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D4ED8'"
                     }
                   }
                 }

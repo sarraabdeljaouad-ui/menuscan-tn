@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "27e624b4f525c4417a7f",
   "position": {
-    "x": 336,
+    "x": 176,
     "y": 58,
     "z": 1011,
     "height": 50,
@@ -20,15 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "fait_marketing"
+                      "Entity": "dim_canal"
                     }
                   },
-                  "Property": "campagne_id"
+                  "Property": "nom_canal"
                 }
               },
-              "queryRef": "fait_marketing.campagne_id",
-              "nativeQueryRef": "campagne_id",
-              "active": true
+              "queryRef": "dim_canal.nom_canal",
+              "nativeQueryRef": "nom_canal"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Campagne'"
+                  "Value": "'Canal'"
                 }
               }
             }

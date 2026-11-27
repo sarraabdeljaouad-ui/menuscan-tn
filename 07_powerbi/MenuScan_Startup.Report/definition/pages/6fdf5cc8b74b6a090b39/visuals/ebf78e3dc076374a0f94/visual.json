@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "ebf78e3dc076374a0f94",
   "position": {
-    "x": 648,
+    "x": 16,
     "y": 510,
     "z": 1027,
     "height": 196,
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_etablissement"
+                      "Entity": "dim_formule"
                     }
                   },
-                  "Property": "ville"
+                  "Property": "nom_formule"
                 }
               },
-              "queryRef": "dim_etablissement.ville",
-              "nativeQueryRef": "ville",
+              "queryRef": "dim_formule.nom_formule",
+              "nativeQueryRef": "nom_formule",
               "active": true
             }
           ]
@@ -42,71 +42,15 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "K01 Établissements actifs"
+                  "Property": "K02 MRR"
                 }
               },
-              "queryRef": "_Mesures.K01 Établissements actifs",
-              "nativeQueryRef": "K01 Établissements actifs"
+              "queryRef": "_Mesures.K02 MRR",
+              "nativeQueryRef": "K02 MRR"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "_Mesures"
-                  }
-                },
-                "Property": "K01 Établissements actifs"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
-    },
-    "objects": {
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1D4ED8'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -218,7 +162,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Établissements actifs par ville'"
+                  "Value": "'MRR par formule (DT HT)'"
                 }
               }
             },
@@ -250,6 +194,45 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D4ED8'"
+                    }
+                  }
                 }
               }
             }

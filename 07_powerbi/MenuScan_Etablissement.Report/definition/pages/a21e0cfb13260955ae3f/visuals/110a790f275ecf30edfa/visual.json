@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "110a790f275ecf30edfa",
   "position": {
-    "x": 668,
+    "x": 628,
     "y": 210,
     "z": 1021,
     "height": 400,
-    "width": 596,
+    "width": 636,
     "tabOrder": 1021
   },
   "visual": {
@@ -58,7 +58,7 @@
               },
               "queryRef": "_Mesures.Prix avant → après",
               "nativeQueryRef": "Prix avant → après",
-              "displayName": "Prix TTC (DT)"
+              "displayName": "Prix TTC"
             },
             {
               "field": {
@@ -83,27 +83,12 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Fenêtre (jours)"
-                }
-              },
-              "queryRef": "_Mesures.Fenêtre (jours)",
-              "nativeQueryRef": "Fenêtre (jours)",
-              "displayName": "Fenêtre (j)"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Mesures"
-                    }
-                  },
                   "Property": "Quantités avant → après"
                 }
               },
               "queryRef": "_Mesures.Quantités avant → après",
               "nativeQueryRef": "Quantités avant → après",
-              "displayName": "Qté avant → après"
+              "displayName": "Qté av. → ap."
             },
             {
               "field": {
@@ -290,7 +275,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Choisir un établissement · fenêtre égale avant et après, au plus 30 jours'"
+                  "Value": "'Choisir un établissement · même durée avant et après (14 à 60 jours) · articles vendus seulement'"
                 }
               }
             },
@@ -309,6 +294,21 @@
                       "Value": "'#64748B'"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

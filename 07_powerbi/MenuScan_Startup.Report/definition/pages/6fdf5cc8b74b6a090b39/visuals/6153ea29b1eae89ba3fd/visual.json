@@ -6,7 +6,7 @@
     "y": 8,
     "z": 1004,
     "height": 36,
-    "width": 160,
+    "width": 127,
     "tabOrder": 1004
   },
   "visual": {
@@ -29,7 +29,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'TB-1 · Croissance'"
+                  "Value": "'Croissance'"
                 }
               }
             },

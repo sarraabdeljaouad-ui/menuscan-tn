@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "a1164f97852412bb5254",
   "position": {
-    "x": 570,
+    "x": 537,
     "y": 8,
     "z": 1005,
     "height": 36,
-    "width": 160,
+    "width": 127,
     "tabOrder": 1005
   },
   "visual": {
@@ -29,7 +29,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'TB-2 · Rétention'"
+                  "Value": "'Rétention'"
                 }
               }
             },

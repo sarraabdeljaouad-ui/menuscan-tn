@@ -1,179 +1,143 @@
 table dim_etablissement
-	lineageTag: 41ffb1e4-4071-4052-b11e-db2c2425bca5
 
 	column etablissement_id
 		dataType: string
-		lineageTag: 66e50be4-7ca0-4ac3-8c11-5abf41602590
 		summarizeBy: none
 		sourceColumn: etablissement_id
 
 	column nom_etablissement
 		dataType: string
-		lineageTag: 99f098f2-becf-41b9-bc81-b3ce8a1dceac
 		summarizeBy: none
 		sourceColumn: nom_etablissement
 
 	column type_etablissement
 		dataType: string
-		lineageTag: 2c26de98-e32f-4a9c-b32b-5c201d12b83a
 		summarizeBy: none
 		sourceColumn: type_etablissement
 
 	column ville_id
 		dataType: string
-		lineageTag: 65484b3b-f1b6-454a-8b93-0f7ddd4825f8
 		summarizeBy: none
 		sourceColumn: ville_id
 
 	column ville
 		dataType: string
-		lineageTag: 6b79d8e4-38f3-47d5-acad-433908dc0c2c
 		summarizeBy: none
 		sourceColumn: ville
 
 	column gouvernorat
 		dataType: string
-		lineageTag: ff0e1f1f-082f-4e76-9289-0d6501016691
 		summarizeBy: none
 		sourceColumn: gouvernorat
 
 	column region
 		dataType: string
-		lineageTag: 563f1c5e-066a-404a-8921-0e43e014389d
 		summarizeBy: none
 		sourceColumn: region
 
 	column canal_id
 		dataType: string
-		lineageTag: 4f9b2c72-aad0-4fca-8eb7-89bc495046ee
 		summarizeBy: none
 		sourceColumn: canal_id
 
 	column nom_canal
 		dataType: string
-		lineageTag: 07105dba-82d8-486e-b4c8-eeefc5374d07
 		summarizeBy: none
 		sourceColumn: nom_canal
 
 	column type_canal
 		dataType: string
-		lineageTag: 845c0449-d087-425d-8ab0-cff2b85a8b5e
 		summarizeBy: none
 		sourceColumn: type_canal
 
 	column campagne_id
 		dataType: string
-		lineageTag: e2873df6-0b0b-4e35-b3e0-cd1b4cca44c0
 		summarizeBy: none
 		sourceColumn: campagne_id
 
 	column prospect_id
 		dataType: string
-		lineageTag: c344b0a6-1c73-4f48-b5d5-055b3e98ba6e
 		summarizeBy: none
 		sourceColumn: prospect_id
 
 	column date_signature
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 13a1adbd-d602-4f46-bc60-ae79e0206a6b
 		summarizeBy: none
 		sourceColumn: date_signature
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column date_mise_en_service
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 5275fd9d-cbec-441b-b986-d0f3783d28b4
 		summarizeBy: none
 		sourceColumn: date_mise_en_service
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column mois_cohorte
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 49cf96eb-520f-411a-8423-273e184dae67
 		summarizeBy: none
 		sourceColumn: mois_cohorte
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column nb_tables
 		dataType: int64
 		formatString: 0
-		lineageTag: 46dd033f-f0da-4bb3-86dc-eb3cbc5d801c
 		summarizeBy: none
 		sourceColumn: nb_tables
 
 	column formule_initiale_id
 		dataType: string
-		lineageTag: 87a679c5-170b-4fc1-8bb6-ebeb6b39f813
 		summarizeBy: none
 		sourceColumn: formule_initiale_id
 
 	column formule_initiale
 		dataType: string
-		lineageTag: 56f7a476-752e-44af-8656-f60d096c2f4b
 		summarizeBy: none
 		sourceColumn: formule_initiale
 
 	column formule_actuelle_id
 		dataType: string
-		lineageTag: f8f20284-db77-42eb-b0bc-4b2a58cf759d
 		summarizeBy: none
 		sourceColumn: formule_actuelle_id
 
 	column formule_actuelle
 		dataType: string
-		lineageTag: 1c2573b0-ac51-4906-b5b5-69ba1b8a1d46
 		summarizeBy: none
 		sourceColumn: formule_actuelle
 
 	column periodicite_facturation
 		dataType: string
-		lineageTag: de33c354-4362-4962-ac08-6391ba11d0d7
 		summarizeBy: none
 		sourceColumn: periodicite_facturation
 
 	column statut_etablissement
 		dataType: string
-		lineageTag: aeeb48fb-6a5a-4aff-bccf-5350d28a0a32
 		summarizeBy: none
 		sourceColumn: statut_etablissement
 
 	column est_actif
 		dataType: boolean
-		lineageTag: 76fd5c56-41ae-4d60-bebb-dca1d2bcfeb2
 		summarizeBy: none
 		sourceColumn: est_actif
 
 	column date_resiliation
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 66e124cb-e2e9-42bf-b1a4-8724d145c4aa
 		summarizeBy: none
 		sourceColumn: date_resiliation
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column motif_resiliation
 		dataType: string
-		lineageTag: 385b9de8-25f9-4885-a7b0-a7b0004acd2f
 		summarizeBy: none
 		sourceColumn: motif_resiliation
 
 	column trimestre_cohorte = "T" & QUARTER ( dim_etablissement[mois_cohorte] ) & " " & YEAR ( dim_etablissement[mois_cohorte] )
 		dataType: string
-		lineageTag: 9022f97f-8d12-4523-86ee-474339b5dcbb
 		summarizeBy: none
 		sortByColumn: ordre_cohorte
 
 	column ordre_cohorte = YEAR ( dim_etablissement[mois_cohorte] ) * 10 + QUARTER ( dim_etablissement[mois_cohorte] )
 		dataType: int64
 		formatString: 0
-		lineageTag: 3b94cfc2-e1cf-4f29-a794-0fb071f8f94d
 		summarizeBy: none
 
 	partition dim_etablissement = m
@@ -184,4 +148,3 @@ table dim_etablissement
 					Donnees = Source{[Schema = "marts", Item = "dim_etablissement"]}[Data]
 				in
 					Donnees
-

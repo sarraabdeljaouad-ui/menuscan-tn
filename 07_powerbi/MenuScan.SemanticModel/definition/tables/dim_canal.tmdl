@@ -1,32 +1,25 @@
 table dim_canal
-	lineageTag: f2567d93-1c98-445c-b54f-eb9a70d23bce
 
 	column canal_id
 		dataType: string
-		lineageTag: 70e893a3-2ab3-404a-bbd5-cdf5fe69bd18
 		summarizeBy: none
 		sourceColumn: canal_id
 
 	column nom_canal
 		dataType: string
-		lineageTag: 7f2c1d32-630c-4806-b845-2e4f11162025
 		summarizeBy: none
 		sourceColumn: nom_canal
 
 	column type_canal
 		dataType: string
-		lineageTag: 7ee8d4a3-bb44-40d7-8d58-90b8b3ab830f
 		summarizeBy: none
 		sourceColumn: type_canal
 
 	column taux_conversion_cible
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: abf8d615-1a9d-420e-8c09-24facd012891
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: taux_conversion_cible
-
-		annotation SummarizationSetBy = Automatic
 
 	partition dim_canal = m
 		mode: import
@@ -36,4 +29,3 @@ table dim_canal
 					Donnees = Source{[Schema = "marts", Item = "dim_canal"]}[Data]
 				in
 					Donnees
-

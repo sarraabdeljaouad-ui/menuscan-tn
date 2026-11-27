@@ -1,42 +1,34 @@
-table _Mesures
-	lineageTag: f5b48378-fafc-431b-8f38-d4b5c5d957db
+table '_Mesures'
 
 	measure Sessions = COUNTROWS ( fait_session )
 		formatString: #,0
 		displayFolder: 0. Bases
-		lineageTag: 50eaf6e5-8294-4b35-bbbd-39369837dc8f
 
 	measure Commandes = COUNTROWS ( fait_commande )
 		formatString: #,0
 		displayFolder: 0. Bases
-		lineageTag: fd48b8be-046f-443d-9fb6-219251f310f5
 
 	measure 'Commandes servies' = CALCULATE ( COUNTROWS ( fait_commande ), fait_commande[est_servie] = TRUE () )
 		formatString: #,0
 		displayFolder: 0. Bases
-		lineageTag: 6651ce19-beb0-4e00-8996-f9ed0726bdff
 
 	measure 'CA commandes servies TTC' = CALCULATE ( SUM ( fait_commande[montant_total_ttc] ), fait_commande[est_servie] = TRUE () )
 		formatString: #,0
 		displayFolder: 0. Bases
-		lineageTag: 49ce5c84-bc1e-4fe2-9589-4927171f0172
 
 	measure 'Commandes servies par jour' = DIVIDE ( [Commandes servies], COUNTROWS ( dim_date ) )
 		formatString: #,0.0
 		displayFolder: 0. Bases
-		lineageTag: 75ae16fc-3df9-4940-8223-346252eae9e1
 
 	measure Prospects = COUNTROWS ( fait_prospect )
 		formatString: #,0
 		displayFolder: 0. Bases
-		lineageTag: 8a035e95-a642-4caa-abcc-c85727438c80
 
 	measure 'Dépenses marketing TTC' = SUM ( fait_marketing[depense_ttc] )
 		formatString: #,0
 		displayFolder: 0. Bases
-		lineageTag: abf1ac5e-5f3b-4e25-85e7-0af726de72a4
 
-	measure 'K01 Établissements actifs' =
+	measure 'K01 Établissements actifs' = ```
 			VAR m = MAX ( dim_date[premier_jour_mois] )
 			RETURN
 				CALCULATE (
@@ -45,11 +37,11 @@ table _Mesures
 					REMOVEFILTERS ( dim_date ),
 					dim_date[premier_jour_mois] = m
 				)
+			```
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: b4ff8480-1cc6-4264-bc8c-0be0586c4a35
 
-	measure 'K02 MRR' =
+	measure 'K02 MRR' = ```
 			VAR m = MAX ( dim_date[premier_jour_mois] )
 			VAR r =
 				CALCULATE (
@@ -59,41 +51,35 @@ table _Mesures
 				)
 			RETURN
 				IF ( r <> 0, r )
+			```
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: cf3db834-fd86-4000-9b15-b580df69d465
 
 	measure 'K03 ARR' = 12 * [K02 MRR]
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 2ef6e87e-21cb-44f5-a748-20e26ed1fe7b
 
 	measure 'K04 MRR nouveau' = SUM ( fait_abonnement_mensuel[mrr_nouveau_ht] )
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 18d569ed-6dd6-4d12-899c-e02e7e176223
 
 	measure 'K04 MRR expansion' = SUM ( fait_abonnement_mensuel[mrr_expansion_ht] )
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 3319494c-2dfe-4ecd-b3b8-4d922c41990b
 
 	measure 'K04 MRR contraction' = SUM ( fait_abonnement_mensuel[mrr_contraction_ht] )
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 66e51032-51ca-42df-9343-1dbe0b28f948
 
 	measure 'K04 MRR perdu' = SUM ( fait_abonnement_mensuel[mrr_resiliation_ht] )
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: dc607c0f-5ed6-4aa7-ae49-26a86066eee4
 
 	measure 'K04 Variation nette du MRR' = SUM ( fait_abonnement_mensuel[variation_ht] )
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 9ced7912-3ceb-43a0-80eb-c3f823f9fbfa
 
-	measure Résiliations =
+	measure 'Résiliations' = ```
 			VAR d1 = MIN ( dim_date[date] )
 			VAR d2 = MAX ( dim_date[date] )
 			RETURN
@@ -104,11 +90,11 @@ table _Mesures
 							&& dim_etablissement[date_resiliation] <= d2
 					)
 				)
+			```
 		formatString: #,0
 		displayFolder: 2. Rétention
-		lineageTag: bdc097d0-ba8b-4735-b1b1-a34d2552af62
 
-	measure 'K05 Taux de résiliation mensuel' =
+	measure 'K05 Taux de résiliation mensuel' = ```
 			VAR mois = VALUES ( dim_date[premier_jour_mois] )
 			VAR resiliations =
 				SUMX (
@@ -139,73 +125,70 @@ table _Mesures
 				)
 			RETURN
 				DIVIDE ( resiliations, actifs_debut )
+			```
 		formatString: 0.00 %
 		displayFolder: 2. Rétention
-		lineageTag: ef8db068-19d4-4d7a-924d-b03f02439b93
 
-	measure 'K07 Taux de conversion des prospects' =
+	measure 'K07 Taux de conversion des prospects' = ```
 			DIVIDE (
 				CALCULATE ( COUNTROWS ( fait_prospect ), fait_prospect[est_converti] = TRUE () ),
 				[Prospects]
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 3. Acquisition
-		lineageTag: 1a9f581b-7cdd-4cdf-a475-469c8bab6293
 
 	measure 'K08 Délai de signature médian' = CALCULATE ( MEDIAN ( fait_prospect[delai_conversion_jours] ), fait_prospect[est_converti] = TRUE () )
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: b79c1031-af8e-4f2f-be1a-cd4503a1054c
 
-	measure Signatures =
+	measure Signatures = ```
 			CALCULATE (
 				COUNTROWS ( fait_prospect ),
 				fait_prospect[est_converti] = TRUE (),
 				REMOVEFILTERS ( dim_date ),
 				TREATAS ( VALUES ( dim_date[date] ), fait_prospect[date_conversion] )
 			)
+			```
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: 7ca2f493-49b0-4565-aaad-00a2aebb7895
 
 	measure 'K09 CAC' = DIVIDE ( [Dépenses marketing TTC], [Signatures] )
 		formatString: #,0.0
 		displayFolder: 3. Acquisition
-		lineageTag: eb26b161-1ce7-42a6-9729-0823583f0609
 
-	measure 'Revenu mensuel moyen par établissement' =
+	measure 'Revenu mensuel moyen par établissement' = ```
 			DIVIDE (
 				CALCULATE ( SUM ( fait_abonnement_mensuel[mrr_ht] ), fait_abonnement_mensuel[est_abonne] = TRUE () ),
 				CALCULATE ( COUNTROWS ( fait_abonnement_mensuel ), fait_abonnement_mensuel[est_abonne] = TRUE () )
 			)
+			```
 		formatString: #,0.00
 		displayFolder: 3. Acquisition
-		lineageTag: 3731ad00-af49-47ba-b1ca-2cd8691c2d87
 
 	measure 'K10 Valeur vie client' = DIVIDE ( [Revenu mensuel moyen par établissement], [K05 Taux de résiliation mensuel] )
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: 71fa0437-fbf1-4fac-8e5e-091a9b3ee21c
 
-	measure 'K11 Coût par clic' =
+	measure 'K11 Coût par clic' = ```
 			CALCULATE (
 				DIVIDE ( SUM ( fait_marketing[depense_ttc] ), SUM ( fait_marketing[clics] ) ),
 				KEEPFILTERS ( dim_canal[type_canal] = "en_ligne" )
 			)
+			```
 		formatString: #,0.000
 		displayFolder: 3. Acquisition
-		lineageTag: 25319114-851c-41bf-a4fe-49a0227c4ee8
 
-	measure 'K11 Taux de clic' =
+	measure 'K11 Taux de clic' = ```
 			CALCULATE (
 				DIVIDE ( SUM ( fait_marketing[clics] ), SUM ( fait_marketing[impressions] ) ),
 				KEEPFILTERS ( dim_canal[type_canal] = "en_ligne" )
 			)
+			```
 		formatString: 0.00 %
 		displayFolder: 3. Acquisition
-		lineageTag: a92e9224-a601-413e-8fcb-3c4a672c4880
 
-	measure 'K12 Sessions par table et par jour' =
+	measure 'K12 Sessions par table et par jour' = ```
 			VAR d1 = MIN ( dim_date[date] )
 			VAR d2 = MAX ( dim_date[date] )
 			VAR tables_jours =
@@ -226,11 +209,11 @@ table _Mesures
 				)
 			RETURN
 				DIVIDE ( [Sessions], tables_jours )
+			```
 		formatString: #,0.000
 		displayFolder: 4. Usage
-		lineageTag: 75b286f2-0d3e-46e4-a18f-9eda0286a40a
 
-	measure 'K13 Taux de commande' =
+	measure 'K13 Taux de commande' = ```
 			DIVIDE (
 				CALCULATE (
 					COUNTROWS ( fait_session ),
@@ -239,16 +222,15 @@ table _Mesures
 				),
 				CALCULATE ( COUNTROWS ( fait_session ), KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ) )
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 4. Usage
-		lineageTag: 5b69bd80-9294-4239-8c9b-e6de40f40c25
 
 	measure 'K20 Étape 1 Article consulté' = DIVIDE ( CALCULATE ( COUNTROWS ( fait_session ), fait_session[a_vu_article] = TRUE () ), [Sessions] )
 		formatString: 0.0 %
 		displayFolder: 4. Usage
-		lineageTag: 84ee7f1b-8122-4135-a1a4-60f87524cd43
 
-	measure 'K20 Étape 2 Panier' =
+	measure 'K20 Étape 2 Panier' = ```
 			DIVIDE (
 				CALCULATE (
 					COUNTROWS ( fait_session ),
@@ -257,89 +239,77 @@ table _Mesures
 				),
 				CALCULATE ( COUNTROWS ( fait_session ), KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ) )
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 4. Usage
-		lineageTag: c027d654-2a26-4dbd-9918-ec230b06ce53
 
 	measure 'K20 Étape 3 Commande' = [K13 Taux de commande]
 		formatString: 0.0 %
 		displayFolder: 4. Usage
-		lineageTag: 5cb1124f-d848-4fb3-b7da-c2c2afbfd614
 
 	measure 'K14 Panier moyen' = DIVIDE ( [CA commandes servies TTC], [Commandes servies] )
 		formatString: #,0.00
 		displayFolder: 5. Activité en salle
-		lineageTag: 0f0e243e-2633-4b6e-8654-092a31bc06b1
 
 	measure 'K15 Taux d''annulation' = DIVIDE ( CALCULATE ( COUNTROWS ( fait_commande ), fait_commande[statut_commande] = "annulee" ), [Commandes] )
 		formatString: 0.00 %
 		displayFolder: 5. Activité en salle
-		lineageTag: 6912886b-de96-4bae-8570-c9b49f098994
 
 	measure 'K16 Facturé HT' = SUM ( fait_facturation[montant_net_ht] )
 		formatString: #,0
 		displayFolder: 6. Facturation
-		lineageTag: d617712f-14e6-4775-933d-811aab1b96d7
 
 	measure 'K16 Encaissé TTC' = SUM ( fait_facturation[montant_encaisse_ttc] )
 		formatString: #,0
 		displayFolder: 6. Facturation
-		lineageTag: df26395e-8034-48f3-b3c0-c787b82684da
 
-	measure 'K17 Taux de factures payées en retard' =
+	measure 'K17 Taux de factures payées en retard' = ```
 			DIVIDE (
 				CALCULATE ( COUNTROWS ( fait_facturation ), fait_facturation[statut_facture] = "payee_en_retard" ),
 				CALCULATE ( COUNTROWS ( fait_facturation ), fait_facturation[montant_ttc] > 0 )
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 6. Facturation
-		lineageTag: 98c9a422-f004-46ff-8871-981ef9978c8e
 
 	measure 'K17 Factures impayées' = CALCULATE ( COUNTROWS ( fait_facturation ), fait_facturation[statut_facture] = "impayee" )
 		formatString: #,0
 		displayFolder: 6. Facturation
-		lineageTag: 483d9e4d-c3ee-4732-81a3-ac851534bf6c
 
 	measure 'K18 Délai de résolution médian (h)' = CALCULATE ( MEDIAN ( fait_ticket_support[delai_resolution_heures] ), fait_ticket_support[statut_ticket] = "resolu" )
 		formatString: #,0.0
 		displayFolder: 7. Support
-		lineageTag: 8a191400-5d49-4a72-8a08-95b13e455f51
 
 	measure 'K18 Satisfaction moyenne' = CALCULATE ( AVERAGE ( fait_ticket_support[note_satisfaction] ), fait_ticket_support[statut_ticket] = "resolu" )
 		formatString: 0.00
 		displayFolder: 7. Support
-		lineageTag: de988331-4ac9-4433-8453-f802e77b32f0
 
 	measure 'Quantités servies' = CALCULATE ( SUM ( fait_ligne_commande[quantite] ), fait_ligne_commande[est_servie] = TRUE () )
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: dd366a0d-f584-407f-b68a-1506af50f6ee
 
 	measure 'Ventes servies TTC (lignes)' = CALCULATE ( SUM ( fait_ligne_commande[montant_ligne_ttc] ), fait_ligne_commande[est_servie] = TRUE () )
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 9b6eb3c7-e53a-4912-8399-7596bd2ec979
 
 	measure 'K21 Marge brute estimée TTC' = CALCULATE ( SUM ( fait_ligne_commande[marge_brute_estimee_ttc] ), fait_ligne_commande[est_servie] = TRUE () )
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 3feec550-dfd8-41fc-8069-40d9d3b8cdb4
 
-	measure 'K21 Taux de coût estimé' =
+	measure 'K21 Taux de coût estimé' = ```
 			DIVIDE (
 				CALCULATE ( SUM ( fait_ligne_commande[cout_matiere_estime_ttc] ), fait_ligne_commande[est_servie] = TRUE () ),
 				[Ventes servies TTC (lignes)]
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 8. Menu et marge
-		lineageTag: 6bb29619-f9a6-4d1c-bc30-fc5bb1471835
 
 	measure 'K22 Marge unitaire estimée' = DIVIDE ( [K21 Marge brute estimée TTC], [Quantités servies] )
 		formatString: #,0.000
 		displayFolder: 8. Menu et marge
-		lineageTag: 7f6cce0a-beea-4be5-b622-6565fafead88
 
-	measure 'K22 Classe du plat' =
+	measure 'K22 Classe du plat' = ```
 			VAR q = [Quantités servies]
 			VAR etab = VALUES ( dim_article[etablissement_id] )
 			VAR q_etab =
@@ -365,91 +335,87 @@ table _Mesures
 						"Poids mort"
 					)
 				)
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: 4be3c69f-7159-4f75-a4fe-febf8d7d05c9
 
-	measure 'K22 Nombre de vedettes' =
+	measure 'K22 Nombre de vedettes' = ```
 			COUNTROWS (
 				FILTER (
 					FILTER ( VALUES ( dim_article[article_id] ), [Quantités servies] > 0 ),
 					[K22 Classe du plat] = "Vedette"
 				)
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 71953cde-9fc4-44e3-887d-86e19d1e748c
 
-	measure 'K22 Nombre de chevaux de labour' =
+	measure 'K22 Nombre de chevaux de labour' = ```
 			COUNTROWS (
 				FILTER (
 					FILTER ( VALUES ( dim_article[article_id] ), [Quantités servies] > 0 ),
 					[K22 Classe du plat] = "Cheval de labour"
 				)
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 11d282c7-7237-40b9-b7bd-0bc0af2970b0
 
-	measure 'K22 Nombre d''énigmes' =
+	measure 'K22 Nombre d''énigmes' = ```
 			COUNTROWS (
 				FILTER (
 					FILTER ( VALUES ( dim_article[article_id] ), [Quantités servies] > 0 ),
 					[K22 Classe du plat] = "Énigme"
 				)
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 39096723-6d03-4153-8389-e90a619b944d
 
-	measure 'K22 Nombre de poids morts' =
+	measure 'K22 Nombre de poids morts' = ```
 			COUNTROWS (
 				FILTER (
 					FILTER ( VALUES ( dim_article[article_id] ), [Quantités servies] > 0 ),
 					[K22 Classe du plat] = "Poids mort"
 				)
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: ba279771-e618-4bfb-8f61-fe2be22a064e
 
-	measure 'Part des commandes du soir' =
+	measure 'Part des commandes du soir' = ```
 			DIVIDE (
 				CALCULATE ( [Commandes servies], fait_commande[heure] >= 19 || fait_commande[heure] < 2 ),
 				[Commandes servies]
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 9. Saisonnalité
-		lineageTag: e7afd89b-00c1-4763-a638-7b319b9dadf9
 
 	measure 'K23 Part du soir en Ramadan' = CALCULATE ( [Part des commandes du soir], dim_date[est_ramadan] = TRUE () )
 		formatString: 0.0 %
 		displayFolder: 9. Saisonnalité
-		lineageTag: 49ce974e-acae-4b8f-adb0-571161fa3575
 
 	measure 'K23 Part du soir hors Ramadan' = CALCULATE ( [Part des commandes du soir], dim_date[est_ramadan] = FALSE () )
 		formatString: 0.0 %
 		displayFolder: 9. Saisonnalité
-		lineageTag: bdafa652-4576-4a33-97d6-c079429ca249
 
 	measure 'K23 Commandes par jour en Ramadan' = CALCULATE ( [Commandes servies par jour], dim_date[est_ramadan] = TRUE () )
 		formatString: #,0.0
 		displayFolder: 9. Saisonnalité
-		lineageTag: ad80ba54-bdae-4238-a8b0-f44f58888702
 
 	measure 'K23 Commandes par jour hors Ramadan' = CALCULATE ( [Commandes servies par jour], dim_date[est_ramadan] = FALSE () )
 		formatString: #,0.0
 		displayFolder: 9. Saisonnalité
-		lineageTag: d37b298a-8766-4c53-b541-b7084913999b
 
-	measure 'K02 MRR A-1' =
+	measure 'K02 MRR A-1' = ```
 			VAR m = EDATE ( MAX ( dim_date[premier_jour_mois] ), -12 )
 			RETURN
 				CALCULATE ( SUM ( fait_abonnement_mensuel[mrr_ht] ), REMOVEFILTERS ( dim_date ), dim_date[premier_jour_mois] = m )
+			```
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 1c9b297b-e073-4057-9453-6bc1846e0603
 
-	measure 'Pont MRR valeur' =
+	measure 'Pont MRR valeur' = ```
 			VAR a = MAX ( dim_date[annee] )
 			VAR depart =
 				CALCULATE ( [K02 MRR], REMOVEFILTERS ( dim_date ), dim_date[annee] = a - 1 )
@@ -462,23 +428,20 @@ table _Mesures
 					4, [K04 MRR contraction],
 					5, [K04 MRR perdu]
 				)
+			```
 		formatString: #,0
 		displayFolder: 1. Croissance
-		lineageTag: 947ac0d0-82fc-4b7c-818c-6c06b8993ae4
 
 	measure 'Texte K01' = FORMAT ( [K01 Établissements actifs], "#,0" )
 		displayFolder: 1. Croissance
-		lineageTag: 41ae174f-ab19-4ac2-8df0-30a05110a2f4
 
 	measure 'Texte K01 détail' = "au " & FORMAT ( EOMONTH ( MAX ( dim_date[premier_jour_mois] ), 0 ), "dd/MM/yyyy" )
 		displayFolder: 1. Croissance
-		lineageTag: 73dd285d-3412-40a8-a242-2f2c6e2806b7
 
 	measure 'Texte K02' = FORMAT ( [K02 MRR], "#,0" ) & " DT HT"
 		displayFolder: 1. Croissance
-		lineageTag: b0ef08ed-ca57-4a6e-b83b-9a0f36b3ba2e
 
-	measure 'Texte K02 détail' =
+	measure 'Texte K02 détail' = ```
 			VAR p = [K02 MRR A-1]
 			RETURN
 				IF (
@@ -486,14 +449,13 @@ table _Mesures
 					"A-1 : non disponible",
 					"A-1 : " & FORMAT ( p, "#,0" ) & " DT · " & FORMAT ( DIVIDE ( [K02 MRR] - p, p ), "+0.0 %;-0.0 %" )
 				)
+			```
 		displayFolder: 1. Croissance
-		lineageTag: dc4174b6-d11d-4323-8cf9-8a15071753e6
 
 	measure 'Texte K03' = FORMAT ( [K03 ARR], "#,0" ) & " DT HT"
 		displayFolder: 1. Croissance
-		lineageTag: 2bfa77eb-a607-4388-b3de-8cca3e5bb67f
 
-	measure 'Texte K03 détail' =
+	measure 'Texte K03 détail' = ```
 			VAR p = 12 * [K02 MRR A-1]
 			RETURN
 				IF (
@@ -501,33 +463,29 @@ table _Mesures
 					"A-1 : non disponible",
 					"A-1 : " & FORMAT ( p, "#,0" ) & " DT · " & FORMAT ( DIVIDE ( [K03 ARR] - p, p ), "+0.0 %;-0.0 %" )
 				)
+			```
 		displayFolder: 1. Croissance
-		lineageTag: 6b9c4e86-2440-4a03-b0b1-57a8d01ecb56
 
 	measure 'Texte K16' = FORMAT ( [K16 Facturé HT], "#,0" ) & " DT HT"
 		displayFolder: 1. Croissance
-		lineageTag: 9455cc25-7639-4a4d-85f2-011ea6c3a6af
 
 	measure 'Texte K16 détail' = "encaissé : " & FORMAT ( [K16 Encaissé TTC], "#,0" ) & " DT TTC"
 		displayFolder: 1. Croissance
-		lineageTag: 27d6abb8-ebe5-4b4f-9b8d-577e60f31adc
 
 	measure 'Texte K17' = FORMAT ( [K17 Taux de factures payées en retard], "0.0 %" )
 		displayFolder: 1. Croissance
-		lineageTag: a42220cc-d277-44fc-ae9c-31732287219a
 
-	measure 'Texte K17 détail' =
+	measure 'Texte K17 détail' = ```
 			VAR p = CALCULATE ( [K17 Taux de factures payées en retard], SAMEPERIODLASTYEAR ( dim_date[date] ) )
 			RETURN
 				FORMAT ( [K17 Factures impayées], "#,0" ) & " impayées · A-1 : " & IF ( ISBLANK ( p ), "n. d.", FORMAT ( p, "0.0 %" ) )
+			```
 		displayFolder: 1. Croissance
-		lineageTag: 35606390-8772-44c1-ae1a-ee68732b4a23
 
 	measure 'Texte variation MRR' = "Variation nette : " & FORMAT ( [K04 Variation nette du MRR], "+#,0;-#,0" ) & " DT HT"
 		displayFolder: 1. Croissance
-		lineageTag: c37daafe-23e3-44c1-b512-ed361e81d77e
 
-	measure 'K06 Rétention de cohorte' =
+	measure 'K06 Rétention de cohorte' = ```
 			VAR n = SELECTEDVALUE ( 'Mois écoulés'[mois], 12 )
 			VAR arrete = CALCULATE ( MAX ( dim_date[date] ), REMOVEFILTERS ( dim_date ) )
 			VAR cohorte = FILTER ( dim_etablissement, NOT ISBLANK ( dim_etablissement[date_mise_en_service] ) )
@@ -543,11 +501,11 @@ table _Mesures
 					COUNTROWS ( cohorte ) > 0 && COUNTROWS ( eligibles ) = COUNTROWS ( cohorte ),
 					DIVIDE ( COUNTROWS ( actifs ), COUNTROWS ( eligibles ) )
 				)
+			```
 		formatString: 0 %
 		displayFolder: 2. Rétention
-		lineageTag: d4c2400e-f191-4cd0-83b1-49a0524fabd5
 
-	measure 'K06 Rétention à 12 mois des cohortes A-1' =
+	measure 'K06 Rétention à 12 mois des cohortes A-1' = ```
 			VAR a = MAX ( dim_date[annee] ) - 1
 			RETURN
 				CALCULATE (
@@ -555,11 +513,11 @@ table _Mesures
 					'Mois écoulés'[mois] = 12,
 					KEEPFILTERS ( FILTER ( ALL ( dim_etablissement[mois_cohorte] ), YEAR ( dim_etablissement[mois_cohorte] ) = a ) )
 				)
+			```
 		formatString: 0.0 %
 		displayFolder: 2. Rétention
-		lineageTag: 8d01c800-7c8b-404b-822f-a2457f444be4
 
-	measure 'Couleur cohorte' =
+	measure 'Couleur cohorte' = ```
 			VAR r = [K06 Rétention de cohorte]
 			RETURN
 				SWITCH (
@@ -571,344 +529,300 @@ table _Mesures
 					r >= 0.6, "#BAC8FF",
 					"#E0E7FF"
 				)
+			```
 		displayFolder: 2. Rétention
-		lineageTag: 9b009bf6-a568-45ca-8bcc-fdd6108662df
 
 	measure 'Couleur texte cohorte' = IF ( [K06 Rétention de cohorte] >= 0.8, "#FFFFFF", "#0F172A" )
 		displayFolder: 2. Rétention
-		lineageTag: d01ef3f9-1512-430c-92d3-04bc2cf09424
 
 	measure 'Texte K05' = FORMAT ( [K05 Taux de résiliation mensuel], "0.00 %" )
 		displayFolder: 2. Rétention
-		lineageTag: c6e9ac72-7863-4dc9-a941-9ae7a3d1668b
 
-	measure 'Texte K05 détail' =
+	measure 'Texte K05 détail' = ```
 			VAR p = CALCULATE ( [K05 Taux de résiliation mensuel], SAMEPERIODLASTYEAR ( dim_date[date] ) )
 			RETURN
 				"moyenne pondérée · A-1 : " & IF ( ISBLANK ( p ), "n. d.", FORMAT ( p, "0.00 %" ) )
+			```
 		displayFolder: 2. Rétention
-		lineageTag: 90e78554-95c3-4d06-a7a5-01171f0bb53f
 
 	measure 'Texte résiliations' = FORMAT ( [Résiliations], "#,0" )
 		displayFolder: 2. Rétention
-		lineageTag: 5f6788e5-a108-4b18-9107-9a169022dccf
 
 	measure 'Texte résiliations détail' = "du " & FORMAT ( MIN ( dim_date[date] ), "dd/MM/yyyy" ) & " au " & FORMAT ( MAX ( dim_date[date] ), "dd/MM/yyyy" )
 		displayFolder: 2. Rétention
-		lineageTag: 0ee667ab-9a54-4003-a1d8-08e3f45f18ab
 
-	measure 'Texte K06' =
+	measure 'Texte K06' = ```
 			VAR r = [K06 Rétention à 12 mois des cohortes A-1]
 			RETURN IF ( ISBLANK ( r ), "n. d.", FORMAT ( r, "0.0 %" ) )
+			```
 		displayFolder: 2. Rétention
-		lineageTag: 53cbaefe-ac5b-4ee2-8d08-06284df126e0
 
 	measure 'Texte K06 détail' = "cohortes " & ( MAX ( dim_date[annee] ) - 1 )
 		displayFolder: 2. Rétention
-		lineageTag: 22bafbf4-e56d-46e8-862a-2d58d2bfdecc
 
 	measure 'Texte MRR perdu' = FORMAT ( -[K04 MRR perdu], "#,0" ) & " DT HT"
 		displayFolder: 2. Rétention
-		lineageTag: a04d342f-b081-4975-8f8a-8d0e2a33462f
 
 	measure 'Texte MRR perdu détail' = "somme des pertes du K04"
 		displayFolder: 2. Rétention
-		lineageTag: a182edd7-02b0-476f-937c-001ced3abed0
 
 	measure 'Texte moyenne K05' = "Moyenne de la période : " & FORMAT ( [K05 Taux de résiliation mensuel], "0.00 %" )
 		displayFolder: 2. Rétention
-		lineageTag: 5586c756-b4ab-49d4-b159-d572fa1edb8c
 
 	measure Clics = SUM ( fait_marketing[clics] )
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: e7b92c88-8fbe-4773-8cac-c8aaadf33801
 
 	measure 'Signatures (campagne)' = CALCULATE ( [Signatures], TREATAS ( VALUES ( fait_marketing[campagne_id] ), fait_prospect[campagne_id] ) )
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: 874c801f-0b01-4b7e-9770-0570a262a8d4
 
 	measure 'K10 Valeur vie client par canal' = CALCULATE ( [K10 Valeur vie client], TREATAS ( VALUES ( dim_canal[canal_id] ), dim_etablissement[canal_id] ) )
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: 99c4f243-205e-4574-be43-d2d9f7621655
 
-	measure 'Prospects par étape' =
+	measure 'Prospects par étape' = ```
 			SWITCH (
 				SELECTEDVALUE ( 'Étapes commerciales'[ordre] ),
 				1, [Prospects],
 				2, CALCULATE ( [Prospects], fait_prospect[statut_prospect] IN { "en_cours", "converti" } ),
 				3, CALCULATE ( [Prospects], fait_prospect[statut_prospect] = "converti" )
 			)
+			```
 		formatString: #,0
 		displayFolder: 3. Acquisition
-		lineageTag: a96376c9-e669-4f22-94fa-b91bcf6460bc
 
-	measure 'Couleur CAC' =
+	measure 'Couleur CAC' = ```
 			VAR c = [K09 CAC]
 			VAR canaux = FILTER ( ALLSELECTED ( dim_canal[nom_canal] ), NOT ISBLANK ( [K09 CAC] ) )
 			VAR mini = MINX ( canaux, [K09 CAC] )
 			VAR maxi = MAXX ( canaux, [K09 CAC] )
 			RETURN SWITCH ( TRUE (), c = mini, "#1D4ED8", c = maxi, "#C2410C", "#CBD5E1" )
+			```
 		displayFolder: 3. Acquisition
-		lineageTag: e4a38b18-cc0b-4915-b3d6-50efc0846cad
 
 	measure 'Texte K07' = FORMAT ( [K07 Taux de conversion des prospects], "0.0 %" )
 		displayFolder: 3. Acquisition
-		lineageTag: 9d22def2-2a16-4691-b966-39b6e57da5d1
 
 	measure 'Texte K07 détail' = FORMAT ( CALCULATE ( [Prospects], fait_prospect[est_converti] = TRUE () ), "#,0" ) & " convertis / " & FORMAT ( [Prospects], "#,0" ) & " contactés"
 		displayFolder: 3. Acquisition
-		lineageTag: 4f2b2573-adba-448f-ae06-e7076300ab0e
 
 	measure 'Texte K08' = FORMAT ( [K08 Délai de signature médian], "#,0" ) & " jours"
 		displayFolder: 3. Acquisition
-		lineageTag: 86497f78-e46b-4f11-95cf-7fb361ee7d15
 
 	measure 'Texte K08 détail' = "médiane, prospects convertis"
 		displayFolder: 3. Acquisition
-		lineageTag: 9c2fab63-dcd9-46b6-a154-a6c374885882
 
-	measure 'Texte CAC bas' =
+	measure 'Texte CAC bas' = ```
 			VAR canaux = FILTER ( VALUES ( dim_canal[nom_canal] ), NOT ISBLANK ( [K09 CAC] ) )
 			RETURN FORMAT ( MINX ( canaux, [K09 CAC] ), "#,0.0" ) & " DT"
+			```
 		displayFolder: 3. Acquisition
-		lineageTag: 2a2705c1-15ea-473a-9461-b829694fccb3
 
-	measure 'Texte CAC bas détail' =
+	measure 'Texte CAC bas détail' = ```
 			VAR canaux = FILTER ( VALUES ( dim_canal[nom_canal] ), NOT ISBLANK ( [K09 CAC] ) )
 			RETURN CONCATENATEX ( TOPN ( 1, canaux, [K09 CAC], ASC ), dim_canal[nom_canal], ", " )
+			```
 		displayFolder: 3. Acquisition
-		lineageTag: c9cff06b-ade8-473d-83ac-a29f344ba30f
 
-	measure 'Texte CAC haut' =
+	measure 'Texte CAC haut' = ```
 			VAR canaux = FILTER ( VALUES ( dim_canal[nom_canal] ), NOT ISBLANK ( [K09 CAC] ) )
 			RETURN FORMAT ( MAXX ( canaux, [K09 CAC] ), "#,0.0" ) & " DT"
+			```
 		displayFolder: 3. Acquisition
-		lineageTag: 281ad668-6530-4b88-a748-b8f0666729b3
 
-	measure 'Texte CAC haut détail' =
+	measure 'Texte CAC haut détail' = ```
 			VAR canaux = FILTER ( VALUES ( dim_canal[nom_canal] ), NOT ISBLANK ( [K09 CAC] ) )
 			RETURN CONCATENATEX ( TOPN ( 1, canaux, [K09 CAC], DESC ), dim_canal[nom_canal], ", " )
+			```
 		displayFolder: 3. Acquisition
-		lineageTag: 1173ef2d-7ecb-45e2-990a-71bf74f1152f
 
 	measure 'Texte K10' = FORMAT ( [K10 Valeur vie client], "#,0" ) & " DT HT"
 		displayFolder: 3. Acquisition
-		lineageTag: f98b4e73-c4a0-4e82-889c-e0dc9b04248d
 
 	measure 'Texte K10 détail' = "revenu mensuel moyen " & FORMAT ( [Revenu mensuel moyen par établissement], "#,0.00" ) & " / K05"
 		displayFolder: 3. Acquisition
-		lineageTag: ab24a258-ea96-48fa-b9bb-5e9206159673
 
 	measure 'Texte prospects' = FORMAT ( [Prospects], "#,0" ) & " prospects · statuts du jeu : perdu, en cours, converti"
 		displayFolder: 3. Acquisition
-		lineageTag: 8c41b645-30ba-471c-a57a-a031b66a0672
 
 	measure 'K12 (Essentiel)' = IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", [K12 Sessions par table et par jour] )
 		formatString: #,0.00
 		displayFolder: 4. Usage
-		lineageTag: 73e6f137-14fe-490b-8f4f-3473645070fd
 
 	measure 'Sessions (Essentiel)' = IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", [Sessions] )
 		formatString: #,0
 		displayFolder: 4. Usage
-		lineageTag: d04fda08-ea77-43de-a8bb-ca1c5610db25
 
 	measure 'Tables (Essentiel)' = IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", SUM ( dim_etablissement[nb_tables] ) )
 		formatString: #,0
 		displayFolder: 4. Usage
-		lineageTag: c5a86174-b505-4294-9fe9-8337e69b608c
 
 	measure 'MRR actuel de l''établissement' = IF ( SELECTEDVALUE ( dim_etablissement[est_actif] ), [K02 MRR] )
 		formatString: #,0
 		displayFolder: 4. Usage
-		lineageTag: aafc34ca-fb8b-4d7b-b1d8-2059620da9d5
 
 	measure 'Score K19' = "phase 7"
 		displayFolder: 4. Usage
-		lineageTag: 4a53cc63-2286-44e2-a93f-65067ddfaba5
 
 	measure 'Texte phase 7' = "[phase 7]"
 		displayFolder: 7. Support
-		lineageTag: cf384f69-ece2-4574-a93c-554b1df12df9
 
 	measure 'Texte K18' = FORMAT ( [K18 Délai de résolution médian (h)], "#,0.0" ) & " h"
 		displayFolder: 7. Support
-		lineageTag: bc8c623c-5679-4c66-a6bc-6b142492e1b0
 
 	measure 'Texte K18 détail' = "médiane · satisfaction : " & FORMAT ( [K18 Satisfaction moyenne], "0.0" ) & " / 5"
 		displayFolder: 7. Support
-		lineageTag: 0a98c930-8c62-48fc-822a-9d9f13bdcec5
 
 	measure 'Texte seuil K19' = "score K19 ≥ seuil (phase 7)"
 		displayFolder: 7. Support
-		lineageTag: ce21bc99-e5fe-42fe-8ec4-e7f9c5f81c14
 
 	measure 'Texte MRR menacé' = "MRR des établissements à risque"
 		displayFolder: 7. Support
-		lineageTag: 5965c350-4be6-487d-91e6-af06b186565d
 
 	measure 'Texte candidats' = "règle à fixer en phase 7"
 		displayFolder: 7. Support
-		lineageTag: 75ff5e70-25ef-4aba-b3ae-f1567dc4447d
 
-	measure 'Nom de l''établissement' =
+	measure 'Nom de l''établissement' = ```
 			IF (
 				HASONEVALUE ( dim_etablissement[etablissement_id] ),
 				SELECTEDVALUE ( dim_etablissement[nom_etablissement] ) & " · " & SELECTEDVALUE ( dim_etablissement[etablissement_id] ),
 				"Tous les établissements"
 			)
+			```
 		displayFolder: 5. Activité en salle
-		lineageTag: 28494be4-1122-456b-8e4b-00bdd30ac621
 
 	measure 'Tables de l''établissement' = CALCULATE ( COUNTROWS ( dim_table ), TREATAS ( VALUES ( dim_etablissement[etablissement_id] ), dim_table[etablissement_id] ) )
 		formatString: #,0
 		displayFolder: 5. Activité en salle
-		lineageTag: c7a941ee-0167-4c80-8331-84626124ba3d
 
 	measure 'Commandes servies par table' = DIVIDE ( [Commandes servies], [Tables de l'établissement] )
 		formatString: #,0.0
 		displayFolder: 5. Activité en salle
-		lineageTag: 13231f75-571d-48fc-8be1-26d4d9680d25
 
 	measure 'Texte commandes servies' = FORMAT ( [Commandes servies], "#,0" )
 		displayFolder: 5. Activité en salle
-		lineageTag: dc1d9f4b-6ef3-4908-a057-dd619646963f
 
 	measure 'Texte commandes servies détail' = "sur " & FORMAT ( [Commandes], "#,0" ) & " commandes"
 		displayFolder: 5. Activité en salle
-		lineageTag: bb029284-7c58-42e9-88ad-79ba2a8c0a26
 
 	measure 'Texte CA servi' = FORMAT ( [CA commandes servies TTC], "#,0" ) & " DT"
 		displayFolder: 5. Activité en salle
-		lineageTag: 33e8a79f-c1f4-4947-be11-041ffc41f6a0
 
 	measure 'Texte CA servi détail' = "TTC, commandes servies"
 		displayFolder: 5. Activité en salle
-		lineageTag: 317a3b67-6540-4e93-89ee-a1ee4724c418
 
 	measure 'Texte K14' = FORMAT ( [K14 Panier moyen], "#,0.000" ) & " DT"
 		displayFolder: 5. Activité en salle
-		lineageTag: b6fe01db-43c6-409d-89c3-0b5c42e0a013
 
 	measure 'Texte K14 détail' = "TTC par commande servie"
 		displayFolder: 5. Activité en salle
-		lineageTag: 11cc1414-7e54-4db6-a5e7-ce1dd737e068
 
-	measure 'Texte K15' = FORMAT ( [K15 Taux d'annulation], "0.00 %" )
+	measure 'Texte K15' = FORMAT ( COALESCE ( [K15 Taux d'annulation], 0 ), "0.00 %" )
 		displayFolder: 5. Activité en salle
-		lineageTag: 567df00e-a2f6-44cd-8ea0-2f9c8ebb30d6
 
-	measure 'Texte K15 détail' = FORMAT ( CALCULATE ( [Commandes], fait_commande[statut_commande] = "annulee" ), "#,0" ) & " commandes annulées"
+	measure 'Texte K15 détail' = FORMAT ( COALESCE ( CALCULATE ( [Commandes], fait_commande[statut_commande] = "annulee" ), 0 ), "#,0" ) & " commandes annulées"
 		displayFolder: 5. Activité en salle
-		lineageTag: 41d60ddc-63eb-44e9-a9aa-010e41da9c4f
 
 	measure 'Texte commandes par table' = FORMAT ( [Commandes servies par table], "#,0.0" )
 		displayFolder: 5. Activité en salle
-		lineageTag: e6b0053d-c619-4968-aebe-19d5f7221ff8
 
 	measure 'Texte commandes par table détail' = FORMAT ( [Tables de l'établissement], "#,0" ) & " tables"
 		displayFolder: 5. Activité en salle
-		lineageTag: 91e9e559-d150-4683-90e9-c69c5b1037bd
 
 	measure 'Couleur semaine' = IF ( CALCULATE ( COUNTROWS ( dim_date ), dim_date[est_ramadan] = TRUE () ) > 0, "#C2410C", "#1D4ED8" )
 		displayFolder: 5. Activité en salle
-		lineageTag: 202f5c4a-83b6-449f-a523-d333b06a5de2
 
 	measure 'Couleur zone' = SWITCH ( SELECTEDVALUE ( dim_table[zone] ), "salle", "#1E3A8A", "terrasse", "#1D4ED8", "etage", "#C2410C", "#CBD5E1" )
 		displayFolder: 5. Activité en salle
-		lineageTag: f34f7cb8-68b8-4771-87d5-6fc067ed5cae
 
-	measure 'Texte CA par zone' =
+	measure 'Texte CA par zone' = ```
 			CONCATENATEX (
 				VALUES ( dim_table[zone] ),
 				dim_table[zone] & " : " & FORMAT ( [CA commandes servies TTC], "#,0" ) & " DT",
 				" · ",
 				[CA commandes servies TTC], DESC
 			)
+			```
 		displayFolder: 5. Activité en salle
-		lineageTag: 9f2f68f3-b64a-45b6-accd-122893ceda18
 
 	measure 'Vues de fiche' = SUM ( fait_vue_article[nb_vues] )
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: aff5ae4b-bb85-4027-bba3-2b4aa7f72157
 
 	measure 'Commandes de l''article' = CALCULATE ( DISTINCTCOUNT ( fait_ligne_commande[commande_id] ), fait_ligne_commande[est_servie] = TRUE () )
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: c2ec5d7c-bd4b-42c2-8219-538b312ded2a
 
 	measure 'Conversion de la fiche' = DIVIDE ( [Commandes de l'article], [Vues de fiche] )
 		formatString: 0.0 %
 		displayFolder: 8. Menu et marge
-		lineageTag: fce0ffc9-6c7c-4e90-b8e5-5c99533b3ed3
 
-	measure 'Prix TTC actuel' = CALCULATE ( MAX ( dim_article[prix_ttc] ), dim_article[est_prix_actuel] = TRUE () )
+	measure 'Prix TTC actuel' = ```
+			CALCULATE (
+				MAX ( dim_article[prix_ttc] ),
+				dim_article[est_prix_actuel] = TRUE (),
+				TREATAS ( VALUES ( dim_etablissement[etablissement_id] ), dim_article[etablissement_id] )
+			)
+			```
 		formatString: #,0.000
 		displayFolder: 8. Menu et marge
-		lineageTag: 7e964839-7fde-456e-8573-c386a9bd47ca
 
-	measure 'Couleur article' =
+	measure 'Couleur article' = ```
 			VAR arts = ALLSELECTED ( dim_article[nom_article] )
 			VAR vues_moy = AVERAGEX ( arts, [Vues de fiche] )
 			VAR conv_moy = DIVIDE ( SUMX ( arts, [Commandes de l'article] ), SUMX ( arts, [Vues de fiche] ) )
 			RETURN IF ( [Vues de fiche] >= vues_moy && [Conversion de la fiche] < conv_moy, "#C2410C", "#1D4ED8" )
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: 9330137f-7b25-4c89-aa64-7cf7ffb71256
 
-	measure 'Étapes de session valeur' =
+	measure 'Étapes de session valeur' = ```
 			SWITCH (
 				SELECTEDVALUE ( 'Étapes de session'[ordre] ),
 				1, CALCULATE ( [Sessions], KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ) ),
 				2, CALCULATE ( [Sessions], KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ), fait_session[a_ajoute_panier] = TRUE () ),
 				3, CALCULATE ( [Sessions], KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ), fait_session[a_commande] = TRUE () )
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: aec93e7c-7af5-4785-91c1-6c4fb1286a78
 
-	measure 'Articles au menu' =
+	measure 'Articles au menu' = ```
 			CALCULATE (
 				DISTINCTCOUNT ( dim_article[article_id] ),
 				dim_article[est_prix_actuel] = TRUE (),
 				TREATAS ( VALUES ( dim_etablissement[etablissement_id] ), dim_article[etablissement_id] )
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 4b1e720e-848d-45f3-88ff-babfffe62cea
 
 	measure 'Texte K13' = FORMAT ( [K13 Taux de commande], "0.0 %" )
 		displayFolder: 8. Menu et marge
-		lineageTag: dd0496bb-2657-4863-aa5c-b534ed0985c8
 
-	measure 'Texte K13 détail' =
+	measure 'Texte K13 détail' = ```
 			VAR s = CALCULATE ( [Sessions], KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ) )
 			VAR c = CALCULATE ( [Sessions], KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ), fait_session[a_commande] = TRUE () )
 			RETURN
 				FORMAT ( c, "#,0" ) & " sessions avec commande sur " & FORMAT ( s, "#,0" )
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: d387d9ee-0294-4c81-8ad9-d2dc94e0e40e
 
 	measure 'Texte panier' = FORMAT ( [K20 Étape 2 Panier], "0.0 %" )
 		displayFolder: 8. Menu et marge
-		lineageTag: a69952c6-1e85-4e7b-a3ee-677c3cf2f275
 
-	measure 'Texte panier détail' =
+	measure 'Texte panier détail' = ```
 			FORMAT (
 				CALCULATE ( [Sessions], fait_session[a_ajoute_panier] = TRUE (), KEEPFILTERS ( dim_formule[inclut_commande] = TRUE () ) ),
 				"#,0"
 			) & " sessions avec un ajout au panier"
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: 3c468349-ead5-42ac-aea2-3e157ab5191d
 
 	measure 'Texte articles' = FORMAT ( [Articles au menu], "#,0" )
 		displayFolder: 8. Menu et marge
-		lineageTag: a668a6f0-0069-463d-91ba-8ff6d0f5c069
 
-	measure 'Texte articles détail' =
+	measure 'Texte articles détail' = ```
 			FORMAT (
 				CALCULATE (
 					DISTINCTCOUNT ( dim_article[categorie_id] ),
@@ -917,26 +831,26 @@ table _Mesures
 				),
 				"#,0"
 			) & " catégories"
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: 234c947b-b4cf-4946-a3db-aaf2910e27f5
 
-	measure 'Article le moins converti' =
+	measure 'Article le moins converti' = ```
 			VAR plus_vus = TOPN ( 10, FILTER ( VALUES ( dim_article[nom_article] ), [Vues de fiche] > 0 ), [Vues de fiche], DESC )
 			RETURN CONCATENATEX ( TOPN ( 1, plus_vus, [Conversion de la fiche], ASC ), dim_article[nom_article], ", " )
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: 6bead6b3-32f3-4f7b-a166-d410ec55c481
 
-	measure 'Article le moins converti détail' =
+	measure 'Article le moins converti détail' = ```
 			VAR plus_vus = TOPN ( 10, FILTER ( VALUES ( dim_article[nom_article] ), [Vues de fiche] > 0 ), [Vues de fiche], DESC )
 			VAR a = TOPN ( 1, plus_vus, [Conversion de la fiche], ASC )
 			RETURN
 				FORMAT ( CALCULATE ( [Vues de fiche], a ), "#,0" ) & " vues, "
 					& FORMAT ( CALCULATE ( [Commandes de l'article], a ), "#,0" ) & " commandes ("
 					& FORMAT ( CALCULATE ( [Conversion de la fiche], a ), "0.0 %" ) & ")"
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: b181a5c4-ecaf-46eb-99d7-fcee01e288bd
 
-	measure 'Couleur heure' =
+	measure 'Couleur heure' = ```
 			VAR v = [Commandes servies]
 			VAR maxi =
 				CALCULATE (
@@ -955,125 +869,129 @@ table _Mesures
 					r >= 0.2, "#C7D2FE",
 					"#E0E7FF"
 				)
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: 9fabe1a3-c433-4914-8158-cb588e2a647d
 
-	measure 'Part horaire hors Ramadan' =
+	measure 'Part horaire hors Ramadan' = ```
 			DIVIDE (
 				CALCULATE ( [Commandes servies], dim_date[est_ramadan] = FALSE () ),
 				CALCULATE ( [Commandes servies], dim_date[est_ramadan] = FALSE (), REMOVEFILTERS ( dim_heure ) )
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 9. Saisonnalité
-		lineageTag: 220c336e-cd8f-4493-b33c-2b24f64c3234
 
-	measure 'Part horaire Ramadan' =
+	measure 'Part horaire Ramadan' = ```
 			DIVIDE (
 				CALCULATE ( [Commandes servies], dim_date[est_ramadan] = TRUE () ),
 				CALCULATE ( [Commandes servies], dim_date[est_ramadan] = TRUE (), REMOVEFILTERS ( dim_heure ) )
 			)
+			```
 		formatString: 0.0 %
 		displayFolder: 9. Saisonnalité
-		lineageTag: 039a96aa-68b0-4e2f-a010-f1200fe6e8f7
 
 	measure 'CA servi par jour' = DIVIDE ( [CA commandes servies TTC], COUNTROWS ( dim_date ) )
 		formatString: #,0.0
 		displayFolder: 9. Saisonnalité
-		lineageTag: dfdb992d-493e-483b-beae-f37946537a3d
 
-	measure 'Heure de pointe hors Ramadan' =
+	measure 'Heure de pointe hors Ramadan' = ```
 			VAR h = CALCULATETABLE ( VALUES ( dim_heure[heure] ), REMOVEFILTERS ( dim_heure ) )
 			VAR pic = TOPN ( 1, h, CALCULATE ( [Commandes servies], dim_date[est_ramadan] = FALSE () ), DESC )
 			RETURN CONCATENATEX ( pic, FORMAT ( dim_heure[heure], "0" ) & " h", ", " )
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: 8502b91b-2b4c-4c6c-81b2-61fd332b0512
 
-	measure 'Heure de pointe hors Ramadan détail' =
+	measure 'Heure de pointe hors Ramadan détail' = ```
 			VAR h = CALCULATETABLE ( VALUES ( dim_heure[heure] ), REMOVEFILTERS ( dim_heure ) )
 			VAR pic = TOPN ( 1, h, CALCULATE ( [Commandes servies], dim_date[est_ramadan] = FALSE () ), DESC )
 			RETURN FORMAT ( CALCULATE ( [Commandes servies], pic, dim_date[est_ramadan] = FALSE () ), "#,0" ) & " commandes servies à cette heure"
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: 55abaf64-2311-4a06-8c72-7308b366928b
 
-	measure 'Heure de pointe Ramadan' =
+	measure 'Heure de pointe Ramadan' = ```
 			VAR h = CALCULATETABLE ( VALUES ( dim_heure[heure] ), REMOVEFILTERS ( dim_heure ) )
 			VAR pic = TOPN ( 1, h, CALCULATE ( [Commandes servies], dim_date[est_ramadan] = TRUE () ), DESC )
 			RETURN CONCATENATEX ( pic, FORMAT ( dim_heure[heure], "0" ) & " h", ", " )
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: b5756430-fb89-422a-b946-d746fd6283d8
 
-	measure 'Heure de pointe Ramadan détail' =
+	measure 'Heure de pointe Ramadan détail' = ```
 			VAR h = CALCULATETABLE ( VALUES ( dim_heure[heure] ), REMOVEFILTERS ( dim_heure ) )
 			VAR pic = TOPN ( 1, h, CALCULATE ( [Commandes servies], dim_date[est_ramadan] = TRUE () ), DESC )
 			RETURN FORMAT ( CALCULATE ( [Commandes servies], pic, dim_date[est_ramadan] = TRUE () ), "#,0" ) & " commandes servies à cette heure"
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: baa6cd3d-1f0a-447c-b557-42ddf23d8acc
 
 	measure 'Texte commandes par jour' = FORMAT ( [K23 Commandes par jour hors Ramadan], "#,0.00" ) & " → " & FORMAT ( [K23 Commandes par jour en Ramadan], "#,0.00" )
 		displayFolder: 9. Saisonnalité
-		lineageTag: 16b4d791-2642-4e2d-9c25-fe0fee341950
 
-	measure 'Texte commandes par jour détail' =
+	measure 'Texte commandes par jour détail' = ```
 			"hors Ramadan → Ramadan ("
 				& FORMAT ( DIVIDE ( [K23 Commandes par jour en Ramadan], [K23 Commandes par jour hors Ramadan] ) - 1, "+0 %;-0 %" ) & ")"
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: f1b1a8ae-1bb2-4bef-8032-efce8e8b4d93
 
-	measure 'Texte CA par jour' =
+	measure 'Texte CA par jour' = ```
 			FORMAT ( CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = FALSE () ), "#,0.0" ) & " → "
 				& FORMAT ( CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = TRUE () ), "#,0.0" ) & " DT"
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: 0b660407-f48b-4eab-9f28-d252b384cc4f
 
-	measure 'Texte CA par jour détail' =
+	measure 'Texte CA par jour détail' = ```
 			VAR h = CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = FALSE () )
 			VAR r = CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = TRUE () )
 			RETURN "hors Ramadan → Ramadan (" & FORMAT ( DIVIDE ( r, h ) - 1, "+0 %;-0 %" ) & ")"
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: 5a9efb3a-f71d-496b-a985-d50752b5ad9c
 
-	measure 'Texte été' =
+	measure 'Texte été' = ```
 			VAR e = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "ete" )
 			VAR n = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "normale" )
-			RETURN
-				"Été : " & FORMAT ( e, "#,0.00" ) & " commandes par jour · période normale : " & FORMAT ( n, "#,0.00" )
-					& " (" & FORMAT ( DIVIDE ( e, n ) - 1, "+0 %;-0 %" ) & ")"
+			RETURN FORMAT ( DIVIDE ( e, n ) - 1, "+0 %;-0 %" ) & " par jour en été"
+			```
 		displayFolder: 9. Saisonnalité
-		lineageTag: 0a0661c9-0dc7-467f-b264-e9c084cc402e
+
+	measure 'Texte été détail' = ```
+			VAR e = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "ete" )
+			VAR n = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "normale" )
+			RETURN "commandes par jour : " & FORMAT ( e, "#,0.0" ) & " en été, " & FORMAT ( n, "#,0.0" ) & " en période normale"
+			```
+		displayFolder: 9. Saisonnalité
 
 	measure 'Prix moyen pratiqué' = DIVIDE ( SUM ( fait_ligne_commande[montant_ligne_ttc] ), SUM ( fait_ligne_commande[quantite] ) )
 		formatString: #,0.000
 		displayFolder: 8. Menu et marge
-		lineageTag: de8cecf8-14a2-4ac5-9d89-5d830529dbaa
 
-	measure 'Hausse de prix' =
+	measure 'Hausse de prix' = ```
 			VAR p = SELECTEDVALUE ( dim_article[prix_precedent] )
 			RETURN
 				IF (
-					HASONEVALUE ( dim_article[prix_id] ) && NOT ISBLANK ( p ),
+					NOT ISBLANK ( [Fenêtre (jours)] ),
 					DIVIDE ( SELECTEDVALUE ( dim_article[prix_ttc] ) - p, p )
 				)
+			```
 		formatString: +0.0 %;-0.0 %
 		displayFolder: 8. Menu et marge
-		lineageTag: 136a700f-f449-416c-ba96-97edd4c9be59
 
-	measure 'Fenêtre (jours)' =
+	measure 'Fenêtre brute (jours)' = ```
 			VAR d = SELECTEDVALUE ( dim_article[valide_du] )
 			VAR prec = SELECTEDVALUE ( dim_article[debut_version_precedente] )
 			VAR arrete = CALCULATE ( MAX ( dim_date[date] ), REMOVEFILTERS ( dim_date ) )
 			VAR fin = COALESCE ( SELECTEDVALUE ( dim_article[valide_au] ), arrete )
 			RETURN
 				IF (
-					HASONEVALUE ( dim_article[prix_id] ) && NOT ISBLANK ( prec ),
-					MIN ( 30, MIN ( DATEDIFF ( prec, d, DAY ), DATEDIFF ( d, fin, DAY ) + 1 ) )
+					HASONEVALUE ( dim_article[prix_id] ) && NOT ISBLANK ( prec )
+						&& SELECTEDVALUE ( dim_article[etablissement_id] ) IN VALUES ( dim_etablissement[etablissement_id] ),
+					VAR w = MIN ( 60, MIN ( DATEDIFF ( prec, d, DAY ), DATEDIFF ( d, fin, DAY ) + 1 ) )
+					RETURN IF ( w >= 14, w )
 				)
+			```
 		formatString: 0
 		displayFolder: 8. Menu et marge
-		lineageTag: 2d2de3df-d59f-4354-8c33-a5add24d7307
 
-	measure 'Quantités avant le changement' =
+	measure 'Quantités avant le changement' = ```
 			VAR d = SELECTEDVALUE ( dim_article[valide_du] )
-			VAR w = [Fenêtre (jours)]
+			VAR w = [Fenêtre brute (jours)]
 			VAR a = SELECTEDVALUE ( dim_article[article_id] )
 			RETURN
 				IF (
@@ -1086,13 +1004,13 @@ table _Mesures
 						FILTER ( ALL ( dim_date[date] ), dim_date[date] >= d - w && dim_date[date] < d )
 					)
 				)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 107630ac-01fe-4869-8b1c-e35fbca33c69
 
-	measure 'Quantités après le changement' =
+	measure 'Quantités après le changement' = ```
 			VAR d = SELECTEDVALUE ( dim_article[valide_du] )
-			VAR w = [Fenêtre (jours)]
+			VAR w = [Fenêtre brute (jours)]
 			VAR a = SELECTEDVALUE ( dim_article[article_id] )
 			RETURN
 				IF (
@@ -1105,34 +1023,42 @@ table _Mesures
 						FILTER ( ALL ( dim_date[date] ), dim_date[date] >= d && dim_date[date] < d + w )
 					)
 				)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 74510ab2-b5eb-4eef-b545-a5882188e493
 
-	measure 'Prix avant → après' =
+	measure 'Fenêtre (jours)' = ```
+			VAR w = [Fenêtre brute (jours)]
+			RETURN
+				IF ( NOT ISBLANK ( w ) && [Quantités avant le changement] + [Quantités après le changement] > 0, w )
+			```
+		formatString: 0
+		displayFolder: 8. Menu et marge
+
+	measure 'Prix avant → après' = ```
 			IF (
 				NOT ISBLANK ( [Hausse de prix] ),
 				FORMAT ( SELECTEDVALUE ( dim_article[prix_precedent] ), "0.000" ) & " → " & FORMAT ( SELECTEDVALUE ( dim_article[prix_ttc] ), "0.000" )
 			)
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: d06819dd-d14b-4943-8b67-baefac954870
 
-	measure 'Quantités avant → après' =
+	measure 'Quantités avant → après' = ```
 			IF (
 				NOT ISBLANK ( [Fenêtre (jours)] ),
 				FORMAT ( [Quantités avant le changement], "0" ) & " → " & FORMAT ( [Quantités après le changement], "0" )
 			)
+			```
 		displayFolder: 8. Menu et marge
-		lineageTag: 35af9547-0332-420b-a3a9-65d3f0e028dc
 
-	measure 'Écart des quantités' =
+	measure 'Écart des quantités' = ```
 			VAR av = [Quantités avant le changement]
 			RETURN IF ( av > 0, DIVIDE ( [Quantités après le changement] - av, av ) )
+			```
 		formatString: +0 %;-0 %
 		displayFolder: 8. Menu et marge
-		lineageTag: 861bdc12-0de3-45df-a998-f24ab3c425c0
 
-	measure 'Changements de prix' =
+	measure 'Changements de prix' = ```
 			CALCULATE (
 				COUNTROWS ( dim_article ),
 				dim_article[motif_changement] <> "creation",
@@ -1140,11 +1066,11 @@ table _Mesures
 				TREATAS ( VALUES ( dim_etablissement[etablissement_id] ), dim_article[etablissement_id] ),
 				TREATAS ( VALUES ( dim_date[date] ), dim_article[valide_du] )
 			)
+			```
 		formatString: #,0
 		displayFolder: 8. Menu et marge
-		lineageTag: 477706c3-c057-49a8-b2cc-ac64146e6306
 
-	measure 'Hausse moyenne' =
+	measure 'Hausse moyenne' = ```
 			VAR lignes =
 				CALCULATETABLE (
 					dim_article,
@@ -1154,43 +1080,114 @@ table _Mesures
 					TREATAS ( VALUES ( dim_date[date] ), dim_article[valide_du] )
 				)
 			RETURN AVERAGEX ( lignes, DIVIDE ( dim_article[prix_ttc] - dim_article[prix_precedent], dim_article[prix_precedent] ) )
+			```
 		formatString: +0.0 %;-0.0 %
 		displayFolder: 8. Menu et marge
-		lineageTag: 8ac3ac7f-100b-4a4e-b08f-037ff31a308d
 
 	measure 'Texte changements' = FORMAT ( [Changements de prix], "#,0" )
 		displayFolder: 8. Menu et marge
-		lineageTag: 29720dcd-124d-432e-ba90-3a6da5c4652c
 
 	measure 'Texte changements détail' = "révisions et repositionnements sur la période"
 		displayFolder: 8. Menu et marge
-		lineageTag: 67db16f0-a9b7-4fe2-9ff0-614733413c23
 
 	measure 'Texte hausse' = FORMAT ( [Hausse moyenne], "+0.0 %;-0.0 %" )
 		displayFolder: 8. Menu et marge
-		lineageTag: 89a460f3-3b2b-4aec-9046-22afa7054792
 
 	measure 'Texte hausse détail' = "moyenne simple des " & FORMAT ( [Changements de prix], "0" ) & " changements"
 		displayFolder: 8. Menu et marge
-		lineageTag: 1e6cf368-3612-46b9-894d-fe81a10acdf2
 
 	measure 'Texte sensibilité détail' = "modèle de la phase 7 (EF-11)"
 		displayFolder: 8. Menu et marge
-		lineageTag: 2d351c26-67e7-4b53-95b8-f95aa0b11e70
 
 	measure 'Titre prix et quantités' = "Prix et quantités par article : " & IF ( HASONEVALUE ( dim_article[nom_article] ), SELECTEDVALUE ( dim_article[nom_article] ), "choisir un article" )
 		displayFolder: 8. Menu et marge
-		lineageTag: 3b006aa8-a6d7-4365-be54-10cb3c3acb75
+
+	measure 'Recette valeur' = ```
+			SWITCH (
+				SELECTEDVALUE ( Recette[code] ),
+				"R01", [K01 Établissements actifs],
+				"R02", [K02 MRR],
+				"R03", CALCULATE ( [K02 MRR], dim_date[annee] = 2025 ),
+				"R04", [K03 ARR],
+				"R05", CALCULATE ( [K04 MRR nouveau], dim_date[annee] = 2026 ),
+				"R06", CALCULATE ( [K04 MRR expansion], dim_date[annee] = 2026 ),
+				"R07", CALCULATE ( [K04 MRR contraction], dim_date[annee] = 2026 ),
+				"R08", CALCULATE ( [K04 MRR perdu], dim_date[annee] = 2026 ),
+				"R09", CALCULATE ( [Résiliations], dim_date[annee] = 2026 ),
+				"R10", CALCULATE ( [K05 Taux de résiliation mensuel], dim_date[annee] = 2026 ),
+				"R11", CALCULATE ( [K06 Rétention de cohorte], 'Mois écoulés'[mois] = 12, dim_etablissement[trimestre_cohorte] = "T1 2025" ),
+				"R12", [K07 Taux de conversion des prospects],
+				"R13", [K08 Délai de signature médian],
+				"R14", CALCULATE ( [K09 CAC], dim_canal[nom_canal] = "Parrainage" ),
+				"R15", CALCULATE ( [K09 CAC], dim_canal[nom_canal] = "Salons professionnels" ),
+				"R16", CALCULATE ( [K10 Valeur vie client], dim_date[annee] = 2026 ),
+				"R17", CALCULATE ( [K11 Coût par clic], dim_date[annee] = 2026 ),
+				"R18", CALCULATE ( [K11 Taux de clic], dim_date[annee] = 2026 ),
+				"R19", CALCULATE ( [K12 Sessions par table et par jour], dim_date[annee] = 2026 ),
+				"R20", CALCULATE ( [K13 Taux de commande], dim_formule[nom_formule] = "Commande" ),
+				"R21", CALCULATE ( [K13 Taux de commande], dim_formule[nom_formule] = "Pro" ),
+				"R22", [K14 Panier moyen],
+				"R23", [K15 Taux d'annulation],
+				"R24", CALCULATE ( [Commandes], dim_date[annee] = 2026 ),
+				"R25", CALCULATE ( [CA commandes servies TTC], dim_date[annee] = 2026 ),
+				"R26", CALCULATE ( [K16 Facturé HT], dim_date[annee] = 2026 ),
+				"R27", CALCULATE ( [K16 Encaissé TTC], dim_date[annee] = 2026 ),
+				"R28", CALCULATE ( [K17 Taux de factures payées en retard], dim_date[annee] = 2026 ),
+				"R29", CALCULATE ( [K17 Factures impayées], dim_date[annee] = 2026 ),
+				"R30", [K18 Délai de résolution médian (h)],
+				"R31", [K18 Satisfaction moyenne],
+				"R32", CALCULATE ( [K20 Étape 1 Article consulté], dim_formule[nom_formule] = "Commande" ),
+				"R33", CALCULATE ( [K20 Étape 2 Panier], dim_formule[nom_formule] = "Commande" ),
+				"R34", CALCULATE ( [K21 Marge brute estimée TTC], dim_date[annee] = 2026 ),
+				"R35", CALCULATE ( [K21 Taux de coût estimé], dim_date[annee] = 2026 ),
+				"R36", CALCULATE ( [K22 Nombre de vedettes], dim_date[annee] = 2026 ),
+				"R37", CALCULATE ( [K22 Nombre de chevaux de labour], dim_date[annee] = 2026 ),
+				"R38", CALCULATE ( [K22 Nombre d'énigmes], dim_date[annee] = 2026 ),
+				"R39", CALCULATE ( [K22 Nombre de poids morts], dim_date[annee] = 2026 ),
+				"R40", [K23 Part du soir en Ramadan],
+				"R41", [K23 Part du soir hors Ramadan]
+			)
+			```
+		formatString: #,0.0000
+		displayFolder: 10. Recette
+
+	measure 'Recette attendu' = SELECTEDVALUE ( Recette[attendu] )
+		formatString: #,0.0000
+		displayFolder: 10. Recette
+
+	measure 'Recette écart' = IF ( HASONEVALUE ( Recette[code] ), [Recette valeur] - [Recette attendu] )
+		formatString: #,0.0000
+		displayFolder: 10. Recette
+
+	measure 'Recette statut' = ```
+			VAR v = [Recette valeur]
+			RETURN
+				IF (
+					HASONEVALUE ( Recette[code] ),
+					IF ( ISBLANK ( v ), "ABSENT", IF ( ABS ( v - [Recette attendu] ) <= SELECTEDVALUE ( Recette[tolerance] ) + 1E-9, "OK", "ÉCART" ) )
+				)
+			```
+		displayFolder: 10. Recette
+
+	measure 'Couleur statut' = SWITCH ( [Recette statut], "OK", "#DCFCE7", "ÉCART", "#FEE2E2", "ABSENT", "#FEF3C7" )
+		displayFolder: 10. Recette
+
+	measure 'Texte recette' = ```
+			VAR ok = COUNTROWS ( FILTER ( VALUES ( Recette[code] ), [Recette statut] = "OK" ) )
+			RETURN FORMAT ( ok, "0" ) & " / " & FORMAT ( COUNTROWS ( Recette ), "0" ) & " contrôles conformes"
+			```
+		displayFolder: 10. Recette
+
+	measure 'Texte recette détail' = "valeurs attendues calculées en SQL sur menuscan_dwh le 26/11/2026"
+		displayFolder: 10. Recette
 
 	column Value
 		isHidden
 		formatString: 0
-		lineageTag: 0b7b26f7-dd1c-488d-bc70-bcaa9dd4c862
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
 
-	partition _Mesures = calculated
+	partition '_Mesures' = calculated
 		mode: import
 		source = {BLANK()}
-

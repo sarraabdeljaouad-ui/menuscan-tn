@@ -1,9 +1,7 @@
 table 'Étapes commerciales'
-	lineageTag: d17aeb62-0a14-4dd6-8f76-f1134c4d7aec
 
 	column etape
 		dataType: string
-		lineageTag: 6db3a3a4-2ea2-4123-bd7d-1cce60b1f4af
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [etape]
@@ -11,7 +9,6 @@ table 'Étapes commerciales'
 
 	column ordre
 		dataType: int64
-		lineageTag: b8eaa389-06bb-4873-9c96-964a393bf9d6
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [ordre]
@@ -19,4 +16,3 @@ table 'Étapes commerciales'
 	partition 'Étapes commerciales' = calculated
 		mode: import
 		source = DATATABLE ( "etape", STRING, "ordre", INTEGER, { { "Prospects contactés", 1 }, { "En cours ou signés", 2 }, { "Signés", 3 } } )
-

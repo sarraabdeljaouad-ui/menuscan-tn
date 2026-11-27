@@ -2,34 +2,156 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "9c8e4ba2167a24d09e78",
   "position": {
-    "x": 1076,
-    "y": 14,
+    "x": 936,
+    "y": 8,
     "z": 1008,
-    "height": 26,
-    "width": 188,
+    "height": 36,
+    "width": 127,
     "tabOrder": 1008
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "actionButton",
     "objects": {
-      "general": [
+      "text": [
         {
           "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Données au 31/12/2026",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "10pt",
-                      "color": "#FFFFFF"
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Recette T6.4'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
                     }
                   }
-                ],
-                "horizontalTextAlignment": "right"
+                }
               }
-            ]
+            },
+            "horizontalAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "icon": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "fill": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "fillColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "outline": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "shape": [
+        {
+          "properties": {
+            "tileShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'rectangleRounded'"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "tileShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'rectangleRounded'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
           }
         }
       ]
@@ -61,40 +183,41 @@
           }
         }
       ],
-      "padding": [
+      "visualLink": [
         {
           "properties": {
-            "top": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "true"
                 }
               }
             },
-            "bottom": {
+            "type": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "'PageNavigation'"
                 }
               }
             },
-            "left": {
+            "navigationSection": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "'8607147512c3def86bfa'"
                 }
               }
             },
-            "right": {
+            "tooltip": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "'Recette T6.4'"
                 }
               }
             }
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   }
 }

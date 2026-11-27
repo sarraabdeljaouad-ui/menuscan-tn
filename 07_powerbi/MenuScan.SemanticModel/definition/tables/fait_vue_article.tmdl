@@ -1,51 +1,43 @@
 table fait_vue_article
-	lineageTag: 2a1e8758-a174-4ca2-a537-61e880aaeff1
 
 	column etablissement_id
 		dataType: string
 		isHidden
-		lineageTag: 2bd94fc2-602f-47bc-b39f-1fc34f027405
 		summarizeBy: none
 		sourceColumn: etablissement_id
 
 	column article_id
 		dataType: string
-		lineageTag: dc26d88e-1a8e-4faa-a5b6-20cb85422947
 		summarizeBy: none
 		sourceColumn: article_id
 
 	column prix_id
 		dataType: string
 		isHidden
-		lineageTag: 412faa59-9aae-4450-bedc-2738af62c811
 		summarizeBy: none
 		sourceColumn: prix_id
 
 	column date_id
 		dataType: int64
 		isHidden
-		lineageTag: 5e0d1ff5-215c-46c3-9485-1601522c0dea
 		summarizeBy: none
 		sourceColumn: date_id
 
 	column heure
 		dataType: int64
 		isHidden
-		lineageTag: c9644499-13c9-4dd5-9022-481990b4574e
 		summarizeBy: none
 		sourceColumn: heure
 
 	column nb_vues
 		dataType: int64
 		formatString: #,0
-		lineageTag: 337fc2f6-92fe-4ac1-9981-47bf74d70daf
 		summarizeBy: sum
 		sourceColumn: nb_vues
 
 	column nb_sessions
 		dataType: int64
 		formatString: #,0
-		lineageTag: 4c13a2b1-598d-4f76-8cd5-643930034de8
 		summarizeBy: sum
 		sourceColumn: nb_sessions
 
@@ -57,4 +49,3 @@ table fait_vue_article
 					Donnees = Source{[Schema = "marts", Item = "fait_vue_article"]}[Data]
 				in
 					Donnees
-

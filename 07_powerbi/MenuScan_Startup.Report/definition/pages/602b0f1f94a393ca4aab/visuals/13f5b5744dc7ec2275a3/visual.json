@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "13f5b5744dc7ec2275a3",
   "position": {
-    "x": 496,
+    "x": 336,
     "y": 58,
     "z": 1012,
     "height": 50,
@@ -20,15 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "dim_ville"
+                      "Entity": "fait_marketing"
                     }
                   },
-                  "Property": "ville"
+                  "Property": "campagne_id"
                 }
               },
-              "queryRef": "dim_ville.ville",
-              "nativeQueryRef": "ville",
-              "active": true
+              "queryRef": "fait_marketing.campagne_id",
+              "nativeQueryRef": "campagne_id"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Ville'"
+                  "Value": "'Campagne'"
                 }
               }
             }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "229023d61968e0f81698",
   "position": {
-    "x": 736,
+    "x": 670,
     "y": 8,
     "z": 1006,
     "height": 36,
-    "width": 160,
+    "width": 127,
     "tabOrder": 1006
   },
   "visual": {
@@ -29,7 +29,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'TB-3 · Acquisition'"
+                  "Value": "'Acquisition'"
                 }
               }
             },

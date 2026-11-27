@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "475861f2cbc19b8152d9",
   "position": {
-    "x": 856,
+    "x": 436,
     "y": 510,
     "z": 1026,
     "height": 196,
@@ -23,11 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "motif_resiliation"
+                  "Property": "nom_canal"
                 }
               },
-              "queryRef": "dim_etablissement.motif_resiliation",
-              "nativeQueryRef": "motif_resiliation",
+              "queryRef": "dim_etablissement.nom_canal",
+              "nativeQueryRef": "nom_canal",
               "active": true
             }
           ]
@@ -66,47 +66,9 @@
             },
             "direction": "Descending"
           }
-        ]
+        ],
+        "isDefaultSort": false
       }
-    },
-    "objects": {
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1D4ED8'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -218,7 +180,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Motifs déclarés'"
+                  "Value": "'Résiliations par canal'"
                 }
               }
             },
@@ -250,6 +212,45 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D4ED8'"
+                    }
+                  }
                 }
               }
             }

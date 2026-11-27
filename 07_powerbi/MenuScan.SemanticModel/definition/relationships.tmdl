@@ -125,4 +125,3 @@ relationship fait_vue_article_date_id
 relationship fait_vue_article_heure
 	fromColumn: fait_vue_article.heure
 	toColumn: dim_heure.heure
-

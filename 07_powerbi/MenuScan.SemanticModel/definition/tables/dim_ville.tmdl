@@ -1,53 +1,41 @@
 table dim_ville
-	lineageTag: c8bf346c-5f83-4a18-93da-3b9522629366
 
 	column ville_id
 		dataType: string
-		lineageTag: 9eb08473-3fcd-46a8-88b7-0a84bf405369
 		summarizeBy: none
 		sourceColumn: ville_id
 
 	column ville
 		dataType: string
-		lineageTag: d8792fc5-1f05-411f-87ed-37df29ac999d
 		summarizeBy: none
 		sourceColumn: ville
 
 	column gouvernorat
 		dataType: string
-		lineageTag: 77b3ae40-a8a5-4a08-a068-686a02231486
 		summarizeBy: none
 		sourceColumn: gouvernorat
 
 	column region
 		dataType: string
-		lineageTag: e0e4946d-c906-46f0-a749-71348cc5ded8
 		summarizeBy: none
 		sourceColumn: region
 
 	column est_cotiere
 		dataType: boolean
-		lineageTag: a5f07cb7-b915-40ab-a5ed-21cae3a2a199
 		summarizeBy: none
 		sourceColumn: est_cotiere
 
 	column poids_marche
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: fec455c4-3627-4080-b72b-bb097f46ef28
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: poids_marche
-
-		annotation SummarizationSetBy = Automatic
 
 	column date_ouverture_commerciale
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 40aa1363-97a5-41e6-b975-d60b66ec637d
 		summarizeBy: none
 		sourceColumn: date_ouverture_commerciale
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	partition dim_ville = m
 		mode: import
@@ -57,4 +45,3 @@ table dim_ville
 					Donnees = Source{[Schema = "marts", Item = "dim_ville"]}[Data]
 				in
 					Donnees
-

@@ -1,106 +1,88 @@
 table fait_abonnement_mensuel
-	lineageTag: fa55351a-54c0-4d3a-8379-da96e1ffcfd5
 
 	column etablissement_id
 		dataType: string
 		isHidden
-		lineageTag: 96054416-c77b-478a-9515-f970e93bb1ce
 		summarizeBy: none
 		sourceColumn: etablissement_id
 
 	column mois
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 8af16458-bcf2-4999-9c90-02cffe2b793c
 		summarizeBy: none
 		sourceColumn: mois
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column date_id
 		dataType: int64
 		isHidden
-		lineageTag: 356930b6-799c-40eb-8c86-be96b8cc5e73
 		summarizeBy: none
 		sourceColumn: date_id
 
 	column abonnement_id
 		dataType: string
-		lineageTag: d580fedc-ef14-4c5d-b315-ae7507926f66
 		summarizeBy: none
 		sourceColumn: abonnement_id
 
 	column formule_id
 		dataType: string
 		isHidden
-		lineageTag: 69514dac-16b1-4eda-a352-384c94eab0cd
 		summarizeBy: none
 		sourceColumn: formule_id
 
 	column periodicite
 		dataType: string
-		lineageTag: cd771ff5-3daa-47db-a1b5-b273b182f46d
 		summarizeBy: none
 		sourceColumn: periodicite
 
 	column mrr_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: ad9e9113-dd2e-425d-a993-cdb8bc695727
 		summarizeBy: sum
 		sourceColumn: mrr_ht
 
 	column mrr_precedent_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 6e007411-ed10-4a1e-8993-60a48adf1843
 		summarizeBy: sum
 		sourceColumn: mrr_precedent_ht
 
 	column variation_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 408bf3eb-9907-4b68-b085-383aaefd2455
 		summarizeBy: sum
 		sourceColumn: variation_ht
 
 	column mouvement
 		dataType: string
-		lineageTag: 359bea45-d0d8-485d-87a1-870902444d49
 		summarizeBy: none
 		sourceColumn: mouvement
 
 	column mrr_nouveau_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 8b7f7a6d-7658-45f1-b84f-ae5cf1a77d96
 		summarizeBy: sum
 		sourceColumn: mrr_nouveau_ht
 
 	column mrr_expansion_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 6f840c39-51a6-4ad3-9d7e-b252117a8cab
 		summarizeBy: sum
 		sourceColumn: mrr_expansion_ht
 
 	column mrr_contraction_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 250c4fcf-8051-45f0-9683-3740d9e1099c
 		summarizeBy: sum
 		sourceColumn: mrr_contraction_ht
 
 	column mrr_resiliation_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 9818bf46-a81d-4c54-b62c-486950e8a115
 		summarizeBy: sum
 		sourceColumn: mrr_resiliation_ht
 
 	column est_abonne
 		dataType: boolean
-		lineageTag: 3f66b8db-df5f-4fdc-b276-168d6098f9e1
 		summarizeBy: none
 		sourceColumn: est_abonne
 
@@ -112,4 +94,3 @@ table fait_abonnement_mensuel
 					Donnees = Source{[Schema = "marts", Item = "fait_abonnement_mensuel"]}[Data]
 				in
 					Donnees
-

@@ -6,7 +6,7 @@
     "y": 210,
     "z": 1021,
     "height": 496,
-    "width": 680,
+    "width": 700,
     "tabOrder": 1021
   },
   "visual": {
@@ -29,21 +29,6 @@
               "queryRef": "dim_article.nom_article",
               "nativeQueryRef": "nom_article",
               "displayName": "Article"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_article"
-                    }
-                  },
-                  "Property": "nom_categorie"
-                }
-              },
-              "queryRef": "dim_article.nom_categorie",
-              "nativeQueryRef": "nom_categorie",
-              "displayName": "Catégorie"
             },
             {
               "field": {
@@ -103,7 +88,7 @@
               },
               "queryRef": "_Mesures.Conversion de la fiche",
               "nativeQueryRef": "Conversion de la fiche",
-              "displayName": "Conversion"
+              "displayName": "Conv."
             },
             {
               "field": {
@@ -133,7 +118,7 @@
               },
               "queryRef": "_Mesures.K22 Marge unitaire estimée",
               "nativeQueryRef": "K22 Marge unitaire estimée",
-              "displayName": "Marge unit."
+              "displayName": "Marge u."
             },
             {
               "field": {
@@ -148,7 +133,7 @@
               },
               "queryRef": "_Mesures.K22 Classe du plat",
               "nativeQueryRef": "K22 Classe du plat",
-              "displayName": "Classe (K22)"
+              "displayName": "Classe"
             }
           ]
         }
@@ -320,7 +305,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Conversion = commandes / vues de la fiche ; elle peut dépasser 100 % (ajout depuis la liste)'"
+                  "Value": "'Conv. = commandes / vues (peut dépasser 100 %) · classe K22 : choisir un établissement'"
                 }
               }
             },

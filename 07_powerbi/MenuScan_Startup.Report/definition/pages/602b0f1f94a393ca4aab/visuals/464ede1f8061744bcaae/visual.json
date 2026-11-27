@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "464ede1f8061744bcaae",
   "position": {
-    "x": 520,
-    "y": 116,
+    "x": 272,
+    "y": 179,
     "z": 1018,
-    "height": 84,
-    "width": 240,
+    "height": 18,
+    "width": 232,
     "tabOrder": 1018
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Texte CAC bas"
+                  "Property": "Texte K08 détail"
                 }
               },
-              "queryRef": "_Mesures.Texte CAC bas",
-              "nativeQueryRef": "Texte CAC bas"
+              "queryRef": "_Mesures.Texte K08 détail",
+              "nativeQueryRef": "Texte K08 détail"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "15D"
+                  "Value": "8D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#1E3A8A'"
+                      "Value": "'#64748B'"
                     }
                   }
                 }
@@ -83,32 +83,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'CAC le plus bas (K09)'"
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "10D"
-                }
-              }
-            },
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#334155'"
-                    }
-                  }
+                  "Value": "false"
                 }
               }
             }
@@ -126,25 +101,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#FFFFFF'"
-                    }
-                  }
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
+                  "Value": "false"
                 }
               }
             }
@@ -157,25 +114,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#E2E8F0'"
-                    }
-                  }
-                }
-              }
-            },
-            "radius": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
+                  "Value": "false"
                 }
               }
             }
@@ -188,28 +127,28 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "0D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "0D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "0D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "0D"
                 }
               }
             }

@@ -6,8 +6,8 @@ Ce dossier contient le projet Power BI complet de MenuScan TN, au format PBIP : 
 
 | Élément | Rôle |
 |---|---|
-| `MenuScan.SemanticModel/` | Modèle partagé : 17 tables en Import, 4 tables calculées (axes), 32 relations, 165 mesures, 1 rôle de sécurité |
-| `MenuScan_Startup.pbip` | Rapport Startup, pour la direction de MenuScan : TB-1 Croissance, TB-2 Rétention, TB-3 Acquisition, TB-4 Pilotage |
+| `MenuScan.SemanticModel/` | Modèle partagé : 17 tables en Import, 5 tables calculées (axes et recette), 32 relations, 173 mesures, 1 rôle de sécurité |
+| `MenuScan_Startup.pbip` | Rapport Startup, pour la direction de MenuScan : TB-1 Croissance, TB-2 Rétention, TB-3 Acquisition, TB-4 Pilotage, page Recette T6.4 |
 | `MenuScan_Etablissement.pbip` | Rapport Établissement, pour les gérants : TB-5 Activité, TB-6 Menu, TB-7 Temps, TB-8 Prix |
 | `outils/generer_pbip.py` | Génère tout le projet |
 | `outils/modele_def.py` | Relations, mesures DAX et rôle de sécurité |
@@ -59,6 +59,8 @@ Les pages suivent les maquettes (`Maquettes des tableaux de bord`) : bandeau ble
 | Étapes « En discussion », « Démo faite » (TB-3) | Contactés, en cours ou signés, signés | Le jeu de données n'a que trois statuts : perdu, en cours, converti |
 | Scores K19, MRR menacé, sensibilité au prix | Mention « [phase 7] » | Produits par les modèles de la phase 7 |
 | Période de 6 mois, Café Les Arcades | Période et établissement au choix | Les maquettes montraient un échantillon |
+| Colonne Catégorie du tableau des articles (TB-6) | Filtre Catégorie en haut de page | Place gagnée pour la marge et la classe du plat (K22) |
+| Tous les changements de prix (TB-8) | Changements avec au moins 14 jours de recul, fenêtre de 60 jours au plus | Une fenêtre de quelques jours ne contient presque aucune vente |
 
 
 | Page | Question à laquelle elle répond |
@@ -74,7 +76,7 @@ Les pages suivent les maquettes (`Maquettes des tableaux de bord`) : bandeau ble
 
 ## 5. Valeurs attendues (recette)
 
-Calculées en SQL sur `menuscan_dwh` le 26/11/2026. Mets la mesure dans une carte, avec le filtre indiqué.
+La page **Recette T6.4** du rapport Startup compare automatiquement 41 valeurs attendues (table calculée `Recette`, définie dans `outils/modele_def.py`) aux valeurs calculées par le modèle, avec un statut OK, ÉCART ou ABSENT. Les valeurs attendues ont été calculées en SQL sur `menuscan_dwh` le 26/11/2026. Le tableau ci-dessous en reprend les principales.
 
 | Mesure | Filtre | Valeur attendue |
 |---|---|---|

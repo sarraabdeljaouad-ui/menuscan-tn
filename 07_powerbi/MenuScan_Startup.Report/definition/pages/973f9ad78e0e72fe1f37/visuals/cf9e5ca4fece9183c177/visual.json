@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "cf9e5ca4fece9183c177",
   "position": {
-    "x": 902,
+    "x": 803,
     "y": 8,
     "z": 1007,
     "height": 36,
-    "width": 160,
+    "width": 127,
     "tabOrder": 1007
   },
   "visual": {
@@ -29,7 +29,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'TB-4 · Pilotage ML'"
+                  "Value": "'Pilotage ML'"
                 }
               }
             },

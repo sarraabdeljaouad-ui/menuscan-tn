@@ -1,16 +1,16 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "06ac8ab71b7cc06ea85e",
   "position": {
-    "x": 828,
+    "x": 16,
     "y": 210,
     "z": 1025,
     "height": 290,
-    "width": 436,
+    "width": 800,
     "tabOrder": 1025
   },
   "visual": {
-    "visualType": "waterfallChart",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Pont MRR"
+                      "Entity": "dim_date"
                     }
                   },
-                  "Property": "etape"
+                  "Property": "premier_jour_mois"
                 }
               },
-              "queryRef": "Pont MRR.etape",
-              "nativeQueryRef": "etape",
+              "queryRef": "dim_date.premier_jour_mois",
+              "nativeQueryRef": "premier_jour_mois",
               "active": true
             }
           ]
@@ -42,47 +42,15 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Pont MRR valeur"
+                  "Property": "K02 MRR"
                 }
               },
-              "queryRef": "_Mesures.Pont MRR valeur",
-              "nativeQueryRef": "Pont MRR valeur"
+              "queryRef": "_Mesures.K02 MRR",
+              "nativeQueryRef": "K02 MRR"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Pont MRR"
-                  }
-                },
-                "Property": "etape"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ]
       }
-    },
-    "objects": {
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "background": [
@@ -194,7 +162,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Mouvements de MRR (K04)'"
+                  "Value": "'MRR mensuel sur 36 mois (DT HT)'"
                 }
               }
             },
@@ -231,13 +199,8 @@
             },
             "text": {
               "expr": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Mesures"
-                    }
-                  },
-                  "Property": "Texte variation MRR"
+                "Literal": {
+                  "Value": "'Valeur en fin de mois, lue dans fait_abonnement_mensuel'"
                 }
               }
             },
@@ -254,6 +217,38 @@
                   "expr": {
                     "Literal": {
                       "Value": "'#64748B'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D4ED8'"
                     }
                   }
                 }

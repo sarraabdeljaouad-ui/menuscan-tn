@@ -2,93 +2,101 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "3c84d2d860768cfed010",
   "position": {
-    "x": 700,
-    "y": 66,
+    "x": 496,
+    "y": 58,
     "z": 1013,
-    "height": 32,
-    "width": 564,
+    "height": 50,
+    "width": 150,
     "tabOrder": 1013
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_etablissement"
+                    }
+                  },
+                  "Property": "nom_canal"
+                }
+              },
+              "queryRef": "dim_etablissement.nom_canal",
+              "nativeQueryRef": "nom_canal"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
-      "general": [
+      "data": [
         {
           "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Formule et canal : ceux de l'établissement",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9pt",
-                      "color": "#64748B"
-                    }
-                  }
-                ],
-                "horizontalTextAlignment": "right"
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
               }
-            ]
+            }
+          }
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Canal'"
+                }
+              }
+            }
           }
         }
       ]
     },
     "visualContainerObjects": {
-      "background": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "border": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
       "padding": [
         {
           "properties": {
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "2D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "2D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "2D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "2D"
                 }
               }
             }

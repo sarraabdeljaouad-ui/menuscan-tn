@@ -1,56 +1,45 @@
 table dim_table
-	lineageTag: 8c51499a-482e-43fb-87fa-b12602c0f160
 
 	column table_id
 		dataType: string
-		lineageTag: 6b9ce564-433c-4436-b787-5a67bd0d81dc
 		summarizeBy: none
 		sourceColumn: table_id
 
 	column etablissement_id
 		dataType: string
-		lineageTag: bbcd06e6-0a49-41d5-83da-9df2dc0a65b2
 		summarizeBy: none
 		sourceColumn: etablissement_id
 
 	column numero_table
 		dataType: int64
 		formatString: 0
-		lineageTag: e9658882-036d-4459-8e68-72fb9f09df37
 		summarizeBy: none
 		sourceColumn: numero_table
 
 	column zone
 		dataType: string
-		lineageTag: a62dc684-54cb-4fe3-9818-d847791c1cbe
 		summarizeBy: none
 		sourceColumn: zone
 
 	column capacite
 		dataType: int64
 		formatString: 0
-		lineageTag: 56dda94a-7192-442e-a442-b53194cda438
 		summarizeBy: none
 		sourceColumn: capacite
 
 	column qr_code_id
 		dataType: string
-		lineageTag: 4f871967-7367-4a91-a3d1-0fecc5c7f0f3
 		summarizeBy: none
 		sourceColumn: qr_code_id
 
 	column date_installation
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: f119310a-28a9-4614-a524-6d87aea8f9d3
 		summarizeBy: none
 		sourceColumn: date_installation
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column libelle_table = "Table " & dim_table[numero_table] & " · " & dim_table[zone]
 		dataType: string
-		lineageTag: f847ab8a-77a9-4141-8035-0317621b3fc9
 		summarizeBy: none
 
 	partition dim_table = m
@@ -61,4 +50,3 @@ table dim_table
 					Donnees = Source{[Schema = "marts", Item = "dim_table"]}[Data]
 				in
 					Donnees
-

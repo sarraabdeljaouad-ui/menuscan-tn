@@ -1,8 +1,8 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "18dacb4cf90f6bb14f9c",
   "position": {
-    "x": 336,
+    "x": 176,
     "y": 58,
     "z": 1011,
     "height": 50,
@@ -23,12 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "type_etablissement"
+                  "Property": "ville"
                 }
               },
-              "queryRef": "dim_etablissement.type_etablissement",
-              "nativeQueryRef": "type_etablissement",
-              "active": true
+              "queryRef": "dim_etablissement.ville",
+              "nativeQueryRef": "ville"
             }
           ]
         }
@@ -61,7 +60,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Type'"
+                  "Value": "'Ville'"
                 }
               }
             }

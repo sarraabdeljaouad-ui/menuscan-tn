@@ -1,69 +1,58 @@
 table fait_ticket_support
-	lineageTag: ed94113e-848d-426f-b1b2-624b011e4b71
 
 	column ticket_id
 		dataType: string
-		lineageTag: 6d0cfb2c-0857-4144-b70c-6e80f421d9b8
 		summarizeBy: none
 		sourceColumn: ticket_id
 
 	column etablissement_id
 		dataType: string
 		isHidden
-		lineageTag: b8f2147e-5006-49e5-baf5-76f0d4908f8b
 		summarizeBy: none
 		sourceColumn: etablissement_id
 
 	column date_id
 		dataType: int64
 		isHidden
-		lineageTag: 03bce27c-c2cf-42f2-a036-f74aa3e2df36
 		summarizeBy: none
 		sourceColumn: date_id
 
 	column date_ouverture
 		dataType: dateTime
 		formatString: General Date
-		lineageTag: 430104b6-4e55-41c5-a8be-878e3d83c3fa
 		summarizeBy: none
 		sourceColumn: date_ouverture
 
 	column date_resolution
 		dataType: dateTime
 		formatString: General Date
-		lineageTag: 2e572390-d5fd-42d3-b9e1-4fccffb78523
 		summarizeBy: none
 		sourceColumn: date_resolution
 
 	column categorie
 		dataType: string
-		lineageTag: a49e1b09-1828-493c-9687-5363aaa254ae
 		summarizeBy: none
 		sourceColumn: categorie
 
 	column canal_contact
 		dataType: string
-		lineageTag: d0cc8292-934e-486d-883a-6a5c245de326
 		summarizeBy: none
 		sourceColumn: canal_contact
 
 	column statut_ticket
 		dataType: string
-		lineageTag: 2e28cea3-e70c-4041-95ee-ae9b68537ce1
 		summarizeBy: none
 		sourceColumn: statut_ticket
 
 	column delai_resolution_heures
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 8949ddd4-de30-4f2e-86c2-c8fda3ee4942
 		summarizeBy: sum
 		sourceColumn: delai_resolution_heures
 
 	column note_satisfaction
 		dataType: int64
 		formatString: #,0
-		lineageTag: 0b49a7a8-199a-4712-87b0-8709dc76031d
 		summarizeBy: sum
 		sourceColumn: note_satisfaction
 
@@ -75,4 +64,3 @@ table fait_ticket_support
 					Donnees = Source{[Schema = "marts", Item = "fait_ticket_support"]}[Data]
 				in
 					Donnees
-

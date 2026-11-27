@@ -1,60 +1,45 @@
 table dim_formule
-	lineageTag: 76dfcd89-81e6-4351-9ba9-846e6bb8b295
 
 	column formule_id
 		dataType: string
-		lineageTag: ecacf97e-9ac6-4389-b3a9-f9b5f6aff6e5
 		summarizeBy: none
 		sourceColumn: formule_id
 
 	column nom_formule
 		dataType: string
-		lineageTag: c3a9b1a2-9cb0-428e-b053-387c3302728f
 		summarizeBy: none
 		sourceColumn: nom_formule
 
 	column prix_mensuel_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 75d1a77b-bd39-47e8-a3fb-04264ea67661
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: prix_mensuel_ht
 
-		annotation SummarizationSetBy = Automatic
-
 	column prix_annuel_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 9dae3e47-6bf6-4f2d-8c7d-552935fc33ad
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: prix_annuel_ht
 
-		annotation SummarizationSetBy = Automatic
-
 	column frais_mise_en_place_ht
-		dataType: double
+		dataType: decimal
 		formatString: #,0.000
-		lineageTag: 9658b05d-8f86-425d-98a6-728625589bbc
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: frais_mise_en_place_ht
-
-		annotation SummarizationSetBy = Automatic
 
 	column inclut_commande
 		dataType: boolean
-		lineageTag: bfdbbb91-dee8-48b0-be3e-19b0ed2f709d
 		summarizeBy: none
 		sourceColumn: inclut_commande
 
 	column inclut_statistiques
 		dataType: boolean
-		lineageTag: 883e75f6-3063-4a81-974b-875d9c3e3dad
 		summarizeBy: none
 		sourceColumn: inclut_statistiques
 
 	column description
 		dataType: string
-		lineageTag: eda54d98-7bc3-4f98-99b1-4dc387d49c85
 		summarizeBy: none
 		sourceColumn: description
 
@@ -66,4 +51,3 @@ table dim_formule
 					Donnees = Source{[Schema = "marts", Item = "dim_formule"]}[Data]
 				in
 					Donnees
-

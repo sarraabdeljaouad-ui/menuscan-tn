@@ -1,97 +1,78 @@
 table fait_prospect
-	lineageTag: df452ac4-556b-49ed-a64b-aea94323e3a8
 
 	column prospect_id
 		dataType: string
-		lineageTag: c9788185-df44-4c16-b1d5-8013ba039dff
 		summarizeBy: none
 		sourceColumn: prospect_id
 
 	column canal_id
 		dataType: string
 		isHidden
-		lineageTag: 2e523b0b-fe15-4126-a6e6-03c6b005200b
 		summarizeBy: none
 		sourceColumn: canal_id
 
 	column campagne_id
 		dataType: string
-		lineageTag: c7bf0f6e-d0c8-476d-8d12-ee45a0a2930f
 		summarizeBy: none
 		sourceColumn: campagne_id
 
 	column ville_id
 		dataType: string
 		isHidden
-		lineageTag: adcc9830-39d5-4e07-b76a-ce73ed5d019e
 		summarizeBy: none
 		sourceColumn: ville_id
 
 	column type_etablissement
 		dataType: string
-		lineageTag: ce475702-71ef-4971-a3a0-6dde8c71f952
 		summarizeBy: none
 		sourceColumn: type_etablissement
 
 	column date_id
 		dataType: int64
 		isHidden
-		lineageTag: 8f039476-0333-4a2c-aa91-726bdd36f638
 		summarizeBy: none
 		sourceColumn: date_id
 
 	column date_contact
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 5ea4a86a-f357-4a8d-a224-be45bae593bc
 		summarizeBy: none
 		sourceColumn: date_contact
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column date_conversion
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: cbe2940e-0ed9-4c9e-90bf-ef4d514a8982
 		summarizeBy: none
 		sourceColumn: date_conversion
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column statut_prospect
 		dataType: string
-		lineageTag: 303f6792-00cf-4067-b48d-4395a5602502
 		summarizeBy: none
 		sourceColumn: statut_prospect
 
 	column est_converti
 		dataType: boolean
-		lineageTag: 5a03f8fc-7254-40c5-a466-70f4be13b281
 		summarizeBy: none
 		sourceColumn: est_converti
 
 	column delai_conversion_jours
 		dataType: int64
 		formatString: #,0
-		lineageTag: 4a9d2d7b-dd92-45cb-bfb7-a0efb7890cd7
 		summarizeBy: sum
 		sourceColumn: delai_conversion_jours
 
 	column etablissement_id
 		dataType: string
-		lineageTag: 5a7fbf5b-fed0-4403-871d-77a7f0ece82b
 		summarizeBy: none
 		sourceColumn: etablissement_id
 
 	column parrain_etablissement_id
 		dataType: string
-		lineageTag: 30294139-6925-4e1d-8541-68a7c00330dc
 		summarizeBy: none
 		sourceColumn: parrain_etablissement_id
 
 	column motif_perte
 		dataType: string
-		lineageTag: abebf5d0-62c0-45c9-8193-d5873ac6b434
 		summarizeBy: none
 		sourceColumn: motif_perte
 
@@ -103,4 +84,3 @@ table fait_prospect
 					Donnees = Source{[Schema = "marts", Item = "fait_prospect"]}[Data]
 				in
 					Donnees
-
