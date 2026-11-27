@@ -1,0 +1,10 @@
+# MenuScan TN · analyse et ML : ce qui ne va pas dans Git
+# Données et résultats régénérés à chaque exécution (ils viennent de l'entrepôt)
+05_data/features/*
+!05_data/features/.gitkeep
+06_exports/predictions/*
+!06_exports/predictions/.gitkeep
+06_exports/modeles/*.joblib
+06_exports/journaux/*
+!06_exports/journaux/.gitkeep
+.pytest_cache/

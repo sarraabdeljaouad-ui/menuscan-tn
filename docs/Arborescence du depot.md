@@ -77,12 +77,16 @@ menuscan-tn/
 │   ├── MenuScan_Startup.pbip
 │   └── MenuScan_Etablissement.pbip
 │
-├── 08_analyse_ml/                ← phases 7 et 8 : notebooks et modèles
-│   ├── 01_eda.ipynb
-│   ├── 02_resiliation.ipynb
-│   ├── 03_sensibilite_prix.ipynb
-│   ├── 04_recommandations.ipynb
-│   └── fiches_modeles/
+├── 08_analyse_ml/                ← phase 7 : analyses et ML (même découpage que TuniShop)
+│   ├── README.md, 00_ordre_execution.md, CHANGELOG.md
+│   ├── 00_commun/                (module menuscan_analytics ; sql/ : schéma ml)
+│   ├── 01_eda/                   (01_eda_global)
+│   ├── 02_data_mining/           (règles d'association, sensibilité au prix)
+│   ├── 03_machine_learning/      (préparation, résiliation, évaluation, publication)
+│   ├── 04_livrables/             (rapports, fiches modèles, exploitation)
+│   ├── 05_data/                  (variables hors Git, dictionnaire, lignage)
+│   ├── 06_exports/               (figures, tables, modèles, prédictions, journaux)
+│   └── tests/                    (tests sans base de données)
 │
 ├── 09_recette/                   ← notes de validation et PV des phases 1 à 9
 │
