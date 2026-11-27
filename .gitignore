@@ -34,3 +34,6 @@ Thumbs.db
 
 # QR codes générés
 01_application/qr/sortie/
+**/.pbi/
+07_powerbi/**/diagramLayout.json
+07_powerbi/**/definition/cultures/
