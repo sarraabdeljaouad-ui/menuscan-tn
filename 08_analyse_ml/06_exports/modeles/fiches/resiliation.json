@@ -1,0 +1,50 @@
+{
+  "modele": "resiliation",
+  "date": "2026-11-27",
+  "autrice": "Sarra Abdeljaouad",
+  "objet": "probabilité de résiliation le mois suivant, par établissement actif (K19, EF-10)",
+  "donnees": "05_data/features/etablissement_mois.parquet",
+  "apprentissage": "mois de janvier 2024 à novembre 2025 (cibles 2024-2025)",
+  "validation": "mois de juin à novembre 2025 (choix du modèle)",
+  "test": "mois de décembre 2025 à novembre 2026 (cibles 2026)",
+  "algorithme": "logistique, C = 0.03, classes pondérées",
+  "variables": [
+    "sessions_table_jour_1m",
+    "sessions_table_jour_3m",
+    "log_tendance_usage",
+    "taux_commande_3m",
+    "sans_commande_table",
+    "tickets_3m",
+    "tickets_2_ou_plus",
+    "satisfaction_6m",
+    "sans_note",
+    "part_factures_retard_6m",
+    "a_facture_retard_6m",
+    "anciennete_mois",
+    "mrr_ht",
+    "nb_tables",
+    "echeance_annuelle",
+    "facturation_mensuelle",
+    "formule",
+    "type_etablissement",
+    "region",
+    "type_canal"
+  ],
+  "auc_validation": 0.8616,
+  "auc_test_2026": 0.794,
+  "auc_test_ic95": [
+    0.7384,
+    0.8501
+  ],
+  "auc_regle_simple_test": 0.6681,
+  "regle_simple": "retards de paiement (part sur 6 mois)",
+  "alerte": "10 % des établissements les plus à risque",
+  "precision_alerte_test": 0.1474,
+  "rappel_alerte_test": 0.4868,
+  "jalon_J8": "ATTEINT",
+  "limites": [
+    "données synthétiques : le modèle retrouve les règles du générateur",
+    "76 résiliations en test : intervalle de l'AUC large",
+    "periodicite_facturation = valeur actuelle de l'établissement"
+  ]
+}

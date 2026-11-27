@@ -7,14 +7,14 @@ from __future__ import annotations
 
 import pandas as pd
 
-from . import chargement
+from . import chargement, temporal_split
 
 # Une ligne par établissement actif en fin de mois m. Cible : résiliation effective le mois suivant (m + 1).
 # Toutes les variables sont calculées avec des données antérieures ou égales à la fin du mois m (pas de fuite).
 SQL_ETAB_MOIS = """
 with m as (
     select debut::date, (debut + interval '1 month - 1 day')::date as fin
-    from generate_series('2024-01-01'::date, '2026-11-01'::date, interval '1 month') debut
+    from generate_series('2024-01-01'::date, %(dernier_mois)s::date, interval '1 month') debut
 )
 select
     e.etablissement_id, m.debut as mois,
@@ -67,10 +67,18 @@ def _glissant(base, agr, colonnes, n, suffixe, decalage=0):
     return base.join(roul, on=["etablissement_id", "mois"])
 
 
-def panel():
-    """Jeu mensuel : une ligne par établissement actif et par mois, avec la cible et les variables explicatives."""
-    df = chargement.lire(SQL_ETAB_MOIS)
+def panel(avec_mois_a_scorer: bool = False):
+    """Jeu mensuel : une ligne par établissement actif et par mois, avec la cible et les variables explicatives.
+
+    Par défaut, de janvier 2024 au dernier mois dont la cible est connue (temporal_split.DERNIER_MOIS_PANEL).
+    avec_mois_a_scorer=True ajoute le mois d'arrêté (décembre 2026), dont la cible est inconnue (NaN) :
+    ce sont les lignes à scorer.
+    """
+    dernier = temporal_split.MOIS_A_SCORER if avec_mois_a_scorer else temporal_split.DERNIER_MOIS_PANEL
+    df = chargement.lire(SQL_ETAB_MOIS, dernier_mois=dernier.date())
     df["mois"] = pd.to_datetime(df["mois"])
+    df["resilie_mois_suivant"] = df["resilie_mois_suivant"].astype("float")
+    df.loc[df["mois"] > temporal_split.DERNIER_MOIS_PANEL, "resilie_mois_suivant"] = float("nan")
     act, tic, fac = chargement.lire(SQL_ACTIVITE), chargement.lire(SQL_TICKETS), chargement.lire(SQL_FACTURES)
     for t in (act, tic, fac):
         t["mois"] = pd.to_datetime(t["mois"])

@@ -1,0 +1,28 @@
+﻿variable;type;description
+etablissement_id;str;identifiant de l'établissement
+mois;datetime64[us];premier jour du mois observé (variables calculées jusqu'à la fin de ce mois)
+resilie_mois_suivant;float64;"cible : 1 si la résiliation prend effet le mois suivant ; vide pour le mois à scorer"
+type_etablissement;str;café, restaurant, salon de thé, fast-food
+region;str;région du gouvernorat
+nom_canal;str;canal d'acquisition détaillé
+type_canal;str;famille du canal d'acquisition
+nb_tables;int64;nombre de tables équipées
+periodicite_facturation;str;mensuelle ou annuelle (valeur actuelle de l'établissement)
+formule_initiale;str;formule à la signature
+anciennete_mois;int64;mois entiers depuis la mise en service, à la fin du mois
+formule;str;formule facturée ce mois
+mrr_ht;float64;revenu mensuel récurrent HT du mois (DT)
+sessions_1m;float64;sessions de menu du mois
+sessions_3m;float64;sessions des 3 derniers mois
+sessions_commande_3m;float64;sessions avec commande, 3 derniers mois
+sessions_3m_avant;float64;sessions des 3 mois précédant les 3 derniers
+tickets_3m;float64;tickets de support ouverts, 3 derniers mois
+factures_6m;float64;factures émises, 6 derniers mois
+factures_retard_6m;float64;factures payées en retard ou impayées, 6 derniers mois
+sessions_table_jour_1m;float64;sessions par table et par jour, mois courant
+sessions_table_jour_3m;float64;sessions par table et par jour, 3 derniers mois
+tendance_usage;float64;(sessions 3 derniers mois + 1) / (sessions 3 mois précédents + 1)
+taux_commande_3m;float64;part des sessions avec commande (formules avec commande à table)
+satisfaction_6m;float64;note moyenne des tickets notés, 6 derniers mois (1 à 5)
+part_factures_retard_6m;float64;part des factures en retard ou impayées, 6 derniers mois
+sous_jeu;str;ajustement, validation, test ou a_scorer (temporal_split.sous_jeu)

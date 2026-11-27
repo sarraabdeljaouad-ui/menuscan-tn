@@ -1,0 +1,266 @@
+﻿etablissement_id;mois;probabilite;rang;alerte;facteur_1;facteur_2;facteur_3;formule;anciennete_mois
+ETB0002;2026-12-01;0.7047925399310625;1;True;Échéance de l'engagement annuel;Ancienneté;Satisfaction support;Essentiel;35
+ETB0235;2026-12-01;0.41586964002137267;2;True;Échéance de l'engagement annuel;Ancienneté;Taille (tables);Essentiel;11
+ETB0317;2026-12-01;0.38307068753644963;3;True;Retards de paiement;Tickets de support;Facturation mensuelle;Essentiel;5
+ETB0220;2026-12-01;0.3827935165874678;4;True;Échéance de l'engagement annuel;Satisfaction support;Ancienneté;Commande;11
+ETB0228;2026-12-01;0.3641615701587051;5;True;Échéance de l'engagement annuel;Satisfaction support;Ancienneté;Pro;11
+ETB0223;2026-12-01;0.3120884851947589;6;True;Échéance de l'engagement annuel;Ancienneté;Montant de l'abonnement;Essentiel;11
+ETB0117;2026-12-01;0.21701640232528296;7;True;Retards de paiement;Tickets de support;Facturation mensuelle;Pro;20
+ETB0340;2026-12-01;0.19327909821122324;8;True;Retards de paiement;Tickets de support;Facturation mensuelle;Commande;3
+ETB0207;2026-12-01;0.15553501615532053;9;True;Retards de paiement;Facturation mensuelle;Ancienneté;Essentiel;13
+ETB0201;2026-12-01;0.15192250479755065;10;True;Retards de paiement;Facturation mensuelle;Ancienneté;Essentiel;13
+ETB0292;2026-12-01;0.14898812100771228;11;True;Retards de paiement;Facturation mensuelle;Taille (tables);Essentiel;6
+ETB0138;2026-12-01;0.1430518883221218;12;True;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;18
+ETB0308;2026-12-01;0.13985824359011556;13;True;Retards de paiement;Facturation mensuelle;Satisfaction support;Essentiel;6
+ETB0202;2026-12-01;0.135072224853044;14;True;Retards de paiement;Tickets de support;Facturation mensuelle;Commande;13
+ETB0279;2026-12-01;0.12916242137122091;15;True;Retards de paiement;Facturation mensuelle;Satisfaction support;Essentiel;7
+ETB0353;2026-12-01;0.12657777504243914;16;True;Retards de paiement;Facturation mensuelle;Usage du menu;Essentiel;3
+ETB0334;2026-12-01;0.11213614929233691;17;True;Retards de paiement;Facturation mensuelle;Satisfaction support;Commande;4
+ETB0284;2026-12-01;0.105327429346017;18;True;Retards de paiement;Facturation mensuelle;Satisfaction support;Commande;7
+ETB0067;2026-12-01;0.10497717778620203;19;True;Retards de paiement;Ancienneté;Facturation mensuelle;Pro;26
+ETB0078;2026-12-01;0.10381362269191187;20;True;Retards de paiement;Ancienneté;Facturation mensuelle;Commande;24
+ETB0096;2026-12-01;0.09981129423375355;21;True;Retards de paiement;Ancienneté;Facturation mensuelle;Pro;22
+ETB0349;2026-12-01;0.09750721551394222;22;True;Retards de paiement;Facturation mensuelle;Usage du menu;Pro;3
+ETB0217;2026-12-01;0.09495554811956414;23;True;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;12
+ETB0098;2026-12-01;0.09178149979903763;24;True;Retards de paiement;Ancienneté;Facturation mensuelle;Commande;22
+ETB0190;2026-12-01;0.08749136886408608;25;True;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;14
+ETB0398;2026-12-01;0.08671731056510222;26;True;Tickets de support;Facturation mensuelle;Usage du menu;Essentiel;0
+ETB0185;2026-12-01;0.08575133337501323;27;True;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;14
+ETB0297;2026-12-01;0.08262406807971763;28;False;Retards de paiement;Facturation mensuelle;Usage du menu;Essentiel;6
+ETB0077;2026-12-01;0.08190380981907198;29;False;Retards de paiement;Ancienneté;Facturation mensuelle;Pro;24
+ETB0097;2026-12-01;0.08019523003222345;30;False;Retards de paiement;Ancienneté;Facturation mensuelle;Commande;22
+ETB0224;2026-12-01;0.07399863322131137;31;False;Retards de paiement;Facturation mensuelle;Ancienneté;Essentiel;11
+ETB0316;2026-12-01;0.07276797446122552;32;False;Retards de paiement;Facturation mensuelle;Usage du menu;Essentiel;5
+ETB0311;2026-12-01;0.0709031728948251;33;False;Retards de paiement;Facturation mensuelle;Satisfaction support;Commande;6
+ETB0339;2026-12-01;0.06986757921999641;34;False;Retards de paiement;Facturation mensuelle;Taille (tables);Essentiel;3
+ETB0295;2026-12-01;0.0693599433228994;35;False;Retards de paiement;Facturation mensuelle;Satisfaction support;Essentiel;6
+ETB0377;2026-12-01;0.06815594469846342;36;False;Retards de paiement;Tickets de support;Usage du menu;Essentiel;1
+ETB0148;2026-12-01;0.06717806256133542;37;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;17
+ETB0172;2026-12-01;0.06676565112494094;38;False;Retards de paiement;Facturation mensuelle;Ancienneté;Essentiel;15
+ETB0061;2026-12-01;0.06642134828467047;39;False;Retards de paiement;Ancienneté;Facturation mensuelle;Pro;26
+ETB0402;2026-12-01;0.06612709280359859;40;False;Tickets de support;Facturation mensuelle;Usage du menu;Essentiel;0
+ETB0113;2026-12-01;0.0643252682883827;41;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;20
+ETB0379;2026-12-01;0.060612436451762834;42;False;Tickets de support;Facturation mensuelle;Usage du menu;Essentiel;1
+ETB0165;2026-12-01;0.05870963470183181;43;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;16
+ETB0215;2026-12-01;0.056977442557581595;44;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;12
+ETB0363;2026-12-01;0.055683496231318144;45;False;Retards de paiement;Tickets de support;Usage du menu;Essentiel;2
+ETB0133;2026-12-01;0.05539306193740359;46;False;Retards de paiement;Facturation mensuelle;Ancienneté;Pro;19
+ETB0242;2026-12-01;0.05440574821615413;47;False;Tickets de support;Facturation mensuelle;Ancienneté;Essentiel;10
+ETB0401;2026-12-01;0.05439355441863806;48;False;Tickets de support;Facturation mensuelle;Usage du menu;Essentiel;0
+ETB0337;2026-12-01;0.052665932842433226;49;False;Retards de paiement;Facturation mensuelle;Taille (tables);Commande;4
+ETB0275;2026-12-01;0.05247239357021786;50;False;Retards de paiement;Facturation mensuelle;Montant de l'abonnement;Essentiel;7
+ETB0375;2026-12-01;0.05006436631281813;51;False;Tickets de support;Facturation mensuelle;Usage du menu;Essentiel;1
+ETB0251;2026-12-01;0.04826839386211152;52;False;Retards de paiement;Facturation mensuelle;Taille (tables);Pro;9
+ETB0357;2026-12-01;0.04812138161392206;53;False;Retards de paiement;Facturation mensuelle;Usage du menu;Commande;3
+ETB0114;2026-12-01;0.046946300558166856;54;False;Tickets de support;Facturation mensuelle;Ancienneté;Pro;20
+ETB0213;2026-12-01;0.04567186143293188;55;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;12
+ETB0262;2026-12-01;0.04525567935720456;56;False;Tickets de support;Facturation mensuelle;Satisfaction support;Commande;8
+ETB0053;2026-12-01;0.04447216075901677;57;False;Ancienneté;Facturation mensuelle;Satisfaction support;Essentiel;27
+ETB0327;2026-12-01;0.044035668514658;58;False;Retards de paiement;Facturation mensuelle;Usage du menu;Pro;4
+ETB0367;2026-12-01;0.042047651855592526;59;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;2
+ETB0036;2026-12-01;0.041912070567755234;60;False;Tickets de support;Ancienneté;Facturation mensuelle;Commande;29
+ETB0006;2026-12-01;0.03976024213760749;61;False;Ancienneté;Facturation mensuelle;Satisfaction support;Essentiel;34
+ETB0240;2026-12-01;0.038625724408345934;62;False;Retards de paiement;Facturation mensuelle;Usage du menu;Pro;10
+ETB0029;2026-12-01;0.035535747456136864;63;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;30
+ETB0092;2026-12-01;0.03426566776803424;64;False;Tickets de support;Ancienneté;Facturation mensuelle;Commande;23
+ETB0282;2026-12-01;0.03415590718856867;65;False;Retards de paiement;Facturation mensuelle;Taille (tables);Commande;7
+ETB0021;2026-12-01;0.03364809867320246;66;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;31
+ETB0257;2026-12-01;0.03262793249073354;67;False;Facturation mensuelle;Taille (tables);Type d'établissement;Essentiel;9
+ETB0344;2026-12-01;0.032470104909765395;68;False;Tickets de support;Facturation mensuelle;Montant de l'abonnement;Essentiel;3
+ETB0366;2026-12-01;0.031724738286078365;69;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;2
+ETB0044;2026-12-01;0.03043731624530517;70;False;Ancienneté;Facturation mensuelle;Satisfaction support;Pro;28
+ETB0196;2026-12-01;0.02995632621081353;71;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;13
+ETB0049;2026-12-01;0.029648596313726357;72;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;28
+ETB0296;2026-12-01;0.02958331597793724;73;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;6
+ETB0364;2026-12-01;0.029567475941156125;74;False;Facturation mensuelle;Usage du menu;Taille (tables);Essentiel;2
+ETB0016;2026-12-01;0.029331524348569053;75;False;Ancienneté;Facturation mensuelle;Taille (tables);Commande;32
+ETB0058;2026-12-01;0.028609619022607755;76;False;Ancienneté;Facturation mensuelle;Satisfaction support;Pro;26
+ETB0365;2026-12-01;0.028328552054112437;77;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;2
+ETB0391;2026-12-01;0.028084724456798313;78;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;0
+ETB0124;2026-12-01;0.028034658012278488;79;False;Facturation mensuelle;Ancienneté;Satisfaction support;Pro;19
+ETB0234;2026-12-01;0.027902370333339813;80;False;Facturation mensuelle;Satisfaction support;Ancienneté;Essentiel;11
+ETB0386;2026-12-01;0.0277894743935485;81;False;Facturation mensuelle;Satisfaction support;Usage du menu;Essentiel;1
+ETB0141;2026-12-01;0.0276950218723154;82;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;18
+ETB0260;2026-12-01;0.02766381112618256;83;False;Tickets de support;Facturation mensuelle;Ancienneté;Pro;8
+ETB0315;2026-12-01;0.02686651625760287;84;False;Facturation mensuelle;Taille (tables);Satisfaction support;Essentiel;5
+ETB0003;2026-12-01;0.02681084632347412;85;False;Ancienneté;Facturation mensuelle;Satisfaction support;Pro;35
+ETB0128;2026-12-01;0.02553372380200935;86;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;19
+ETB0395;2026-12-01;0.025511519145583306;87;False;Tickets de support;Facturation mensuelle;Usage du menu;Pro;0
+ETB0005;2026-12-01;0.025507199202285266;88;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;34
+ETB0378;2026-12-01;0.02509858002663982;89;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;1
+ETB0093;2026-12-01;0.02506623129102794;90;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;23
+ETB0382;2026-12-01;0.024682221069034657;91;False;Retards de paiement;Taille (tables);Usage du menu;Pro;1
+ETB0342;2026-12-01;0.024012802105862548;92;False;Facturation mensuelle;Satisfaction support;Taille (tables);Essentiel;3
+ETB0012;2026-12-01;0.02388551007813247;93;False;Ancienneté;Facturation mensuelle;Taille (tables);Commande;33
+ETB0046;2026-12-01;0.0237485338958049;94;False;Ancienneté;Facturation mensuelle;Satisfaction support;Pro;28
+ETB0111;2026-12-01;0.02340499585186684;95;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;20
+ETB0041;2026-12-01;0.022960594323939813;96;False;Ancienneté;Facturation mensuelle;Taille (tables);Commande;29
+ETB0373;2026-12-01;0.022954761132190613;97;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;2
+ETB0159;2026-12-01;0.022820936527435363;98;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;16
+ETB0360;2026-12-01;0.022791590687324694;99;False;Facturation mensuelle;Satisfaction support;Usage du menu;Essentiel;2
+ETB0303;2026-12-01;0.022698880678770534;100;False;Facturation mensuelle;Satisfaction support;Montant de l'abonnement;Essentiel;6
+ETB0183;2026-12-01;0.022672440456050727;101;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;14
+ETB0396;2026-12-01;0.02255110092895402;102;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;0
+ETB0199;2026-12-01;0.022522106829646615;103;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;13
+ETB0385;2026-12-01;0.021971343370479398;104;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;1
+ETB0318;2026-12-01;0.021954672834293698;105;False;Facturation mensuelle;Taille (tables);Satisfaction support;Essentiel;5
+ETB0394;2026-12-01;0.02189811086805449;106;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;0
+ETB0060;2026-12-01;0.021844411117950508;107;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;26
+ETB0389;2026-12-01;0.021522807857679637;108;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;1
+ETB0231;2026-12-01;0.021173908508942733;109;False;Facturation mensuelle;Satisfaction support;Ancienneté;Essentiel;11
+ETB0403;2026-12-01;0.02104730822087523;110;False;Facturation mensuelle;Usage du menu;Montant de l'abonnement;Essentiel;0
+ETB0164;2026-12-01;0.020928755534710013;111;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;16
+ETB0050;2026-12-01;0.020839513057998155;112;False;Ancienneté;Facturation mensuelle;Type d'établissement;Commande;27
+ETB0206;2026-12-01;0.020835975175332894;113;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;13
+ETB0328;2026-12-01;0.0206141614675027;114;False;Facturation mensuelle;Satisfaction support;Montant de l'abonnement;Essentiel;4
+ETB0020;2026-12-01;0.020462796184410704;115;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;31
+ETB0393;2026-12-01;0.020382203897179166;116;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;0
+ETB0383;2026-12-01;0.019848554110189848;117;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;1
+ETB0335;2026-12-01;0.019843672561418953;118;False;Facturation mensuelle;Satisfaction support;Taille (tables);Essentiel;4
+ETB0371;2026-12-01;0.019609507089456493;119;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;1
+ETB0221;2026-12-01;0.01938096857174344;120;False;Facturation mensuelle;Ancienneté;Taille (tables);Commande;12
+ETB0211;2026-12-01;0.01921545517777802;121;False;Facturation mensuelle;Ancienneté;Satisfaction support;Essentiel;12
+ETB0033;2026-12-01;0.019134533193580296;122;False;Ancienneté;Facturation mensuelle;Canal d'acquisition;Pro;30
+ETB0120;2026-12-01;0.019132083018453608;123;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;20
+ETB0390;2026-12-01;0.018350332855531316;124;False;Tickets de support;Facturation mensuelle;Usage du menu;Commande;0
+ETB0400;2026-12-01;0.018203985177905783;125;False;Facturation mensuelle;Taille (tables);Usage du menu;Commande;0
+ETB0369;2026-12-01;0.01794168891788828;126;False;Facturation mensuelle;Usage du menu;Montant de l'abonnement;Essentiel;2
+ETB0351;2026-12-01;0.017759835629763514;127;False;Facturation mensuelle;Usage du menu;Satisfaction support;Essentiel;3
+ETB0347;2026-12-01;0.017735111012711968;128;False;Facturation mensuelle;Usage du menu;Montant de l'abonnement;Essentiel;3
+ETB0119;2026-12-01;0.017497678010987443;129;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;20
+ETB0075;2026-12-01;0.017365461617895237;130;False;Ancienneté;Facturation mensuelle;Montant de l'abonnement;Essentiel;25
+ETB0387;2026-12-01;0.01727450958340074;131;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;1
+ETB0361;2026-12-01;0.01715410789329105;132;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;2
+ETB0158;2026-12-01;0.01688869874117491;133;False;Facturation mensuelle;Ancienneté;Satisfaction support;Pro;17
+ETB0019;2026-12-01;0.016850274501908354;134;False;Ancienneté;Facturation mensuelle;Canal d'acquisition;Pro;31
+ETB0145;2026-12-01;0.016639480263547578;135;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;18
+ETB0100;2026-12-01;0.01650689714545936;136;False;Ancienneté;Facturation mensuelle;Satisfaction support;Commande;21
+ETB0356;2026-12-01;0.01604695752940458;137;False;Facturation mensuelle;Usage du menu;Satisfaction support;Pro;3
+ETB0258;2026-12-01;0.015967454953004494;138;False;Facturation mensuelle;Satisfaction support;Ancienneté;Essentiel;9
+ETB0184;2026-12-01;0.015904365888719765;139;False;Facturation mensuelle;Ancienneté;Satisfaction support;Pro;14
+ETB0090;2026-12-01;0.015875357929026158;140;False;Ancienneté;Facturation mensuelle;Taille (tables);Pro;23
+ETB0345;2026-12-01;0.015822008744741902;141;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;3
+ETB0388;2026-12-01;0.015719323615371282;142;False;Facturation mensuelle;Satisfaction support;Taille (tables);Pro;1
+ETB0362;2026-12-01;0.015691419026507177;143;False;Facturation mensuelle;Usage du menu;Type d'établissement;Commande;2
+ETB0287;2026-12-01;0.015666135055368825;144;False;Facturation mensuelle;Satisfaction support;Taille (tables);Commande;7
+ETB0305;2026-12-01;0.015558126508687299;145;False;Facturation mensuelle;Satisfaction support;Taille (tables);Commande;6
+ETB0350;2026-12-01;0.015412901933639653;146;False;Tickets de support;Facturation mensuelle;Taille (tables);Commande;3
+ETB0175;2026-12-01;0.015302787769080355;147;False;Facturation mensuelle;Ancienneté;Taille (tables);Commande;15
+ETB0392;2026-12-01;0.015123352719345907;148;False;Facturation mensuelle;Usage du menu;Montant de l'abonnement;Essentiel;0
+ETB0181;2026-12-01;0.014406076630345531;149;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;14
+ETB0354;2026-12-01;0.014353862411314327;150;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;3
+ETB0174;2026-12-01;0.014324185158577647;151;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;15
+ETB0343;2026-12-01;0.014226019165768738;152;False;Facturation mensuelle;Satisfaction support;Montant de l'abonnement;Essentiel;3
+ETB0270;2026-12-01;0.014161895308324502;153;False;Facturation mensuelle;Satisfaction support;Montant de l'abonnement;Essentiel;8
+ETB0026;2026-12-01;0.013640520808156484;154;False;Ancienneté;Facturation mensuelle;Taille (tables);Pro;31
+ETB0233;2026-12-01;0.013513861125802593;155;False;Facturation mensuelle;Satisfaction support;Ancienneté;Commande;11
+ETB0170;2026-12-01;0.013278701746789428;156;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;15
+ETB0226;2026-12-01;0.013226096072059126;157;False;Facturation mensuelle;Ancienneté;Taille (tables);Commande;11
+ETB0372;2026-12-01;0.013065746548803842;158;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;1
+ETB0073;2026-12-01;0.013042675841427091;159;False;Ancienneté;Facturation mensuelle;Formule;Pro;25
+ETB0214;2026-12-01;0.012997495716581944;160;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;12
+ETB0313;2026-12-01;0.012717858196223978;161;False;Facturation mensuelle;Satisfaction support;Montant de l'abonnement;Essentiel;6
+ETB0346;2026-12-01;0.012144378795520985;162;False;Facturation mensuelle;Usage du menu;Montant de l'abonnement;Essentiel;3
+ETB0307;2026-12-01;0.012078127131788212;163;False;Facturation mensuelle;Satisfaction support;Type d'établissement;Commande;6
+ETB0171;2026-12-01;0.011830688077452974;164;False;Facturation mensuelle;Ancienneté;Satisfaction support;Pro;15
+ETB0298;2026-12-01;0.0118137507663882;165;False;Facturation mensuelle;Taille (tables);Montant de l'abonnement;Essentiel;6
+ETB0259;2026-12-01;0.011811676344237274;166;False;Facturation mensuelle;Satisfaction support;Ancienneté;Commande;9
+ETB0384;2026-12-01;0.011718272040182559;167;False;Facturation mensuelle;Usage du menu;Satisfaction support;Commande;1
+ETB0197;2026-12-01;0.011495931460347619;168;False;Facturation mensuelle;Ancienneté;Satisfaction support;Commande;13
+ETB0376;2026-12-01;0.011468335237348156;169;False;Facturation mensuelle;Satisfaction support;Taille (tables);Pro;1
+ETB0320;2026-12-01;0.011321077682535608;170;False;Retards de paiement;Taille (tables);Montant de l'abonnement;Essentiel;5
+ETB0331;2026-12-01;0.011155201388410857;171;False;Facturation mensuelle;Satisfaction support;Usage du menu;Commande;4
+ETB0336;2026-12-01;0.011091562125573943;172;False;Facturation mensuelle;Montant de l'abonnement;Commande à table;Essentiel;4
+ETB0300;2026-12-01;0.010909200405782154;173;False;Retards de paiement;Facturation mensuelle;Taille (tables);Commande;6
+ETB0192;2026-12-01;0.010877375285988608;174;False;Facturation mensuelle;Ancienneté;Satisfaction support;Pro;14
+ETB0288;2026-12-01;0.010740514650378319;175;False;Facturation mensuelle;Montant de l'abonnement;Commande à table;Essentiel;7
+ETB0219;2026-12-01;0.010732765779767174;176;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;12
+ETB0306;2026-12-01;0.010681529295812757;177;False;Facturation mensuelle;Taille (tables);Montant de l'abonnement;Essentiel;6
+ETB0399;2026-12-01;0.010519578499482839;178;False;Facturation mensuelle;Usage du menu;Satisfaction support;Pro;0
+ETB0135;2026-12-01;0.010475911878800844;179;False;Facturation mensuelle;Ancienneté;Région;Commande;18
+ETB0374;2026-12-01;0.010099452106317271;180;False;Facturation mensuelle;Usage du menu;Région;Commande;1
+ETB0227;2026-12-01;0.00987119925143245;181;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;11
+ETB0203;2026-12-01;0.009809757293161418;182;False;Retards de paiement;Facturation mensuelle;Ancienneté;Commande;13
+ETB0087;2026-12-01;0.009744950513507294;183;False;Ancienneté;Facturation mensuelle;Région;Pro;23
+ETB0256;2026-12-01;0.009726367156790854;184;False;Facturation mensuelle;Ancienneté;Montant de l'abonnement;Essentiel;9
+ETB0302;2026-12-01;0.009237921497531635;185;False;Facturation mensuelle;Taille (tables);Canal d'acquisition;Commande;6
+ETB0265;2026-12-01;0.00881768602099028;186;False;Facturation mensuelle;Satisfaction support;Taille (tables);Commande;8
+ETB0274;2026-12-01;0.008703960408963285;187;False;Facturation mensuelle;Satisfaction support;Ancienneté;Pro;8
+ETB0291;2026-12-01;0.008502689527747973;188;False;Facturation mensuelle;Satisfaction support;Taille (tables);Commande;7
+ETB0314;2026-12-01;0.008486951429299805;189;False;Facturation mensuelle;Taille (tables);Type d'établissement;Commande;6
+ETB0325;2026-12-01;0.008103501818069818;190;False;Facturation mensuelle;Satisfaction support;Usage du menu;Pro;5
+ETB0268;2026-12-01;0.007971369587796068;191;False;Facturation mensuelle;Ancienneté;Région;Pro;8
+ETB0290;2026-12-01;0.007854909983309703;192;False;Facturation mensuelle;Taille (tables);Type d'établissement;Commande;6
+ETB0301;2026-12-01;0.007801826925592406;193;False;Facturation mensuelle;Satisfaction support;Ancienneté;Commande;6
+ETB0359;2026-12-01;0.00760691874037885;194;False;Facturation mensuelle;Usage du menu;Canal d'acquisition;Pro;2
+ETB0380;2026-12-01;0.007596182920055426;195;False;Facturation mensuelle;Usage du menu;Canal d'acquisition;Pro;1
+ETB0285;2026-12-01;0.00758134288672169;196;False;Facturation mensuelle;Taille (tables);Canal d'acquisition;Commande;7
+ETB0263;2026-12-01;0.007577719038552271;197;False;Facturation mensuelle;Taille (tables);Montant de l'abonnement;Essentiel;8
+ETB0368;2026-12-01;0.007560687895166048;198;False;Retards de paiement;Usage du menu;Canal d'acquisition;Pro;2
+ETB0309;2026-12-01;0.007324709102240366;199;False;Facturation mensuelle;Taille (tables);Type d'établissement;Commande;5
+ETB0191;2026-12-01;0.007274134295309305;200;False;Facturation mensuelle;Ancienneté;Taille (tables);Commande;14
+ETB0013;2026-12-01;0.007260059701125765;201;False;Ancienneté;Satisfaction support;Montant de l'abonnement;Essentiel;33
+ETB0254;2026-12-01;0.0072318299767291025;202;False;Facturation mensuelle;Taille (tables);Type d'établissement;Commande;9
+ETB0216;2026-12-01;0.0070082110899025545;203;False;Facturation mensuelle;Taille (tables);Ancienneté;Pro;12
+ETB0118;2026-12-01;0.0068755939332930316;204;False;Facturation mensuelle;Ancienneté;Formule;Pro;20
+ETB0323;2026-12-01;0.006358667361587215;205;False;Facturation mensuelle;Taille (tables);Montant de l'abonnement;Essentiel;5
+ETB0397;2026-12-01;0.00633269087857371;206;False;Facturation mensuelle;Usage du menu;Satisfaction support;Pro;0
+ETB0188;2026-12-01;0.005658466547145961;207;False;Facturation mensuelle;Ancienneté;Formule;Pro;14
+ETB0330;2026-12-01;0.005511028500457849;208;False;Facturation mensuelle;Taille (tables);Formule;Pro;4
+ETB0054;2026-12-01;0.00545138954225862;209;False;Ancienneté;Satisfaction support;Montant de l'abonnement;Essentiel;27
+ETB0076;2026-12-01;0.005374923962239692;210;False;Ancienneté;Satisfaction support;Taille (tables);Commande;24
+ETB0230;2026-12-01;0.005304380817416466;211;False;Facturation mensuelle;Ancienneté;Usage du menu;Commande;11
+ETB0264;2026-12-01;0.005137459257301603;212;False;Facturation mensuelle;Ancienneté;;Commande;8
+ETB0299;2026-12-01;0.004871627797252203;213;False;Facturation mensuelle;Taille (tables);Ancienneté;Pro;6
+ETB0281;2026-12-01;0.00457511522249636;214;False;Facturation mensuelle;Usage du menu;Région;Commande;7
+ETB0011;2026-12-01;0.004210248341625348;215;False;Ancienneté;Satisfaction support;Montant de l'abonnement;Essentiel;33
+ETB0208;2026-12-01;0.004108423602712785;216;False;Tickets de support;Taille (tables);Ancienneté;Commande;12
+ETB0310;2026-12-01;0.003960544896117898;217;False;Tickets de support;Montant de l'abonnement;Commande à table;Essentiel;6
+ETB0023;2026-12-01;0.003861103061973756;218;False;Ancienneté;Satisfaction support;Canal d'acquisition;Pro;31
+ETB0358;2026-12-01;0.0033523351666088688;219;False;Usage du menu;Satisfaction support;Montant de l'abonnement;Essentiel;2
+ETB0218;2026-12-01;0.0031621202822564704;220;False;Tickets de support;Ancienneté;Usage du menu;Essentiel;12
+ETB0304;2026-12-01;0.0030709162202316484;221;False;Satisfaction support;Taille (tables);Type d'établissement;Essentiel;6
+ETB0122;2026-12-01;0.0030326792553872074;222;False;Ancienneté;Taille (tables);Type d'établissement;Commande;20
+ETB0324;2026-12-01;0.003001057455246284;223;False;Facturation mensuelle;Taille (tables);Type d'établissement;Commande;5
+ETB0051;2026-12-01;0.0029434280382872094;224;False;Ancienneté;Satisfaction support;Canal d'acquisition;Commande;27
+ETB0253;2026-12-01;0.0028383487506568553;225;False;Taille (tables);Usage du menu;Ancienneté;Essentiel;9
+ETB0182;2026-12-01;0.0027961965623809816;226;False;Ancienneté;Satisfaction support;Montant de l'abonnement;Essentiel;15
+ETB0239;2026-12-01;0.0027632481726222857;227;False;Taille (tables);Ancienneté;Montant de l'abonnement;Essentiel;10
+ETB0112;2026-12-01;0.002699327121022896;228;False;Ancienneté;Satisfaction support;Taille (tables);Pro;20
+ETB0319;2026-12-01;0.002522848298460349;229;False;Satisfaction support;Montant de l'abonnement;Commande à table;Essentiel;5
+ETB0024;2026-12-01;0.002468074234295544;230;False;Ancienneté;Taille (tables);Formule;Pro;31
+ETB0147;2026-12-01;0.0023080389001151774;231;False;Ancienneté;Montant de l'abonnement;Commande à table;Essentiel;17
+ETB0152;2026-12-01;0.0021955494979700296;232;False;Ancienneté;Montant de l'abonnement;Commande à table;Essentiel;17
+ETB0276;2026-12-01;0.0021767422410364098;233;False;Satisfaction support;Taille (tables);Ancienneté;Pro;7
+ETB0166;2026-12-01;0.0021592235242654935;234;False;Ancienneté;Satisfaction support;Canal d'acquisition;Commande;16
+ETB0329;2026-12-01;0.0020898447928676535;235;False;Usage du menu;Montant de l'abonnement;Commande à table;Essentiel;4
+ETB0267;2026-12-01;0.0020880686458879254;236;False;Satisfaction support;Montant de l'abonnement;Commande à table;Essentiel;8
+ETB0101;2026-12-01;0.0020573041781955723;237;False;Ancienneté;Type d'établissement;Taille (tables);Pro;21
+ETB0294;2026-12-01;0.002019647354542857;238;False;Satisfaction support;Montant de l'abonnement;Commande à table;Essentiel;6
+ETB0150;2026-12-01;0.002015229653781922;239;False;Ancienneté;Satisfaction support;Taille (tables);Commande;17
+ETB0237;2026-12-01;0.0020090766853352116;240;False;Satisfaction support;Ancienneté;Canal d'acquisition;Pro;10
+ETB0322;2026-12-01;0.0019838297290082356;241;False;Satisfaction support;Montant de l'abonnement;Commande à table;Essentiel;5
+ETB0047;2026-12-01;0.0017957195058334828;242;False;Ancienneté;Canal d'acquisition;;Commande;28
+ETB0072;2026-12-01;0.001746633765896869;243;False;Ancienneté;Taille (tables);Canal d'acquisition;Pro;25
+ETB0068;2026-12-01;0.0017404544969160454;244;False;Ancienneté;Satisfaction support;Usage du menu;Commande;26
+ETB0212;2026-12-01;0.001674476981436613;245;False;Ancienneté;Montant de l'abonnement;Commande à table;Essentiel;12
+ETB0352;2026-12-01;0.001551977545982359;246;False;Usage du menu;Montant de l'abonnement;Commande à table;Essentiel;3
+ETB0333;2026-12-01;0.0014334891471300415;247;False;Satisfaction support;Usage du menu;Région;Commande;4
+ETB0338;2026-12-01;0.0014237140833379376;248;False;Type d'établissement;Montant de l'abonnement;Commande à table;Essentiel;4
+ETB0326;2026-12-01;0.001417084266415765;249;False;Montant de l'abonnement;Commande à table;Formule;Essentiel;5
+ETB0177;2026-12-01;0.0013979252785622101;250;False;Ancienneté;Taille (tables);Satisfaction support;Essentiel;15
+ETB0381;2026-12-01;0.0013689736051137901;251;False;Usage du menu;Satisfaction support;;Commande;1
+ETB0269;2026-12-01;0.0013273363721987303;252;False;Montant de l'abonnement;Commande à table;Formule;Essentiel;8
+ETB0273;2026-12-01;0.0013234233504584522;253;False;Satisfaction support;Ancienneté;Formule;Pro;8
+ETB0252;2026-12-01;0.001316230068144009;254;False;Ancienneté;Taille (tables);Région;Commande;9
+ETB0205;2026-12-01;0.0012788847922647626;255;False;Ancienneté;Satisfaction support;Région;Commande;13
+ETB0261;2026-12-01;0.0012690760209784508;256;False;Taille (tables);Usage du menu;Ancienneté;Commande;8
+ETB0210;2026-12-01;0.001243118000845036;257;False;Ancienneté;Satisfaction support;Région;Commande;12
+ETB0341;2026-12-01;0.0011201308514390226;258;False;Usage du menu;Montant de l'abonnement;Commande à table;Essentiel;3
+ETB0161;2026-12-01;0.001116154648617679;259;False;Ancienneté;Usage du menu;Canal d'acquisition;Commande;16
+ETB0176;2026-12-01;0.001098104635220087;260;False;Ancienneté;Taille (tables);Canal d'acquisition;Commande;15
+ETB0312;2026-12-01;0.001007303515195123;261;False;Usage du menu;Taille (tables);Canal d'acquisition;Commande;5
+ETB0348;2026-12-01;0.0008648401460595355;262;False;Usage du menu;Canal d'acquisition;;Commande;3
+ETB0186;2026-12-01;0.0007379930991875715;263;False;Ancienneté;Canal d'acquisition;Taille (tables);Pro;14
+ETB0198;2026-12-01;0.000504452500266379;264;False;Taille (tables);Ancienneté;Type d'établissement;Commande;13
+ETB0271;2026-12-01;0.0004420482522769848;265;False;Montant de l'abonnement;Commande à table;Formule;Essentiel;8

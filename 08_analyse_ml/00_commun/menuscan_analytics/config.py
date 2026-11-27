@@ -21,6 +21,10 @@ DOSSIER_PREDICTIONS = RACINE / "06_exports" / "predictions"
 DOSSIER_JOURNAUX = RACINE / "06_exports" / "journaux"
 DOSSIER_LIVRABLES = RACINE / "04_livrables"
 
+# Suivi des essais MLflow, en local (base SQLite et fichiers dans 06_exports/journaux, hors Git)
+MLFLOW_URI = "sqlite:///" + (DOSSIER_JOURNAUX / "mlflow.db").as_posix()
+MLFLOW_ARTEFACTS = (DOSSIER_JOURNAUX / "mlartefacts").as_uri()
+
 # 2. Données
 SCHEMA_MARTS = "marts"        # entrepôt construit par dbt (phase 4)
 SCHEMA_RESULTATS = "ml"       # résultats publiés pour Power BI (T7.4)
@@ -28,6 +32,16 @@ DATE_ARRETE = pd.Timestamp("2026-12-31")
 
 # 3. Affichage
 BLEU, ORANGE, GRIS = "#1D4ED8", "#C2410C", "#94A3B8"
+
+
+def experience_mlflow(nom: str) -> None:
+    """Active le suivi MLflow local et l'expérience demandée (créée au premier appel)."""
+    import mlflow
+    DOSSIER_JOURNAUX.mkdir(parents=True, exist_ok=True)
+    mlflow.set_tracking_uri(MLFLOW_URI)
+    if mlflow.get_experiment_by_name(nom) is None:
+        mlflow.create_experiment(nom, artifact_location=MLFLOW_ARTEFACTS)
+    mlflow.set_experiment(nom)
 
 
 def style():

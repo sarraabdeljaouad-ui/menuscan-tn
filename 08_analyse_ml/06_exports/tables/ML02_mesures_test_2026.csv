@@ -1,0 +1,9 @@
+﻿;valeur
+AUC test 2026;0.7940308895664855
+AUC borne basse 95 %;0.7383760307707312
+AUC borne haute 95 %;0.8500642986719124
+AUC règle simple (retards de paiement (part sur 6 mois));0.6680614476998541
+Précision moyenne (AP);0.18604051254496032
+Taux de résiliation de base;0.030919446704637917
+Alerte 10 % : précision;0.14741035856573706
+Alerte 10 % : rappel;0.4868421052631579
