@@ -60,16 +60,23 @@ def colonnes_marts():
     con = psycopg2.connect(host=e.get("POSTGRES_HOST", "localhost"), port=e.get("POSTGRES_PORT", "5432"),
                            user=e["POSTGRES_USER"], password=e["POSTGRES_PASSWORD"], dbname=nom_base())
     cur = con.cursor()
-    cur.execute("select table_name, column_name, data_type from information_schema.columns "
-                "where table_schema = 'marts' order by table_name, ordinal_position")
+    cur.execute("select table_schema, table_name, column_name, data_type from information_schema.columns "
+                "where table_schema in ('marts', 'ml') order by table_schema, table_name, ordinal_position")
     res = {}
-    for t, c, ty in cur.fetchall():
-        res.setdefault(t, []).append((c, ty))
+    for sch, t, c, ty in cur.fetchall():
+        if sch == "ml" and c == "publie_le":
+            continue
+        res.setdefault(t if sch == "marts" else f"ml_{t}", []).append((c, ty))
     con.close()
     manquantes = [t for t in TABLES if t not in res]
     if manquantes:
-        sys.exit(f"Tables absentes du schéma marts : {manquantes}")
+        sys.exit(f"Tables absentes des schémas marts et ml (lancer 04_publication_resultats pour ml) : {manquantes}")
     return res
+
+
+def source(t):
+    """(schéma, table PostgreSQL) d'une table du modèle : les tables « ml_xxx » viennent du schéma ml (phase 7)."""
+    return ("ml", t[3:]) if t.startswith("ml_") else ("marts", t)
 
 
 def format_colonne(t, c, ty, dt):
@@ -115,8 +122,11 @@ def table_tmdl(t, cols, cles):
         L.append("")
     L += [f"\tpartition {t} = m", "\t\tmode: import", "\t\tsource =",
           "\t\t\t\tlet", "\t\t\t\t\tSource = PostgreSQL.Database(Serveur, Base),",
-          f'\t\t\t\t\tDonnees = Source{{[Schema = "marts", Item = "{t}"]}}[Data]',
-          "\t\t\t\tin", "\t\t\t\t\tDonnees", ""]
+          f'\t\t\t\t\tDonnees = Source{{[Schema = "{source(t)[0]}", Item = "{source(t)[1]}"]}}[Data]'
+          + ("," if t.startswith("ml_") else ""),
+          *(['\t\t\t\t\tColonnes = Table.RemoveColumns(Donnees, {"publie_le"})',
+             "\t\t\t\tin", "\t\t\t\t\tColonnes", ""] if t.startswith("ml_") else
+            ["\t\t\t\tin", "\t\t\t\t\tDonnees", ""])]
     return "\n".join(L)
 
 

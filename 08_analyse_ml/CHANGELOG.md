@@ -1,5 +1,16 @@
 # Historique des versions · 08_analyse_ml
 
+## 0.4 (27/11/2026)
+
+- T7.4 : schéma `ml` (script `00_commun/sql/01_schema_ml.sql`, idempotent) et module `publication.py` (une transaction, journal, 8 contrôles).
+- `03_machine_learning/03_evaluation_modeles` : règle des candidats Commande (47), registre des modèles, dossier J8.
+- `03_machine_learning/04_publication_resultats` : 6 tables publiées pour Power BI.
+- `02_sensibilite_prix` : ligne « Toutes catégories » enregistrée à part (`DM02_elasticite_globale`).
+- Power BI (07_powerbi) : 6 tables `ml_…`, TB-4 et TB-8 alimentées, recette R42 à R49.
+- 14 tests (2 nouveaux sur `publication.py`).
+- Élasticité : tolérances de l'optimiseur resserrées. Avec les réglages par défaut, L-BFGS s'arrêtait trop tôt et le résultat variait selon la version de scipy (-0,687 ici, -0,708 sur le poste Windows) ; il est maintenant stable : -0,698.
+- Power BI : les établissements sont désignés par « nom · ville » (403 établissements pour 214 noms ; cinq « Café Ennour »). Le filtre Établissement des pages TB-5 à TB-8 et les tableaux de TB-4 regroupaient les homonymes.
+
 ## 0.3 (27/11/2026)
 
 - T7.3 : `02_data_mining/01_regles_association` (EF-12) et `02_sensibilite_prix` (EF-11).

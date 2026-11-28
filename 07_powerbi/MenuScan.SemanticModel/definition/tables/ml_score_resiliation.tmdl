@@ -1,0 +1,60 @@
+table ml_score_resiliation
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column mois_observe
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: mois_observe
+
+	column probabilite
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: probabilite
+
+	column rang
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: rang
+
+	column alerte
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: alerte
+
+	column facteur_1
+		dataType: string
+		summarizeBy: none
+		sourceColumn: facteur_1
+
+	column facteur_2
+		dataType: string
+		summarizeBy: none
+		sourceColumn: facteur_2
+
+	column facteur_3
+		dataType: string
+		summarizeBy: none
+		sourceColumn: facteur_3
+
+	column version_modele
+		dataType: string
+		summarizeBy: none
+		sourceColumn: version_modele
+
+	partition ml_score_resiliation = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "ml", Item = "score_resiliation"]}[Data],
+					Colonnes = Table.RemoveColumns(Donnees, {"publie_le"})
+				in
+					Colonnes

@@ -1,0 +1,54 @@
+table ml_registre_modele
+
+	column modele
+		dataType: string
+		summarizeBy: none
+		sourceColumn: modele
+
+	column version
+		dataType: string
+		summarizeBy: none
+		sourceColumn: version
+
+	column algorithme
+		dataType: string
+		summarizeBy: none
+		sourceColumn: algorithme
+
+	column mesure
+		dataType: string
+		summarizeBy: none
+		sourceColumn: mesure
+
+	column valeur
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: valeur
+
+	column bas_95
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: bas_95
+
+	column haut_95
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: haut_95
+
+	column decision
+		dataType: string
+		summarizeBy: none
+		sourceColumn: decision
+
+	partition ml_registre_modele = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "ml", Item = "registre_modele"]}[Data],
+					Colonnes = Table.RemoveColumns(Donnees, {"publie_le"})
+				in
+					Colonnes

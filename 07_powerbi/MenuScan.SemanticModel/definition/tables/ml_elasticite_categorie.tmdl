@@ -1,0 +1,51 @@
+table ml_elasticite_categorie
+
+	column categorie
+		dataType: string
+		summarizeBy: none
+		sourceColumn: categorie
+
+	column elasticite
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: elasticite
+
+	column bas_95
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: bas_95
+
+	column haut_95
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: haut_95
+
+	column plats_informatifs
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: plats_informatifs
+
+	column lecture
+		dataType: string
+		summarizeBy: none
+		sourceColumn: lecture
+
+	column effet_hausse_5pc_sur_ca
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: effet_hausse_5pc_sur_ca
+
+	partition ml_elasticite_categorie = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "ml", Item = "elasticite_categorie"]}[Data],
+					Colonnes = Table.RemoveColumns(Donnees, {"publie_le"})
+				in
+					Colonnes

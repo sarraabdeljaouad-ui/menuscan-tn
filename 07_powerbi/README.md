@@ -1,12 +1,12 @@
-# 07_powerbi : rapports Power BI (phase 6)
+# 07_powerbi : rapports Power BI (phases 6 et 7)
 
 Auteure : Sarra Abdeljaouad
 
-Ce dossier contient le projet Power BI complet de MenuScan TN, au format PBIP : un modèle sémantique partagé et deux rapports. Tous les fichiers sont en texte (TMDL pour le modèle, JSON pour les rapports) et sont **générés** par un script à partir du schéma `marts` de PostgreSQL.
+Ce dossier contient le projet Power BI complet de MenuScan TN, au format PBIP : un modèle sémantique partagé et deux rapports. Tous les fichiers sont en texte (TMDL pour le modèle, JSON pour les rapports) et sont **générés** par un script à partir des schémas `marts` (entrepôt dbt) et `ml` (résultats de la phase 7) de PostgreSQL.
 
 | Élément | Rôle |
 |---|---|
-| `MenuScan.SemanticModel/` | Modèle partagé : 17 tables en Import, 5 tables calculées (axes et recette), 32 relations, 173 mesures, 1 rôle de sécurité |
+| `MenuScan.SemanticModel/` | Modèle partagé : 23 tables en Import (17 du schéma `marts`, 6 du schéma `ml`), 5 tables calculées (axes et recette), 35 relations, 184 mesures, 1 rôle de sécurité |
 | `MenuScan_Startup.pbip` | Rapport Startup, pour la direction de MenuScan : TB-1 Croissance, TB-2 Rétention, TB-3 Acquisition, TB-4 Pilotage, page Recette T6.4 |
 | `MenuScan_Etablissement.pbip` | Rapport Établissement, pour les gérants : TB-5 Activité, TB-6 Menu, TB-7 Temps, TB-8 Prix |
 | `outils/generer_pbip.py` | Génère tout le projet |
@@ -17,14 +17,15 @@ Ce dossier contient le projet Power BI complet de MenuScan TN, au format PBIP : 
 
 - **Mode Import** : les données sont copiées dans Power BI. On clique sur **Actualiser** pour charger les données de la nuit.
 - **Modèle en étoile** : 9 tables de faits (dont `fait_vue_article`, ajoutée pour la page TB-6), 8 dimensions. Chaque relation va d'un fait vers une dimension (plusieurs vers un, filtre dans un seul sens). Aucune relation entre dimensions.
-- **Mesures** : toutes dans la table `_Mesures`, rangées par dossier (0. Bases à 9. Saisonnalité). Ce sont les KPI K01 à K23 du référentiel, sauf K06 (cohortes) et K19 (score de risque, phase 7).
+- **Tables `ml_…` (phase 7)** : scores de résiliation K19, candidats à la formule Commande, plats recommandés, élasticités, règles d'association et registre des modèles. Elles sont écrites par `08_analyse_ml/03_machine_learning/04_publication_resultats`. Les trois premières sont reliées à `dim_etablissement` : le rôle de sécurité les filtre aussi.
+- **Mesures** : toutes dans la table `_Mesures`, rangées par dossier (0. Bases à 10. Recette). Ce sont les KPI K01 à K23 du référentiel, sauf K06 (cohortes).
 - **Paramètres** : `Serveur` (localhost:5440) et `Base` (menuscan_dwh), modifiables dans Power Query.
 - **Date/heure automatique désactivée** : la table `dim_date` est marquée comme table de dates.
 - **Sécurité par ligne (RLS)** : le rôle `Gérant démo` ne voit que le Café Ennour (ETB0003). Il filtre les établissements, les articles et les tables, et masque le marketing et les prospects. Le rattachement à de vrais comptes de gérants (fonction `USERPRINCIPALNAME`) viendra en phase 9, avec les comptes de l'application.
 
 ## 2. Ouvrir le projet
 
-1. Démarre PostgreSQL : `docker compose up -d postgres`.
+1. Démarre PostgreSQL : `docker compose up -d postgres`. Le schéma `ml` doit exister : sinon, exécute d'abord `08_analyse_ml/03_machine_learning/04_publication_resultats` (voir `08_analyse_ml/00_ordre_execution.md`).
 2. Dans Power BI Desktop, **Fichier > Ouvrir**, choisis `07_powerbi/MenuScan_Startup.pbip`.
 3. Un bandeau signale que les tables n'ont pas de données : clique sur **Actualiser maintenant**.
 4. Si Power BI demande les identifiants : onglet **Base de données**, utilisateur `POSTGRES_USER` et mot de passe `POSTGRES_PASSWORD` du fichier `.env`.
@@ -37,7 +38,7 @@ Ce dossier contient le projet Power BI complet de MenuScan TN, au format PBIP : 
 
 ## 3. Régénérer le projet
 
-Après un changement dans les marts ou dans les fichiers `outils/*_def.py` :
+Après un changement dans les marts, dans le schéma `ml` ou dans les fichiers `outils/*_def.py` (le script lit les colonnes des deux schémas : `ml` doit avoir été publié) :
 
 ```
 python 07_powerbi/outils/generer_pbip.py
@@ -57,7 +58,7 @@ Les pages suivent les maquettes (`Maquettes des tableaux de bord`) : bandeau ble
 | Top 10 des tables, top 8 des articles | Toutes les lignes, triées | Un filtre « N premiers » reste à poser à la main |
 | Diagonale VVC = 3 × CAC (TB-3) | Nuage de points sans diagonale | Pas de ligne de référence oblique dans ce visuel |
 | Étapes « En discussion », « Démo faite » (TB-3) | Contactés, en cours ou signés, signés | Le jeu de données n'a que trois statuts : perdu, en cours, converti |
-| Scores K19, MRR menacé, sensibilité au prix | Mention « [phase 7] » | Produits par les modèles de la phase 7 |
+| Plats recommandés (TB-8) en encadré de texte | Tableau « Plats recommandés » | Liste produite en phase 7 (EF-12) ; graphique et tableau de prix raccourcis pour lui faire de la place |
 | Période de 6 mois, Café Les Arcades | Période et établissement au choix | Les maquettes montraient un échantillon |
 | Colonne Catégorie du tableau des articles (TB-6) | Filtre Catégorie en haut de page | Place gagnée pour la marge et la classe du plat (K22) |
 | Tous les changements de prix (TB-8) | Changements avec au moins 14 jours de recul, fenêtre de 60 jours au plus | Une fenêtre de quelques jours ne contient presque aucune vente |
@@ -76,7 +77,7 @@ Les pages suivent les maquettes (`Maquettes des tableaux de bord`) : bandeau ble
 
 ## 5. Valeurs attendues (recette)
 
-La page **Recette T6.4** du rapport Startup compare automatiquement 41 valeurs attendues (table calculée `Recette`, définie dans `outils/modele_def.py`) aux valeurs calculées par le modèle, avec un statut OK, ÉCART ou ABSENT. Les valeurs attendues ont été calculées en SQL sur `menuscan_dwh` le 26/11/2026. Le tableau ci-dessous en reprend les principales.
+La page **Recette T6.4** du rapport Startup compare automatiquement 49 valeurs attendues (table calculée `Recette`, définie dans `outils/modele_def.py`) aux valeurs calculées par le modèle, avec un statut OK, ÉCART ou ABSENT. Les valeurs attendues ont été calculées en SQL sur `menuscan_dwh` : R01 à R41 le 26/11/2026, R42 à R49 (schéma `ml`, phase 7) le 27/11/2026. Le tableau ci-dessous en reprend les principales.
 
 | Mesure | Filtre | Valeur attendue |
 |---|---|---|
@@ -104,6 +105,11 @@ La page **Recette T6.4** du rapport Startup compare automatiquement 41 valeurs a
 | K21 Marge brute estimée / Taux de coût | annee = 2026 | 1 093 756 / 25,3 % |
 | K22 Nombre de vedettes / chevaux de labour / énigmes / poids morts | annee = 2026 | 1 078 / 1 487 / 1 006 / 1 123 |
 | K23 Part du soir en Ramadan / hors Ramadan | aucun | 91,8 % / 33,3 % |
+| K19 Établissements scorés / en alerte | aucun | 265 / 27 |
+| K19 MRR menacé (DT HT) | aucun | 850 |
+| Candidats Essentiel → Commande | aucun | 47 |
+| Plats recommandés (Pro) / dont Café Ennour | aucun | 749 / 21 |
+| Élasticité-prix toutes catégories | aucun | -0,70 |
 
 ### Écarts connus avec le cahier des charges (D5)
 
@@ -121,4 +127,7 @@ Le cahier des charges a été chiffré en phase 0 sur les données de référenc
 - **K12** suppose une période continue (pas de dates isolées). Le dénominateur ne suit pas le filtre de formule.
 - **K22 Classe du plat** se lit plat par plat, à l'intérieur d'un établissement. Les nombres de plats par classe peuvent prendre quelques secondes à calculer.
 - **K21 et K22** reposent sur des taux de coût estimés (seed `taux_cout_categorie`), pas sur des coûts réels.
-- **Pas encore dans les rapports** : K06 (matrice de cohortes, page TB-2), K19 (score de risque, phase 7) et les plats recommandés (EF-12, phases 7 et 8).
+- **Établissement = nom · ville** : 403 établissements portent seulement 214 noms (cinq « Café Ennour »). La colonne calculée `dim_etablissement[etablissement]` sert dans les filtres et les tableaux ; avant la phase 7, un filtre sur le nom regroupait les homonymes.
+- **K19 et les résultats `ml`** sont une photo au 31/12/2026 : ils ne suivent pas le filtre de dates. Ils changent quand on republie le schéma `ml`, pas quand on actualise seulement les marts.
+- **Élasticité (TB-8)** : la tuile affiche la catégorie choisie dans le filtre Catégorie, sinon la valeur toutes catégories. « non concluant » signifie trop peu de changements de prix pour conclure.
+- **Pas encore dans les rapports** : K06 (matrice de cohortes, page TB-2).

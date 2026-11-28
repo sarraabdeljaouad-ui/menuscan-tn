@@ -1,0 +1,50 @@
+table ml_regle_association
+
+	column niveau
+		dataType: string
+		summarizeBy: none
+		sourceColumn: niveau
+
+	column antecedent
+		dataType: string
+		summarizeBy: none
+		sourceColumn: antecedent
+
+	column consequent
+		dataType: string
+		summarizeBy: none
+		sourceColumn: consequent
+
+	column commandes_ensemble
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: commandes_ensemble
+
+	column confiance
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: confiance
+
+	column lift_ajuste
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: lift_ajuste
+
+	column lift_2026
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: lift_2026
+
+	partition ml_regle_association = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "ml", Item = "regle_association"]}[Data],
+					Colonnes = Table.RemoveColumns(Donnees, {"publie_le"})
+				in
+					Colonnes

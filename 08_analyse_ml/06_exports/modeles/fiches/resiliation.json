@@ -1,6 +1,6 @@
 {
   "modele": "resiliation",
-  "date": "2026-11-27",
+  "date": "2026-11-28",
   "autrice": "Sarra Abdeljaouad",
   "objet": "probabilité de résiliation le mois suivant, par établissement actif (K19, EF-10)",
   "donnees": "05_data/features/etablissement_mois.parquet",

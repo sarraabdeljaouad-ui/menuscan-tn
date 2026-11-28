@@ -1,6 +1,6 @@
 # MenuScan TN · Analyses et machine learning (phase 7)
 
-Autrice : Sarra Abdeljaouad · version 0.3 (27/11/2026)
+Autrice : Sarra Abdeljaouad · version 0.4 (27/11/2026)
 
 MenuScan TN est une start-up **fictive** ; toutes les données sont **synthétiques**.
 Cette phase transforme l'entrepôt (`menuscan_dwh`, schéma `marts`, construit par dbt) en décisions mesurées :
@@ -26,7 +26,7 @@ Notebooks Python (EDA ▸ data mining ▸ machine learning)
 | T7.1 | EDA globale : résiliations, signaux d'usage, paniers, prix | Terminée |
 | T7.2 | Risque de résiliation, K19 (EF-10) : AUC 2026 = 0,794 [0,738 ; 0,850] | Terminée |
 | T7.3 | Règles d'association (EF-12), sensibilité au prix (EF-11) | Terminée |
-| T7.4 | Schéma `ml`, publication, décision J8 avec le sponsor | À faire |
+| T7.4 | Schéma `ml`, publication contrôlée (8 contrôles), pages TB-4 et TB-8 alimentées, dossier J8 | Terminée ; décision J8 du sponsor attendue |
 
 ## Résultat clé (test sur 2026, jamais vu à l'apprentissage)
 
@@ -34,7 +34,7 @@ Notebooks Python (EDA ▸ data mining ▸ machine learning)
 |---|---|---|---|---|
 | Résiliation le mois suivant | Régression logistique, C = 0,03, classes pondérées | **0,794** | 0,738 à 0,850 | 0,668 (part de factures en retard) |
 
-- Jalon J8 (AUC ≥ 0,75) atteint en valeur centrale ; la borne basse de l'intervalle est sous 0,75.
+- Jalon J8 (AUC ≥ 0,75) atteint en valeur centrale ; la borne basse de l'intervalle est sous 0,75. Recommandation du dossier J8 : validation avec réserve (revue après 6 mois de 2027).
 - Alerte (10 % les plus à risque chaque mois) : 14,7 % de vraies résiliations parmi les alertes, 48,7 % des résiliations repérées.
 - Au 31/12/2026 : 265 établissements actifs scorés, 27 en alerte, 9,9 résiliations attendues en janvier 2027.
 
@@ -43,7 +43,7 @@ Notebooks Python (EDA ▸ data mining ▸ machine learning)
 | Cas | Méthode | Résultat |
 |---|---|---|
 | Associations (EF-12) | Lift ajusté par établissement, test de Poisson corrigé (Bonferroni), apprentissage 2024-2025, vérification 2026 | 3 paires de catégories et 10 paires de plats retenues, toutes confirmées en 2026 ; 749 recommandations pour 55 établissements Pro |
-| Sensibilité au prix (EF-11) | Poisson conditionnelle, effets fixes article et établissement × catégorie × mois, bootstrap par établissement, placebo | Élasticité globale -0,69 [-0,89 ; -0,47] ; placebo 0,01 [-0,36 ; 0,53] ; 6 catégories exploitables (dont 2 nettes : boissons chaudes, crêpes et gaufres), 14 non concluantes |
+| Sensibilité au prix (EF-11) | Poisson conditionnelle, effets fixes article et établissement × catégorie × mois, bootstrap par établissement, placebo | Élasticité globale -0,70 [-0,89 ; -0,48] ; placebo 0,00 [-0,37 ; 0,54] ; 6 catégories exploitables (dont 2 nettes : boissons chaudes, crêpes et gaufres), 14 non concluantes |
 
 ## Méthode
 
@@ -73,7 +73,7 @@ La commande doit être lancée depuis `08_analyse_ml` : le chemin de la base est
 
 | Dossier | Contenu |
 |---|---|
-| `00_commun` | module `menuscan_analytics` (config, chargement, temporal_split, features, modeles, data_mining), scripts SQL du schéma `ml` |
+| `00_commun` | module `menuscan_analytics` (config, chargement, temporal_split, features, modeles, data_mining, publication), script SQL du schéma `ml` |
 | `01_eda` | notebooks d'exploration |
 | `02_data_mining` | règles d'association, sensibilité au prix |
 | `03_machine_learning` | préparation, modèle de résiliation, évaluation, scores, publication |

@@ -23,11 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "nom_etablissement"
+                  "Property": "etablissement"
                 }
               },
-              "queryRef": "dim_etablissement.nom_etablissement",
-              "nativeQueryRef": "nom_etablissement"
+              "queryRef": "dim_etablissement.etablissement",
+              "nativeQueryRef": "etablissement"
             }
           ]
         }

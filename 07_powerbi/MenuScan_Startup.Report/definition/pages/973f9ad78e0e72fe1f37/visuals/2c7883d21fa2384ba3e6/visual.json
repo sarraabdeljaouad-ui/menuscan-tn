@@ -23,11 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "nom_etablissement"
+                  "Property": "etablissement"
                 }
               },
-              "queryRef": "dim_etablissement.nom_etablissement",
-              "nativeQueryRef": "nom_etablissement",
+              "queryRef": "dim_etablissement.etablissement",
+              "nativeQueryRef": "etablissement",
               "displayName": "Établissement (Essentiel)"
             },
             {
@@ -38,12 +38,12 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "K12 (Essentiel)"
+                  "Property": "Usage 3 mois (candidat)"
                 }
               },
-              "queryRef": "_Mesures.K12 (Essentiel)",
-              "nativeQueryRef": "K12 (Essentiel)",
-              "displayName": "Sessions / table / jour (K12)"
+              "queryRef": "_Mesures.Usage 3 mois (candidat)",
+              "nativeQueryRef": "Usage 3 mois (candidat)",
+              "displayName": "Sessions / table / jour (3 mois)"
             },
             {
               "field": {
@@ -53,27 +53,27 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Sessions (Essentiel)"
+                  "Property": "Tables (candidat)"
                 }
               },
-              "queryRef": "_Mesures.Sessions (Essentiel)",
-              "nativeQueryRef": "Sessions (Essentiel)",
-              "displayName": "Sessions"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Mesures"
-                    }
-                  },
-                  "Property": "Tables (Essentiel)"
-                }
-              },
-              "queryRef": "_Mesures.Tables (Essentiel)",
-              "nativeQueryRef": "Tables (Essentiel)",
+              "queryRef": "_Mesures.Tables (candidat)",
+              "nativeQueryRef": "Tables (candidat)",
               "displayName": "Tables"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Mesures"
+                    }
+                  },
+                  "Property": "Score K19 (candidat)"
+                }
+              },
+              "queryRef": "_Mesures.Score K19 (candidat)",
+              "nativeQueryRef": "Score K19 (candidat)",
+              "displayName": "Risque K19"
             }
           ]
         }
@@ -88,7 +88,7 @@
                     "Entity": "_Mesures"
                   }
                 },
-                "Property": "K12 (Essentiel)"
+                "Property": "Usage 3 mois (candidat)"
               }
             },
             "direction": "Descending"
@@ -245,7 +245,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tri par usage du QR code : plus le menu est consulté, plus la commande a de chances d''être utilisée'"
+                  "Value": "'Usage du menu au moins égal à la médiane des établissements Commande, hors alerte K19'"
                 }
               }
             },

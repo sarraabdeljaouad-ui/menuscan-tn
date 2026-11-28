@@ -1,0 +1,9 @@
+﻿code;controle;valeur;statut
+P1;Scores : un par établissement actif au 31/12/2026;0;OK
+P2;Scores : établissements inconnus de dim_etablissement;0;OK
+P3;Scores : alertes = 10 % arrondi au supérieur;0;OK
+P4;Recommandations : établissements hors formule Pro en décembre 2026;0;OK
+P5;Recommandations : plat recommandé absent de la carte actuelle;0;OK
+P6;Candidats : établissements qui ne sont pas en formule Essentiel en décembre 2026;0;OK
+P7;Élasticités : intervalle qui ne contient pas l'estimation;0;OK
+P8;Journal : tables publiées lors de la dernière publication;0;OK

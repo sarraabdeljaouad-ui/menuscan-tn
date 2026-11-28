@@ -4,10 +4,16 @@ SERVEUR = "localhost:5440"   # vu depuis Windows (port publié du conteneur Post
 
 TABLES = ["dim_date", "dim_heure", "dim_etablissement", "dim_table", "dim_article", "dim_formule", "dim_canal",
           "dim_ville", "fait_session", "fait_commande", "fait_ligne_commande", "fait_abonnement_mensuel",
-          "fait_facturation", "fait_marketing", "fait_prospect", "fait_ticket_support", "fait_vue_article"]
+          "fait_facturation", "fait_marketing", "fait_prospect", "fait_ticket_support", "fait_vue_article",
+          # phase 7 : résultats publiés dans le schéma ml par 08_analyse_ml/03_machine_learning/04_publication_resultats
+          "ml_score_resiliation", "ml_candidat_commande", "ml_recommandation_plat", "ml_elasticite_categorie",
+          "ml_regle_association", "ml_registre_modele"]
 
 # (table de faits, colonne) -> (dimension, colonne) ; plusieurs vers un, filtre dans un seul sens
 RELATIONS = [
+    ("ml_score_resiliation", "etablissement_id", "dim_etablissement", "etablissement_id"),
+    ("ml_candidat_commande", "etablissement_id", "dim_etablissement", "etablissement_id"),
+    ("ml_recommandation_plat", "etablissement_id", "dim_etablissement", "etablissement_id"),
     ("fait_session", "etablissement_id", "dim_etablissement", "etablissement_id"),
     ("fait_session", "table_id", "dim_table", "table_id"),
     ("fait_session", "formule_id", "dim_formule", "formule_id"),
@@ -48,6 +54,9 @@ TRI = {("dim_date", "nom_mois"): "mois", ("dim_date", "nom_jour"): "jour_semaine
 
 # Colonnes calculées (DAX) ajoutées aux tables importées : (table, nom, type, format, expression)
 COLONNES_CALCULEES = [
+    # nom + ville : 403 établissements pour 214 noms ; le couple (nom, ville) est unique
+    ("dim_etablissement", "etablissement", "string", None,
+     'dim_etablissement[nom_etablissement] & " · " & dim_etablissement[ville]'),
     ("dim_date", "jour_court", "string", None,
      'UPPER ( LEFT ( dim_date[nom_jour], 1 ) ) & MID ( dim_date[nom_jour], 2, 2 )'),
     ("dim_date", "debut_semaine", "dateTime", "dd/MM/yyyy",
@@ -488,22 +497,45 @@ RETURN CONCATENATEX ( TOPN ( 1, canaux, [K09 CAC], DESC ), dim_canal[nom_canal],
     ("3. Acquisition", "Texte prospects", None,
      'FORMAT ( [Prospects], "#,0" ) & " prospects · statuts du jeu : perdu, en cours, converti"'),
     # ---- pilotage
-    ("4. Usage", "K12 (Essentiel)", "#,0.00", """
-IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", [K12 Sessions par table et par jour] )"""),
-    ("4. Usage", "Sessions (Essentiel)", "#,0",
-     'IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", [Sessions] )'),
-    ("4. Usage", "Tables (Essentiel)", "#,0",
-     'IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", SUM ( dim_etablissement[nb_tables] ) )'),
     ("4. Usage", "MRR actuel de l'établissement", "#,0", """
 IF ( SELECTEDVALUE ( dim_etablissement[est_actif] ), [K02 MRR] )"""),
-    ("4. Usage", "Score K19", None, '"phase 7"'),
-    ("7. Support", "Texte phase 7", None, '"[phase 7]"'),
+    # ---- phase 7 : scores et résultats du schéma ml
+    ("4. Usage", "Score K19", "0.0 %", "MAX ( ml_score_resiliation[probabilite] )"),
+    ("4. Usage", "Établissements scorés", "#,0", "COUNTROWS ( ml_score_resiliation )"),
+    ("4. Usage", "Établissements en alerte K19", "#,0",
+     "CALCULATE ( COUNTROWS ( ml_score_resiliation ), ml_score_resiliation[alerte] = TRUE () )"),
+    ("4. Usage", "MRR menacé", "#,0", """
+CALCULATE (
+    [K02 MRR],
+    TREATAS (
+        CALCULATETABLE ( VALUES ( ml_score_resiliation[etablissement_id] ), ml_score_resiliation[alerte] = TRUE () ),
+        dim_etablissement[etablissement_id]
+    )
+)"""),
+    ("4. Usage", "Facteurs K19", None, """
+VAR f1 = SELECTEDVALUE ( ml_score_resiliation[facteur_1] )
+VAR f2 = SELECTEDVALUE ( ml_score_resiliation[facteur_2] )
+VAR f3 = SELECTEDVALUE ( ml_score_resiliation[facteur_3] )
+RETURN
+    IF ( NOT ISBLANK ( f1 ), f1 & IF ( NOT ISBLANK ( f2 ), " · " & f2 ) & IF ( NOT ISBLANK ( f3 ), " · " & f3 ) )"""),
+    ("4. Usage", "Candidats Commande", "#,0", "COUNTROWS ( ml_candidat_commande )"),
+    ("4. Usage", "Usage 3 mois (candidat)", "#,0.000", "MAX ( ml_candidat_commande[sessions_table_jour_3m] )"),
+    ("4. Usage", "Score K19 (candidat)", "0.0 %", "IF ( NOT ISBLANK ( [Usage 3 mois (candidat)] ), [Score K19] )"),
+    ("4. Usage", "Tables (candidat)", "#,0",
+     "IF ( NOT ISBLANK ( [Usage 3 mois (candidat)] ), SUM ( dim_etablissement[nb_tables] ) )"),
+    ("7. Support", "Texte K19 alertes", None,
+     'FORMAT ( [Établissements en alerte K19], "#,0" ) & " / " & FORMAT ( [Établissements scorés], "#,0" )'),
+    ("7. Support", "Texte MRR menacé valeur", None, 'FORMAT ( [MRR menacé], "#,0" ) & " DT HT"'),
+    ("7. Support", "Texte candidats valeur", None, 'FORMAT ( [Candidats Commande], "#,0" )'),
     ("7. Support", "Texte K18", None, f'{_fmt("[K18 Délai de résolution médian (h)]", '"#,0.0"')} & " h"'),
     ("7. Support", "Texte K18 détail", None,
      '"médiane · satisfaction : " & FORMAT ( [K18 Satisfaction moyenne], "0.0" ) & " / 5"'),
-    ("7. Support", "Texte seuil K19", None, '"score K19 ≥ seuil (phase 7)"'),
-    ("7. Support", "Texte MRR menacé", None, '"MRR des établissements à risque"'),
-    ("7. Support", "Texte candidats", None, '"règle à fixer en phase 7"'),
+    ("7. Support", "Texte seuil K19", None, """
+"10 % les plus à risque · AUC 2026 = "
+    & FORMAT ( LOOKUPVALUE ( ml_registre_modele[valeur], ml_registre_modele[mesure], "AUC test 2026" ), "0.000" )"""),
+    ("7. Support", "Texte MRR menacé", None,
+     '"MRR mensuel des établissements en alerte · " & FORMAT ( DIVIDE ( [MRR menacé], [K02 MRR] ), "0.0 %" ) & " du MRR"'),
+    ("7. Support", "Texte candidats", None, '"Essentiel · usage ≥ médiane Commande · hors alerte"'),
     # ---- établissement : activité
     ("5. Activité en salle", "Nom de l'établissement", None, """
 IF (
@@ -745,7 +777,21 @@ RETURN AVERAGEX ( lignes, DIVIDE ( dim_article[prix_ttc] - dim_article[prix_prec
     ("8. Menu et marge", "Texte hausse", None, _fmt("[Hausse moyenne]", '"+0.0 %;-0.0 %"')),
     ("8. Menu et marge", "Texte hausse détail", None,
      '"moyenne simple des " & FORMAT ( [Changements de prix], "0" ) & " changements"'),
-    ("8. Menu et marge", "Texte sensibilité détail", None, '"modèle de la phase 7 (EF-11)"'),
+    ("8. Menu et marge", "Catégorie de sensibilité", None,
+     'SELECTEDVALUE ( dim_article[nom_categorie], "Toutes catégories" )'),
+    ("8. Menu et marge", "Texte sensibilité", None, """
+VAR c = [Catégorie de sensibilité]
+VAR l = LOOKUPVALUE ( ml_elasticite_categorie[lecture], ml_elasticite_categorie[categorie], c )
+VAR e = LOOKUPVALUE ( ml_elasticite_categorie[elasticite], ml_elasticite_categorie[categorie], c )
+RETURN
+    IF ( l = "non concluant", "non concluant", FORMAT ( e, "0.00" ) )"""),
+    ("8. Menu et marge", "Texte sensibilité détail", None, """
+VAR c = [Catégorie de sensibilité]
+VAR b = LOOKUPVALUE ( ml_elasticite_categorie[bas_95], ml_elasticite_categorie[categorie], c )
+VAR h = LOOKUPVALUE ( ml_elasticite_categorie[haut_95], ml_elasticite_categorie[categorie], c )
+VAR l = LOOKUPVALUE ( ml_elasticite_categorie[lecture], ml_elasticite_categorie[categorie], c )
+RETURN
+    c & " · intervalle " & FORMAT ( b, "0.00" ) & " à " & FORMAT ( h, "0.00" ) & " · " & l"""),
     ("8. Menu et marge", "Titre prix et quantités", None, """
 "Prix et quantités par article : " & IF ( HASONEVALUE ( dim_article[nom_article] ), SELECTEDVALUE ( dim_article[nom_article] ), "choisir un article" )"""),
 ]
@@ -809,6 +855,18 @@ RECETTE = [
     ("R39", "K22 Nombre de poids morts", "2026", 1123, 0, f"CALCULATE ( [K22 Nombre de poids morts], {_A26} )"),
     ("R40", "K23 Part du soir en Ramadan", "2024-2026", 0.9177434, 0.00005, "[K23 Part du soir en Ramadan]"),
     ("R41", "K23 Part du soir hors Ramadan", "2024-2026", 0.3331768, 0.00005, "[K23 Part du soir hors Ramadan]"),
+    # phase 7 (T7.4) : valeurs attendues calculées en SQL sur le schéma ml le 27/11/2026
+    ("R42", "K19 Établissements scorés", "31/12/2026", 265, 0, "[Établissements scorés]"),
+    ("R43", "K19 Établissements en alerte", "31/12/2026", 27, 0, "[Établissements en alerte K19]"),
+    ("R44", "K19 MRR menacé (DT HT)", "31/12/2026", 850, 0, "[MRR menacé]"),
+    ("R45", "K19 Probabilité moyenne", "31/12/2026", 0.037358, 0.000001,
+     "AVERAGE ( ml_score_resiliation[probabilite] )"),
+    ("R46", "Candidats à la formule Commande", "31/12/2026", 47, 0, "[Candidats Commande]"),
+    ("R47", "Recommandations de plats (Pro)", "carte actuelle", 749, 0, "COUNTROWS ( ml_recommandation_plat )"),
+    ("R48", "Recommandations de plats", "Café Ennour", 21, 0,
+     'CALCULATE ( COUNTROWS ( ml_recommandation_plat ), dim_etablissement[etablissement_id] = "ETB0003" )'),
+    ("R49", "Élasticité-prix toutes catégories", "2024-2026", -0.6978, 0.001,
+     'LOOKUPVALUE ( ml_elasticite_categorie[elasticite], ml_elasticite_categorie[categorie], "Toutes catégories" )'),
 ]
 
 
@@ -841,5 +899,5 @@ SWITCH ( [Recette statut], "OK", "#DCFCE7", "ÉCART", "#FEE2E2", "ABSENT", "#FEF
 VAR ok = COUNTROWS ( FILTER ( VALUES ( Recette[code] ), [Recette statut] = "OK" ) )
 RETURN FORMAT ( ok, "0" ) & " / " & FORMAT ( COUNTROWS ( Recette ), "0" ) & " contrôles conformes\""""),
     ("10. Recette", "Texte recette détail", None,
-     '"valeurs attendues calculées en SQL sur menuscan_dwh le 26/11/2026"'),
+     '"valeurs attendues calculées en SQL : R01 à R41 le 26/11/2026, R42 à R49 (schéma ml) le 27/11/2026"'),
 ]

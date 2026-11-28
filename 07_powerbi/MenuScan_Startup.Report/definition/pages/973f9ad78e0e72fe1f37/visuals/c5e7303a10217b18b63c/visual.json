@@ -23,11 +23,11 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Texte phase 7"
+                  "Property": "Texte candidats valeur"
                 }
               },
-              "queryRef": "_Mesures.Texte phase 7",
-              "nativeQueryRef": "Texte phase 7"
+              "queryRef": "_Mesures.Texte candidats valeur",
+              "nativeQueryRef": "Texte candidats valeur"
             }
           ]
         }

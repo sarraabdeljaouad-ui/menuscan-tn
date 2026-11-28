@@ -142,10 +142,10 @@ ETB0046;Petit-déjeuner continental;2;Jus de fraise;règle catégorie
 ETB0046;Petit-déjeuner continental;3;Jus d'orange;règle catégorie
 ETB0058;Infusion verveine;1;Makroudh;règle catégorie
 ETB0058;Infusion verveine;2;Baklawa;règle catégorie
-ETB0058;Infusion verveine;3;Kaak warka;règle catégorie
+ETB0058;Infusion verveine;3;Mille-feuille;règle catégorie
 ETB0058;Thé vert;1;Makroudh;règle catégorie
 ETB0058;Thé vert;2;Baklawa;règle catégorie
-ETB0058;Thé vert;3;Kaak warka;règle catégorie
+ETB0058;Thé vert;3;Mille-feuille;règle catégorie
 ETB0058;Cheesecake;1;Infusion verveine;règle catégorie
 ETB0058;Cheesecake;2;Thé vert;règle catégorie
 ETB0058;Kaak warka;1;Infusion verveine;règle catégorie
@@ -337,14 +337,14 @@ ETB0118;Omelette;1;Jus d'orange;règle catégorie
 ETB0118;Omelette;2;Milk-shake;règle catégorie
 ETB0118;Omelette;3;Jus de fraise;règle catégorie
 ETB0124;Jus d'orange;1;Petit-déjeuner tunisien;règle plat
-ETB0124;Jus d'orange;2;Omelette;règle catégorie
-ETB0124;Jus d'orange;3;Ojja merguez;règle catégorie
+ETB0124;Jus d'orange;2;Ojja merguez;règle catégorie
+ETB0124;Jus d'orange;3;Omelette;règle catégorie
 ETB0124;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
-ETB0124;Jus de fraise;2;Omelette;règle catégorie
-ETB0124;Jus de fraise;3;Ojja merguez;règle catégorie
+ETB0124;Jus de fraise;2;Ojja merguez;règle catégorie
+ETB0124;Jus de fraise;3;Omelette;règle catégorie
 ETB0124;Jus de citron;1;Petit-déjeuner tunisien;règle catégorie
-ETB0124;Jus de citron;2;Omelette;règle catégorie
-ETB0124;Jus de citron;3;Ojja merguez;règle catégorie
+ETB0124;Jus de citron;2;Ojja merguez;règle catégorie
+ETB0124;Jus de citron;3;Omelette;règle catégorie
 ETB0124;Petit-déjeuner tunisien;1;Jus d'orange;règle plat
 ETB0124;Petit-déjeuner tunisien;2;Jus de fraise;règle plat
 ETB0124;Petit-déjeuner tunisien;3;Jus de citron;règle catégorie
@@ -688,11 +688,11 @@ ETB0376;Jus de fraise;1;Petit-déjeuner tunisien;règle plat
 ETB0376;Jus de fraise;2;Ojja merguez;règle catégorie
 ETB0376;Jus de fraise;3;Petit-déjeuner continental;règle catégorie
 ETB0376;Smoothie;1;Ojja merguez;règle catégorie
-ETB0376;Smoothie;2;Petit-déjeuner continental;règle catégorie
-ETB0376;Smoothie;3;Petit-déjeuner tunisien;règle catégorie
+ETB0376;Smoothie;2;Petit-déjeuner tunisien;règle catégorie
+ETB0376;Smoothie;3;Petit-déjeuner continental;règle catégorie
 ETB0376;Jus de citron;1;Ojja merguez;règle catégorie
-ETB0376;Jus de citron;2;Petit-déjeuner continental;règle catégorie
-ETB0376;Jus de citron;3;Petit-déjeuner tunisien;règle catégorie
+ETB0376;Jus de citron;2;Petit-déjeuner tunisien;règle catégorie
+ETB0376;Jus de citron;3;Petit-déjeuner continental;règle catégorie
 ETB0376;Petit-déjeuner tunisien;1;Jus de fraise;règle plat
 ETB0376;Petit-déjeuner tunisien;2;Jus de citron;règle catégorie
 ETB0376;Petit-déjeuner tunisien;3;Smoothie;règle catégorie

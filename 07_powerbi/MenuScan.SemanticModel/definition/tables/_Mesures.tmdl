@@ -646,26 +646,66 @@ table '_Mesures'
 	measure 'Texte prospects' = FORMAT ( [Prospects], "#,0" ) & " prospects · statuts du jeu : perdu, en cours, converti"
 		displayFolder: 3. Acquisition
 
-	measure 'K12 (Essentiel)' = IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", [K12 Sessions par table et par jour] )
-		formatString: #,0.00
-		displayFolder: 4. Usage
-
-	measure 'Sessions (Essentiel)' = IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", [Sessions] )
-		formatString: #,0
-		displayFolder: 4. Usage
-
-	measure 'Tables (Essentiel)' = IF ( SELECTEDVALUE ( dim_etablissement[formule_actuelle] ) = "Essentiel", SUM ( dim_etablissement[nb_tables] ) )
-		formatString: #,0
-		displayFolder: 4. Usage
-
 	measure 'MRR actuel de l''établissement' = IF ( SELECTEDVALUE ( dim_etablissement[est_actif] ), [K02 MRR] )
 		formatString: #,0
 		displayFolder: 4. Usage
 
-	measure 'Score K19' = "phase 7"
+	measure 'Score K19' = MAX ( ml_score_resiliation[probabilite] )
+		formatString: 0.0 %
 		displayFolder: 4. Usage
 
-	measure 'Texte phase 7' = "[phase 7]"
+	measure 'Établissements scorés' = COUNTROWS ( ml_score_resiliation )
+		formatString: #,0
+		displayFolder: 4. Usage
+
+	measure 'Établissements en alerte K19' = CALCULATE ( COUNTROWS ( ml_score_resiliation ), ml_score_resiliation[alerte] = TRUE () )
+		formatString: #,0
+		displayFolder: 4. Usage
+
+	measure 'MRR menacé' = ```
+			CALCULATE (
+				[K02 MRR],
+				TREATAS (
+					CALCULATETABLE ( VALUES ( ml_score_resiliation[etablissement_id] ), ml_score_resiliation[alerte] = TRUE () ),
+					dim_etablissement[etablissement_id]
+				)
+			)
+			```
+		formatString: #,0
+		displayFolder: 4. Usage
+
+	measure 'Facteurs K19' = ```
+			VAR f1 = SELECTEDVALUE ( ml_score_resiliation[facteur_1] )
+			VAR f2 = SELECTEDVALUE ( ml_score_resiliation[facteur_2] )
+			VAR f3 = SELECTEDVALUE ( ml_score_resiliation[facteur_3] )
+			RETURN
+				IF ( NOT ISBLANK ( f1 ), f1 & IF ( NOT ISBLANK ( f2 ), " · " & f2 ) & IF ( NOT ISBLANK ( f3 ), " · " & f3 ) )
+			```
+		displayFolder: 4. Usage
+
+	measure 'Candidats Commande' = COUNTROWS ( ml_candidat_commande )
+		formatString: #,0
+		displayFolder: 4. Usage
+
+	measure 'Usage 3 mois (candidat)' = MAX ( ml_candidat_commande[sessions_table_jour_3m] )
+		formatString: #,0.000
+		displayFolder: 4. Usage
+
+	measure 'Score K19 (candidat)' = IF ( NOT ISBLANK ( [Usage 3 mois (candidat)] ), [Score K19] )
+		formatString: 0.0 %
+		displayFolder: 4. Usage
+
+	measure 'Tables (candidat)' = IF ( NOT ISBLANK ( [Usage 3 mois (candidat)] ), SUM ( dim_etablissement[nb_tables] ) )
+		formatString: #,0
+		displayFolder: 4. Usage
+
+	measure 'Texte K19 alertes' = FORMAT ( [Établissements en alerte K19], "#,0" ) & " / " & FORMAT ( [Établissements scorés], "#,0" )
+		displayFolder: 7. Support
+
+	measure 'Texte MRR menacé valeur' = FORMAT ( [MRR menacé], "#,0" ) & " DT HT"
+		displayFolder: 7. Support
+
+	measure 'Texte candidats valeur' = FORMAT ( [Candidats Commande], "#,0" )
 		displayFolder: 7. Support
 
 	measure 'Texte K18' = FORMAT ( [K18 Délai de résolution médian (h)], "#,0.0" ) & " h"
@@ -674,13 +714,16 @@ table '_Mesures'
 	measure 'Texte K18 détail' = "médiane · satisfaction : " & FORMAT ( [K18 Satisfaction moyenne], "0.0" ) & " / 5"
 		displayFolder: 7. Support
 
-	measure 'Texte seuil K19' = "score K19 ≥ seuil (phase 7)"
+	measure 'Texte seuil K19' = ```
+			"10 % les plus à risque · AUC 2026 = "
+				& FORMAT ( LOOKUPVALUE ( ml_registre_modele[valeur], ml_registre_modele[mesure], "AUC test 2026" ), "0.000" )
+			```
 		displayFolder: 7. Support
 
-	measure 'Texte MRR menacé' = "MRR des établissements à risque"
+	measure 'Texte MRR menacé' = "MRR mensuel des établissements en alerte · " & FORMAT ( DIVIDE ( [MRR menacé], [K02 MRR] ), "0.0 %" ) & " du MRR"
 		displayFolder: 7. Support
 
-	measure 'Texte candidats' = "règle à fixer en phase 7"
+	measure 'Texte candidats' = "Essentiel · usage ≥ médiane Commande · hors alerte"
 		displayFolder: 7. Support
 
 	measure 'Nom de l''établissement' = ```
@@ -1096,7 +1139,26 @@ table '_Mesures'
 	measure 'Texte hausse détail' = "moyenne simple des " & FORMAT ( [Changements de prix], "0" ) & " changements"
 		displayFolder: 8. Menu et marge
 
-	measure 'Texte sensibilité détail' = "modèle de la phase 7 (EF-11)"
+	measure 'Catégorie de sensibilité' = SELECTEDVALUE ( dim_article[nom_categorie], "Toutes catégories" )
+		displayFolder: 8. Menu et marge
+
+	measure 'Texte sensibilité' = ```
+			VAR c = [Catégorie de sensibilité]
+			VAR l = LOOKUPVALUE ( ml_elasticite_categorie[lecture], ml_elasticite_categorie[categorie], c )
+			VAR e = LOOKUPVALUE ( ml_elasticite_categorie[elasticite], ml_elasticite_categorie[categorie], c )
+			RETURN
+				IF ( l = "non concluant", "non concluant", FORMAT ( e, "0.00" ) )
+			```
+		displayFolder: 8. Menu et marge
+
+	measure 'Texte sensibilité détail' = ```
+			VAR c = [Catégorie de sensibilité]
+			VAR b = LOOKUPVALUE ( ml_elasticite_categorie[bas_95], ml_elasticite_categorie[categorie], c )
+			VAR h = LOOKUPVALUE ( ml_elasticite_categorie[haut_95], ml_elasticite_categorie[categorie], c )
+			VAR l = LOOKUPVALUE ( ml_elasticite_categorie[lecture], ml_elasticite_categorie[categorie], c )
+			RETURN
+				c & " · intervalle " & FORMAT ( b, "0.00" ) & " à " & FORMAT ( h, "0.00" ) & " · " & l
+			```
 		displayFolder: 8. Menu et marge
 
 	measure 'Titre prix et quantités' = "Prix et quantités par article : " & IF ( HASONEVALUE ( dim_article[nom_article] ), SELECTEDVALUE ( dim_article[nom_article] ), "choisir un article" )
@@ -1145,7 +1207,15 @@ table '_Mesures'
 				"R38", CALCULATE ( [K22 Nombre d'énigmes], dim_date[annee] = 2026 ),
 				"R39", CALCULATE ( [K22 Nombre de poids morts], dim_date[annee] = 2026 ),
 				"R40", [K23 Part du soir en Ramadan],
-				"R41", [K23 Part du soir hors Ramadan]
+				"R41", [K23 Part du soir hors Ramadan],
+				"R42", [Établissements scorés],
+				"R43", [Établissements en alerte K19],
+				"R44", [MRR menacé],
+				"R45", AVERAGE ( ml_score_resiliation[probabilite] ),
+				"R46", [Candidats Commande],
+				"R47", COUNTROWS ( ml_recommandation_plat ),
+				"R48", CALCULATE ( COUNTROWS ( ml_recommandation_plat ), dim_etablissement[etablissement_id] = "ETB0003" ),
+				"R49", LOOKUPVALUE ( ml_elasticite_categorie[elasticite], ml_elasticite_categorie[categorie], "Toutes catégories" )
 			)
 			```
 		formatString: #,0.0000
@@ -1178,7 +1248,7 @@ table '_Mesures'
 			```
 		displayFolder: 10. Recette
 
-	measure 'Texte recette détail' = "valeurs attendues calculées en SQL sur menuscan_dwh le 26/11/2026"
+	measure 'Texte recette détail' = "valeurs attendues calculées en SQL : R01 à R41 le 26/11/2026, R42 à R49 (schéma ml) le 27/11/2026"
 		displayFolder: 10. Recette
 
 	column Value

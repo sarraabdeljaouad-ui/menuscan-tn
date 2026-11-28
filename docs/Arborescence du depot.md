@@ -70,7 +70,7 @@ menuscan-tn/
 │   ├── demo/                     (livraison d'un mois, remise à zéro, comparaison des bases)
 │   └── rapport_demo.md           (résultat de la démonstration mois par mois)
 │
-├── 07_powerbi/                   ← phase 6 : rapports au format .pbip
+├── 07_powerbi/                   ← phases 6 et 7 : rapports au format .pbip (schémas marts et ml)
 │   ├── README.md                 (ouverture, lecture des pages, valeurs attendues)
 │   ├── outils/                   (generer_pbip.py, modele_def.py, rapports_def.py : génèrent tout le projet)
 │   ├── MenuScan.SemanticModel/   (modèle partagé en TMDL : tables, relations, mesures, rôle Gérant démo)

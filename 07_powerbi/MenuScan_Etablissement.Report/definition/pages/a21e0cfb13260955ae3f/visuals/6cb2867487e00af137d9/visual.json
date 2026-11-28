@@ -3,36 +3,99 @@
   "name": "6cb2867487e00af137d9",
   "position": {
     "x": 16,
-    "y": 620,
+    "y": 520,
     "z": 1022,
-    "height": 86,
+    "height": 186,
     "width": 1248,
     "tabOrder": 1022
   },
   "visual": {
-    "visualType": "textbox",
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Plats recommandés : réservés à la formule Pro (EF-12). Liste « souvent pris avec » produite par les règles d'association de la phase 7 (support, confiance, lift).",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "11pt",
-                      "color": "#334155"
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ml_recommandation_plat"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "plat"
+                }
+              },
+              "queryRef": "ml_recommandation_plat.plat",
+              "nativeQueryRef": "plat",
+              "displayName": "Plat"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ml_recommandation_plat"
+                    }
+                  },
+                  "Property": "rang"
+                }
+              },
+              "queryRef": "ml_recommandation_plat.rang",
+              "nativeQueryRef": "rang",
+              "displayName": "Rang"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ml_recommandation_plat"
+                    }
+                  },
+                  "Property": "plat_recommande"
+                }
+              },
+              "queryRef": "ml_recommandation_plat.plat_recommande",
+              "nativeQueryRef": "plat_recommande",
+              "displayName": "Plat recommandé"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ml_recommandation_plat"
+                    }
+                  },
+                  "Property": "motif"
+                }
+              },
+              "queryRef": "ml_recommandation_plat.motif",
+              "nativeQueryRef": "motif",
+              "displayName": "Motif"
+            }
+          ]
         }
-      ]
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "ml_recommandation_plat"
+                  }
+                },
+                "Property": "plat"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": false
+      }
     },
     "visualContainerObjects": {
       "background": [
@@ -103,28 +166,119 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "10D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "10D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "10D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "4D"
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Plats recommandés (formule Pro, EF-12)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#0F172A'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'« Souvent pris avec » : règles d''association de la phase 7, plats de la carte actuelle · vide si l''établissement n''est pas en formule Pro'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#64748B'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

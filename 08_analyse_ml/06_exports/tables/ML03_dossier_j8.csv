@@ -1,0 +1,8 @@
+﻿;valeur
+AUC 2026 (valeur centrale);0.794
+Intervalle à 95 %;0.738 à 0.850
+Seuil du jalon;0.75
+Seuil atteint en valeur centrale;True
+Seuil atteint par la borne basse;False
+Gain sur la meilleure règle simple;0.126
+Résiliations dans le test 2026;76

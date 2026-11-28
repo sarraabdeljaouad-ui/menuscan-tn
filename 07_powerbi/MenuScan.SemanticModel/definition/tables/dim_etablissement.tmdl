@@ -130,6 +130,10 @@ table dim_etablissement
 		summarizeBy: none
 		sourceColumn: motif_resiliation
 
+	column etablissement = dim_etablissement[nom_etablissement] & " · " & dim_etablissement[ville]
+		dataType: string
+		summarizeBy: none
+
 	column trimestre_cohorte = "T" & QUARTER ( dim_etablissement[mois_cohorte] ) & " " & YEAR ( dim_etablissement[mois_cohorte] )
 		dataType: string
 		summarizeBy: none

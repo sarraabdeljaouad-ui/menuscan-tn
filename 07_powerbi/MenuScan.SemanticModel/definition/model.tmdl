@@ -22,6 +22,12 @@ ref table fait_marketing
 ref table fait_prospect
 ref table fait_ticket_support
 ref table fait_vue_article
+ref table ml_score_resiliation
+ref table ml_candidat_commande
+ref table ml_recommandation_plat
+ref table ml_elasticite_categorie
+ref table ml_regle_association
+ref table ml_registre_modele
 ref table 'Pont MRR'
 ref table 'Mois écoulés'
 ref table 'Étapes commerciales'

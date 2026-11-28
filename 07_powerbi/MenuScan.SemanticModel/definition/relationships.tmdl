@@ -1,3 +1,15 @@
+relationship ml_score_resiliation_etablissement_id
+	fromColumn: ml_score_resiliation.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship ml_candidat_commande_etablissement_id
+	fromColumn: ml_candidat_commande.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
+relationship ml_recommandation_plat_etablissement_id
+	fromColumn: ml_recommandation_plat.etablissement_id
+	toColumn: dim_etablissement.etablissement_id
+
 relationship fait_session_etablissement_id
 	fromColumn: fait_session.etablissement_id
 	toColumn: dim_etablissement.etablissement_id

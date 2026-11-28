@@ -23,11 +23,11 @@
                       "Entity": "dim_etablissement"
                     }
                   },
-                  "Property": "nom_etablissement"
+                  "Property": "etablissement"
                 }
               },
-              "queryRef": "dim_etablissement.nom_etablissement",
-              "nativeQueryRef": "nom_etablissement",
+              "queryRef": "dim_etablissement.etablissement",
+              "nativeQueryRef": "etablissement",
               "displayName": "Établissement"
             },
             {
@@ -58,7 +58,7 @@
               },
               "queryRef": "_Mesures.Score K19",
               "nativeQueryRef": "Score K19",
-              "displayName": "Score"
+              "displayName": "Risque"
             },
             {
               "field": {
@@ -74,6 +74,21 @@
               "queryRef": "_Mesures.MRR actuel de l'établissement",
               "nativeQueryRef": "MRR actuel de l'établissement",
               "displayName": "MRR (DT HT)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Mesures"
+                    }
+                  },
+                  "Property": "Facteurs K19"
+                }
+              },
+              "queryRef": "_Mesures.Facteurs K19",
+              "nativeQueryRef": "Facteurs K19",
+              "displayName": "3 facteurs principaux"
             }
           ]
         }
@@ -88,7 +103,7 @@
                     "Entity": "_Mesures"
                   }
                 },
-                "Property": "MRR actuel de l'établissement"
+                "Property": "Score K19"
               }
             },
             "direction": "Descending"
@@ -245,7 +260,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Mise en page seulement : les scores viendront du modèle de la phase 7 (jalon J8)'"
+                  "Value": "'Probabilité de résiliation en janvier 2027 · tri par risque décroissant · facteurs : ce qui augmente le risque'"
                 }
               }
             },

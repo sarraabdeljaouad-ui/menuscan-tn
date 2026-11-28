@@ -9,6 +9,8 @@ Deux méthodes, toutes deux construites pour neutraliser l'effet « établisseme
 """
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
@@ -115,7 +117,12 @@ def elasticite(panel: pd.DataFrame) -> tuple[float, int]:
         r = y - Q[cel] * e / s[cel]
         return -ll, -np.concatenate([[lp @ r], A.T @ r])
 
-    res = minimize(moins_vraisemblance, np.zeros(k), jac=True, method="L-BFGS-B", options={"maxiter": 3000})
+    # Tolérances serrées : avec les réglages par défaut, L-BFGS s'arrête trop tôt (gradient encore élevé) et le
+    # résultat change d'une version de scipy à l'autre. Ici, il se stabilise à la 4e décimale.
+    res = minimize(moins_vraisemblance, np.zeros(k), jac=True, method="L-BFGS-B",
+                   options={"maxiter": 100000, "ftol": 0.0, "gtol": 1e-7, "maxcor": 50})
+    if np.abs(res.jac).max() > 1e-2:
+        warnings.warn(f"élasticité : convergence incomplète (gradient max {np.abs(res.jac).max():.2g})")
     return float(res.x[0]), informatifs
 
 

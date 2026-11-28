@@ -23,11 +23,11 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Texte phase 7"
+                  "Property": "Texte sensibilité"
                 }
               },
-              "queryRef": "_Mesures.Texte phase 7",
-              "nativeQueryRef": "Texte phase 7"
+              "queryRef": "_Mesures.Texte sensibilité",
+              "nativeQueryRef": "Texte sensibilité"
             }
           ]
         }
@@ -90,7 +90,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Sensibilité au prix par catégorie'"
+                  "Value": "'Élasticité-prix (phase 7)'"
                 }
               }
             },

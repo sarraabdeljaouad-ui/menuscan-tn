@@ -1,0 +1,38 @@
+table ml_recommandation_plat
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column plat
+		dataType: string
+		summarizeBy: none
+		sourceColumn: plat
+
+	column rang
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: rang
+
+	column plat_recommande
+		dataType: string
+		summarizeBy: none
+		sourceColumn: plat_recommande
+
+	column motif
+		dataType: string
+		summarizeBy: none
+		sourceColumn: motif
+
+	partition ml_recommandation_plat = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "ml", Item = "recommandation_plat"]}[Data],
+					Colonnes = Table.RemoveColumns(Donnees, {"publie_le"})
+				in
+					Colonnes

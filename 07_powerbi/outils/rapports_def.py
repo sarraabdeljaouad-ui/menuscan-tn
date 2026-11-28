@@ -114,30 +114,29 @@ STARTUP = [
     ]),
     ("TB-4 · Pilotage ML", segments(("Ville", "C:dim_etablissement.ville"),
                                     ("Formule", "C:dim_etablissement.formule_actuelle")) + [
-        note("Scores K19 produits en phase 7 · [phase 7] = à compléter"),
-        *tuiles(("Établissements à risque élevé", "M:Texte phase 7", "M:Texte seuil K19"),
-                ("MRR menacé", "M:Texte phase 7", "M:Texte MRR menacé"),
-                ("Candidats Essentiel → Commande", "M:Texte phase 7", "M:Texte candidats"),
+        note("Scores K19 au 31/12/2026 : probabilité de résiliation en janvier 2027 (modèle de la phase 7)"),
+        *tuiles(("Établissements en alerte (K19)", "M:Texte K19 alertes", "M:Texte seuil K19"),
+                ("MRR menacé", "M:Texte MRR menacé valeur", "M:Texte MRR menacé"),
+                ("Candidats Essentiel → Commande", "M:Texte candidats valeur", "M:Texte candidats"),
                 ("Délai de résolution (K18)", "M:Texte K18", "M:Texte K18 détail")),
         v("tableEx", 16, 210, 740, 496, "Établissements à risque de résiliation (K19)",
-          {"Values": ["C:dim_etablissement.nom_etablissement|Établissement",
-                      "C:dim_etablissement.formule_actuelle|Formule", "M:Score K19|Score",
-                      "M:MRR actuel de l'établissement|MRR (DT HT)"]},
-          sous_titre="Mise en page seulement : les scores viendront du modèle de la phase 7 (jalon J8)", totaux=False,
-          tri=("M:MRR actuel de l'établissement", "Descending")),
+          {"Values": ["C:dim_etablissement.etablissement|Établissement",
+                      "C:dim_etablissement.formule_actuelle|Formule", "M:Score K19|Risque",
+                      "M:MRR actuel de l'établissement|MRR (DT HT)", "M:Facteurs K19|3 facteurs principaux"]},
+          sous_titre="Probabilité de résiliation en janvier 2027 · tri par risque décroissant · facteurs : ce qui augmente le risque",
+          totaux=False, tri=("M:Score K19", "Descending")),
         v("tableEx", 768, 210, 496, 496, "Candidats à la formule Commande",
-          {"Values": ["C:dim_etablissement.nom_etablissement|Établissement (Essentiel)",
-                      "M:K12 (Essentiel)|Sessions / table / jour (K12)", "M:Sessions (Essentiel)|Sessions",
-                      "M:Tables (Essentiel)|Tables"]},
-          sous_titre="Tri par usage du QR code : plus le menu est consulté, plus la commande a de chances d'être utilisée",
-          totaux=False,
-          tri=("M:K12 (Essentiel)", "Descending")),
+          {"Values": ["C:dim_etablissement.etablissement|Établissement (Essentiel)",
+                      "M:Usage 3 mois (candidat)|Sessions / table / jour (3 mois)", "M:Tables (candidat)|Tables",
+                      "M:Score K19 (candidat)|Risque K19"]},
+          sous_titre="Usage du menu au moins égal à la médiane des établissements Commande, hors alerte K19",
+          totaux=False, tri=("M:Usage 3 mois (candidat)", "Descending")),
     ]),
 ]
 
 RECETTE_PAGE = ("Recette T6.4", [
     note("Page de contrôle : aucun filtre ; chaque ligne porte son propre filtre", x=16, w=1248),
-    {"k": "tuile", "x": 16, "y": 116, "w": 1248, "h": 84, "titre": "Recette de la phase 6 (T6.4)",
+    {"k": "tuile", "x": 16, "y": 116, "w": 1248, "h": 84, "titre": "Recette des phases 6 et 7 (T6.4, T7.4)",
      "valeur": "M:Texte recette", "detail": "M:Texte recette détail", "alerte": False},
     v("tableEx", 16, 210, 1248, 496, "Valeurs attendues et valeurs calculées par le modèle",
       {"Values": ["C:Recette.code|Code", "C:Recette.indicateur|Indicateur", "C:Recette.filtre|Filtre",
@@ -148,7 +147,7 @@ RECETTE_PAGE = ("Recette T6.4", [
 ])
 STARTUP.append(RECETTE_PAGE)
 
-ETAB = ("Établissement", "C:dim_etablissement.nom_etablissement")
+ETAB = ("Établissement", "C:dim_etablissement.etablissement")
 ETABLISSEMENT = [
     ("TB-5 · Activité", segments(ETAB, ANNEE) + [
         note("Rôle « Gérant démo » : un seul établissement visible"),
@@ -214,22 +213,26 @@ ETABLISSEMENT = [
         note("Volumes faibles : à lire comme une tendance, jamais comme un effet prouvé"),
         *tuiles(("Changements de prix", "M:Texte changements", "M:Texte changements détail"),
                 ("Hausse moyenne", "M:Texte hausse", "M:Texte hausse détail"),
-                ("Sensibilité au prix par catégorie", "M:Texte phase 7", "M:Texte sensibilité détail")),
-        v("lineClusteredColumnComboChart", 16, 210, 600, 400, "M:Titre prix et quantités",
+                ("Élasticité-prix (phase 7)", "M:Texte sensibilité", "M:Texte sensibilité détail")),
+        v("lineClusteredColumnComboChart", 16, 210, 600, 300, "M:Titre prix et quantités",
           {"Category": ["C:dim_date.premier_jour_mois"], "Y": ["M:Quantités servies|Quantités servies"],
            "Y2": ["M:Prix moyen pratiqué|Prix TTC moyen"]},
           sous_titre="Barres : quantités servies par mois · ligne : prix TTC moyen pratiqué",
           couleurs_series={"M:Prix moyen pratiqué": ORANGE}),
-        v("tableEx", 628, 210, 636, 400, "Changements de prix et quantités avant / après",
+        v("tableEx", 628, 210, 636, 300, "Changements de prix et quantités avant / après",
           {"Values": ["C:dim_article.nom_article|Article", "C:dim_article.valide_du|Date",
                       "M:Prix avant → après|Prix TTC", "M:Hausse de prix|Hausse",
                       "M:Quantités avant → après|Qté av. → ap.", "M:Écart des quantités|Écart"]},
           sous_titre="Choisir un établissement · même durée avant et après (14 à 60 jours) · articles vendus seulement",
           totaux=False,
           tri=("C:dim_article.valide_du", "Descending")),
-        {"k": "texte", "x": 16, "y": 620, "w": 1248, "h": 86, "cadre": True, "taille": 11, "couleur": "#334155",
-         "texte": "Plats recommandés : réservés à la formule Pro (EF-12). Liste « souvent pris avec » produite par les "
-                  "règles d'association de la phase 7 (support, confiance, lift)."},
+        v("tableEx", 16, 520, 1248, 186, "Plats recommandés (formule Pro, EF-12)",
+          {"Values": ["C:ml_recommandation_plat.plat|Plat", "C:ml_recommandation_plat.rang|Rang",
+                      "C:ml_recommandation_plat.plat_recommande|Plat recommandé",
+                      "C:ml_recommandation_plat.motif|Motif"]},
+          sous_titre="« Souvent pris avec » : règles d'association de la phase 7, plats de la carte actuelle · "
+                     "vide si l'établissement n'est pas en formule Pro",
+          totaux=False, tri=("C:ml_recommandation_plat.plat", "Ascending")),
     ]),
 ]
 

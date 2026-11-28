@@ -1,0 +1,12 @@
+﻿modele;version;algorithme;mesure;valeur;bas_95;haut_95;decision
+resiliation;v1 (27/11/2026);logistique, C = 0.03, classes pondérées;AUC validation 2025;0.8616;;;
+resiliation;v1 (27/11/2026);logistique, C = 0.03, classes pondérées;AUC test 2026;0.794;0.7384;0.8501;"J8 atteint en valeur centrale ; borne basse sous 0,75"
+resiliation;v1 (27/11/2026);logistique, C = 0.03, classes pondérées;AUC règle simple 2026;0.6681;;;
+resiliation;v1 (27/11/2026);logistique, C = 0.03, classes pondérées;Précision de l'alerte 2026;0.1474;;;
+resiliation;v1 (27/11/2026);logistique, C = 0.03, classes pondérées;Rappel de l'alerte 2026;0.4868;;;
+associations;v1 (27/11/2026);lift ajusté par établissement, test de Poisson (Bonferroni);Paires de catégories retenues;3.0;;;
+associations;v1 (27/11/2026);lift ajusté par établissement, test de Poisson (Bonferroni);Paires de plats retenues;10.0;;;
+associations;v1 (27/11/2026);lift ajusté par établissement, test de Poisson (Bonferroni);Part des paires confirmées en 2026;1.0;;;
+elasticite;v1 (27/11/2026);Poisson conditionnelle, effets fixes article et cellule;Élasticité toutes catégories;-0.6977618928172111;-0.8882657349342238;-0.4783386064532582;
+elasticite;v1 (27/11/2026);Poisson conditionnelle, effets fixes article et cellule;Catégories exploitables;6.0;;;
+elasticite;v1 (27/11/2026);Poisson conditionnelle, effets fixes article et cellule;Catégories non concluantes;14.0;;;

@@ -23,11 +23,11 @@
                       "Entity": "_Mesures"
                     }
                   },
-                  "Property": "Texte phase 7"
+                  "Property": "Texte K19 alertes"
                 }
               },
-              "queryRef": "_Mesures.Texte phase 7",
-              "nativeQueryRef": "Texte phase 7"
+              "queryRef": "_Mesures.Texte K19 alertes",
+              "nativeQueryRef": "Texte K19 alertes"
             }
           ]
         }
@@ -90,7 +90,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Établissements à risque élevé'"
+                  "Value": "'Établissements en alerte (K19)'"
                 }
               }
             },

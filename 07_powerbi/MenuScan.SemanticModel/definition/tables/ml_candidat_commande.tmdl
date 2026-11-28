@@ -1,0 +1,35 @@
+table ml_candidat_commande
+
+	column etablissement_id
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: etablissement_id
+
+	column sessions_table_jour_3m
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: sessions_table_jour_3m
+
+	column seuil_usage
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: seuil_usage
+
+	column probabilite_resiliation
+		dataType: decimal
+		formatString: #,0.000
+		summarizeBy: none
+		sourceColumn: probabilite_resiliation
+
+	partition ml_candidat_commande = m
+		mode: import
+		source =
+				let
+					Source = PostgreSQL.Database(Serveur, Base),
+					Donnees = Source{[Schema = "ml", Item = "candidat_commande"]}[Data],
+					Colonnes = Table.RemoveColumns(Donnees, {"publie_le"})
+				in
+					Colonnes
