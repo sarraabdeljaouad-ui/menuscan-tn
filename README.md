@@ -38,7 +38,7 @@ flowchart LR
 | Transformations et qualité | dbt Core (modèles, tests, snapshots, documentation) |
 | Orchestration | Airflow, Docker Compose |
 | Tableaux de bord | Power BI Desktop (sécurité par ligne) |
-| Analyse et ML | Python, scikit-learn, statsmodels, MLflow |
+| Analyse et ML | Python, scikit-learn, statsmodels, mlxtend, MLflow |
 
 ## Avancement
 
@@ -51,7 +51,7 @@ flowchart LR
 | 4. Entrepôt dbt | Nettoyage, sessions, modèle en étoile, tests | Terminée (validée le 25/11/2026 : DQ-01 à DQ-27 à 0 violation, 99,91 % des anomalies retrouvées) |
 | 5. Orchestration | DAG Airflow | Terminée (validée le 26/11/2026 : chaîne quotidienne à minuit, 36 mois rejoués, bases identiques) |
 | 6. Tableaux de bord | Modèle Power BI partagé, rapports Startup et Établissement (9 pages), sécurité par ligne | Terminée (validée le 27/11/2026 : recette 41 contrôles sur 41, rôle Gérant démo testé) |
-| 7. Analyse et ML | Résiliation, sensibilité au prix, recommandations | À venir |
+| 7. Analyse et ML | Résiliation, sensibilité au prix, recommandations | Terminée (jalon J8 validé avec réserve le 28/11/2026 : AUC 2026 = 0,794, recette 49 contrôles sur 49) |
 | 8. Retour dans l'application | Scores et recommandations affichés | À venir |
 | 9. Recette et mise en valeur | PV final, démonstration en ligne | À venir |
 

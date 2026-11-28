@@ -42,7 +42,7 @@ Notebooks Python (EDA ▸ data mining ▸ machine learning)
 
 | Cas | Méthode | Résultat |
 |---|---|---|
-| Associations (EF-12) | Lift ajusté par établissement, test de Poisson corrigé (Bonferroni), apprentissage 2024-2025, vérification 2026 | 3 paires de catégories et 10 paires de plats retenues, toutes confirmées en 2026 ; 749 recommandations pour 55 établissements Pro |
+| Associations (EF-12) | Lift ajusté par établissement, test de Poisson corrigé (Bonferroni), apprentissage 2024-2025, vérification 2026 | 3 paires de catégories et 10 paires de plats retenues, toutes confirmées en 2026 ; 749 recommandations pour 45 des 55 établissements Pro |
 | Sensibilité au prix (EF-11) | Poisson conditionnelle, effets fixes article et établissement × catégorie × mois, bootstrap par établissement, placebo | Élasticité globale -0,70 [-0,89 ; -0,48] ; placebo 0,00 [-0,37 ; 0,54] ; 6 catégories exploitables (dont 2 nettes : boissons chaudes, crêpes et gaufres), 14 non concluantes |
 
 ## Méthode
