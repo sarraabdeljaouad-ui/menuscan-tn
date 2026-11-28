@@ -77,7 +77,8 @@ c1, c2 = st.columns([2, 1], vertical_alignment="center")
 c1.markdown(f"""<div style="font-size:15px;color:#334155;line-height:1.6">Les serveurs et les gérants se connectent pour suivre les commandes.
   Le <b>serveur</b> voit les commandes en direct et le plan des tables. Le <b>gérant</b> voit en plus le chiffre du jour, les indicateurs,
   les meilleures ventes, et ouvre ou ferme les commandes.<br><span style="color:{GRIS}">Comptes de démonstration : <code>gerant.etb0005</code> et
-  <code>serveur.etb0005</code>, mot de passe <code>Demo2026!</code>.</span></div>""", unsafe_allow_html=True)
+  <code>serveur.etb0005</code>, mot de passe <code>Demo2026!</code>. Plats recommandés (formule Pro) : <code>gerant.etb0003</code>.
+  Équipe MenuScan (établissements à risque) : <code>succes.client</code>.</span></div>""", unsafe_allow_html=True)
 c2.page_link("vues/connexion.py", label="Se connecter", icon=":material/login:")
 
 st.divider()

@@ -99,7 +99,7 @@ def _preparer(eng):
     with eng.begin() as c:
         ok = c.execute(text("""SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'menuscan' AND table_name = 'migrations')""")).scalar()
         faites = {r[0] for r in c.execute(text("SELECT migration_id FROM migrations"))} if ok else set()
-        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article", "008_avis", "009_cout_revient"} - faites)
+        manquantes = sorted({"001_parcours_commande", "002_comptes_equipe", "003_persistance", "004_service_salle", "005_gestion_menu", "006_gestion_tables", "007_fiche_article", "008_avis", "009_cout_revient", "010_resultats_ml"} - faites)
         if manquantes:
             raise MigrationManquante(f"Migration manquante ({', '.join(manquantes)}). Lancer : python 02_oltp/charger_base_app.py --migrer")
         for seq, (table, col, pref, _) in SEQUENCES.items():
@@ -218,8 +218,8 @@ _COMPTE = """
         SELECT u.utilisateur_id, u.identifiant, u.role, u.prenom, u.etablissement_id, e.nom_etablissement, e.gerant_prenom,
                v.ville AS nom_ville, a.formule_id, f.nom_formule, f.inclut_statistiques
         FROM utilisateurs u
-        JOIN etablissements e USING (etablissement_id)
-        JOIN ref_villes v USING (ville_id)
+        LEFT JOIN etablissements e ON e.etablissement_id = u.etablissement_id  -- vide pour le rôle menuscan (migration 010)
+        LEFT JOIN ref_villes v ON v.ville_id = e.ville_id
         LEFT JOIN abonnements a ON a.etablissement_id = e.etablissement_id
              AND CAST(:j AS DATE) BETWEEN a.date_debut AND COALESCE(a.date_fin, DATE '2099-12-31')
         LEFT JOIN formules f ON f.formule_id = a.formule_id
@@ -883,3 +883,48 @@ def changer_cout(etablissement_id, article_id, cout):
         if _article(c, etablissement_id, article_id):
             c.execute(text("UPDATE articles SET cout_revient = :c, date_maj_cout = :j WHERE article_id = :a"),
                       dict(c=None if cout is None else round(float(cout), 3), j=maintenant().date(), a=article_id))
+
+
+# ---------- Résultats de la phase 7 (migration 010, copiés par 02_oltp/copier_resultats_ml.py) ----------
+
+def copie_ml():
+    """Dernière copie des résultats : date de publication dans l'entrepôt et date de copie (None si jamais copiés)."""
+    return un("SELECT max(publie_le) AS publie_le, max(copie_le) AS copie_le FROM ml_copie")
+
+
+def scores_resiliation():
+    """Établissements scorés (K19) avec leur ville, leur formule actuelle et leurs 3 facteurs, du plus au moins risqué."""
+    return lire("""
+        SELECT s.etablissement_id, e.nom_etablissement, v.ville AS nom_ville, f.nom_formule, s.probabilite, s.rang, s.alerte,
+               s.facteur_1, s.facteur_2, s.facteur_3, s.mrr_ht, s.mois_observe, s.version_modele, e.gerant_prenom
+        FROM ml_score_resiliation s
+        JOIN etablissements e USING (etablissement_id)
+        JOIN ref_villes v USING (ville_id)
+        LEFT JOIN abonnements a ON a.etablissement_id = s.etablissement_id
+             AND CAST(:j AS DATE) BETWEEN a.date_debut AND COALESCE(a.date_fin, DATE '2099-12-31')
+        LEFT JOIN formules f ON f.formule_id = a.formule_id
+        ORDER BY s.rang""", j=maintenant().date())
+
+
+def candidats_commande():
+    """Établissements Essentiel candidats à la formule Commande (EF-13), du plus au moins utilisateur du menu."""
+    return lire("""
+        SELECT c.etablissement_id, e.nom_etablissement, v.ville AS nom_ville, c.sessions_table_jour_3m, c.seuil_usage,
+               c.probabilite_resiliation, (SELECT count(*) FROM tables_salle t WHERE t.etablissement_id = c.etablissement_id) AS nb_tables
+        FROM ml_candidat_commande c JOIN etablissements e USING (etablissement_id) JOIN ref_villes v USING (ville_id)
+        ORDER BY c.sessions_table_jour_3m DESC""")
+
+
+def recommandations(etablissement_id):
+    """Plats recommandés (EF-12) limités à la carte d'aujourd'hui : un plat retiré depuis la publication disparaît,
+    des deux côtés de la recommandation."""
+    j = maintenant().date()
+    return lire("""
+        WITH carte AS (SELECT a.nom_article, c.nom_categorie FROM articles a JOIN categories_menu c USING (categorie_id)
+                       WHERE a.etablissement_id = :e AND a.date_ajout <= :j AND (a.date_retrait IS NULL OR a.date_retrait > :j))
+        SELECT r.plat, p.nom_categorie AS categorie, r.rang, r.plat_recommande, q.nom_categorie AS categorie_recommandee, r.motif
+        FROM ml_recommandation_plat r
+        JOIN carte p ON p.nom_article = r.plat
+        JOIN carte q ON q.nom_article = r.plat_recommande
+        WHERE r.etablissement_id = :e
+        ORDER BY r.plat, r.rang""", e=etablissement_id, j=j)

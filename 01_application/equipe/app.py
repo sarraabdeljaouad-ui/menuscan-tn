@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Application équipe MenuScan TN (back-office) : accueil public, connexion, puis écran selon le rôle (gérant ou serveur).
+"""Application équipe MenuScan TN (back-office) : accueil public, connexion, puis écran selon le rôle
+(gérant ou serveur d'un établissement ; menuscan pour l'équipe Succès client de MenuScan, migration 010).
 
 Lancement, depuis le dossier 01_application/equipe, environnement Python activé :
     streamlit run app.py          (port 8502, défini dans .streamlit/config.toml)
@@ -53,6 +54,13 @@ u = etat.get("utilisateur")
 accueil = st.Page("vues/accueil.py", title="Accueil", icon=":material/home:", default=u is None)
 if u is None:
     pages = [accueil, st.Page("vues/connexion.py", title="Se connecter", icon=":material/login:", url_path="connexion")]
+elif u["role"] == "menuscan":  # équipe MenuScan : aucun établissement, seulement l'espace Succès client
+    pages = [st.Page("vues/risques.py", title="Établissements à risque", icon=":material/monitor_heart:", url_path="risques",
+                     default=True)]
+    with st.sidebar:
+        st.markdown(f"""<div style="background:rgba(255,255,255,.1);border-radius:16px;padding:12px 14px;font-size:14px;margin-top:8px">
+          <b>MenuScan TN</b><br><span style="color:#C7D7F5">Succès client · {e(u['identifiant'])}</span></div>""", unsafe_allow_html=True)
+        st.button("Se déconnecter", icon=":material/logout:", width="stretch", on_click=deconnecter)
 else:
     titre = "Tableau de bord" if u["role"] == "gerant" else "Service"
     pages = [st.Page("vues/tableau.py", title=titre, icon=":material/dashboard:" if u["role"] == "gerant" else ":material/room_service:",
@@ -62,6 +70,8 @@ else:
         pages.append(st.Page("vues/activite.py", title="Activité des tables", icon=":material/table_restaurant:", url_path="activite"))
         pages.append(st.Page("vues/cloture.py", title="Clôture de la journée", icon=":material/point_of_sale:", url_path="cloture"))
         pages.append(st.Page("vues/qr_codes.py", title="Tables et QR codes", icon=":material/qr_code_2:", url_path="qr"))
+        pages.append(st.Page("vues/recommandations.py", title="Plats recommandés", icon=":material/recommend:",
+                             url_path="recommandations"))
     with st.sidebar:
         role = "Gérant" if u["role"] == "gerant" else "Serveur"
         st.markdown(f"""<div style="background:rgba(255,255,255,.1);border-radius:16px;padding:12px 14px;font-size:14px;margin-top:8px">

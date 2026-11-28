@@ -10,7 +10,8 @@ Deux applications Streamlit (phase 1, tâche T1.3), qui suivent les maquettes va
 Conteneur PostgreSQL démarré, base chargée et migrée, environnement Python activé. Deux terminaux :
 
 ```bash
-python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 009
+python 02_oltp/charger_base_app.py --migrer   # une fois, sur une base chargée avant les migrations 001 à 010
+python 02_oltp/copier_resultats_ml.py         # après chaque publication du schéma ml (phase 7) : scores et plats recommandés
 
 cd 01_application/client
 streamlit run app.py                          # application client : http://localhost:8501/?table=TBL00079
@@ -33,12 +34,14 @@ Chaque application lit sa configuration (thème, port) dans son dossier `.stream
 | `equipe/vues/connexion.py` | Connexion : identifiant et mot de passe |
 | `equipe/vues/tableau.py` | Écran du gérant (tableau de bord) ou du serveur (service) |
 | `equipe/vues/qr_codes.py` | Tables et QR codes (gérant) : un QR par table, PNG et planche PDF à imprimer |
+| `equipe/vues/recommandations.py` | Plats recommandés (gérant, formule Pro) : plats à mettre en avant, « souvent pris avec » chaque plat de la carte |
+| `equipe/vues/risques.py` | Espace MenuScan (rôle `menuscan`) : établissements à risque de résiliation avec leurs facteurs, candidats à la formule Commande |
 | `commun/qr.py` | Génération des QR codes, des cartes de table et de la planche PDF (A4, 6 cartes par page) |
 | `qr/generer_qr.py` | Même génération en ligne de commande, écrite dans `qr/sortie/` (exclu de Git) |
 
 Les dossiers ne s'appellent pas `pages/` : ce nom déclencherait l'ancienne navigation automatique de Streamlit.
 
-## Comptes et rôles (migration 002)
+## Comptes et rôles (migrations 002 et 010)
 
 Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur.etbXXXX` (par exemple `gerant.etb0005` pour le Café Les Arcades). Mot de passe de démonstration commun : `Demo2026!`. Les mots de passe sont hachés avec bcrypt (extension `pgcrypto`) et comparés par PostgreSQL ; ils ne sont jamais stockés en clair.
 
@@ -56,6 +59,7 @@ Deux comptes de démonstration par établissement : `gerant.etbXXXX` et `serveur
 | Menu : changer un prix, une description, un coût de revient, retirer, remettre ou ajouter un article | Non | Oui |
 | Clôture de la journée : encaissements par mode, servies, annulées, reste à encaisser, ventes et marges, export CSV | Non | Oui |
 | Tables et QR codes : ajouter, renuméroter, changer de zone ou de places, retirer ou remettre une table | Non | Oui |
+| Plats recommandés (formule Pro seulement) | Non | Oui |
 
 **Rester connecté :** après la connexion, l'appareil reste connecté, même après une actualisation ou la fermeture du navigateur, jusqu'au bouton « Se déconnecter ». La connexion expire seulement après 30 jours sans utilisation ; chaque ouverture de l'application relance ce délai. Le navigateur garde un jeton aléatoire dans un cookie ; la base n'en garde que l'empreinte SHA-256. Le gérant dispose d'un bouton « Déconnecter partout », qui déconnecte tous les appareils des comptes de son établissement (appareil perdu, départ d'un serveur).
 
@@ -118,7 +122,7 @@ Les commandes du jeu de données n'ont que `servie` ou `annulee`, sans heure d'a
 
 Après un parcours complet (commande, quatre étapes par le gérant et le serveur, annulation, fermeture des commandes), les 23 contrôles de `02_oltp/controles_qualite.sql` restent à 0.
 
-## Évolutions du modèle de données (migrations 001 à 009, décisions D-24 à D-28)
+## Évolutions du modèle de données (migrations 001 à 010, décisions D-24 à D-28)
 
 `02_oltp/migrations/001_parcours_commande.sql`, appliquée automatiquement après un chargement complet, ou seule avec `--migrer` :
 
@@ -139,7 +143,17 @@ Après un parcours complet (commande, quatre étapes par le gérant et le serveu
 - table `avis` (migration 008) : un avis au plus par commande servie (note de 1 à 5, commentaire), visible dans « Activité des tables » (colonne « Note clients » par table, étoiles dans l'historique, onglet « Avis » avec la note moyenne et les commentaires) ;
 - `articles.cout_revient` et `articles.date_maj_cout` (migration 009) : coût saisi par le gérant dans « Menu », bouton « Modifier ». Aucun coût n'est inventé : la colonne reste vide tant qu'il n'est pas saisi, et la marge ne s'affiche que pour les articles renseignés.
 
+- tables `ml_score_resiliation`, `ml_candidat_commande`, `ml_recommandation_plat` et `ml_copie` (migration 010) : copies des résultats de la phase 7, remplies par `02_oltp/copier_resultats_ml.py` ; rôle `menuscan` et compte `succes.client`, rattaché à aucun établissement.
+
 Le menu client choisit les articles par leurs dates d'ajout et de retrait, et non par `statut_article`, qui est une photo à la date d'arrêté du jeu.
+
+## Résultats de la phase 7 dans l'application (migration 010, exigence EF-14)
+
+- **Origine :** le schéma `ml` de l'entrepôt, publié par `08_analyse_ml/03_machine_learning/04_publication_resultats`. L'application ne lit jamais l'entrepôt : `02_oltp/copier_resultats_ml.py` copie les résultats dans `menuscan_app`, en une transaction (en cas d'erreur, l'ancienne copie reste) et contrôle les nombres de lignes.
+- **Espace MenuScan** (`succes.client`) : un compte de l'équipe Succès client de MenuScan, sans établissement. Il voit les établissements à risque (probabilité de résiliation le mois suivant, alerte pour les 10 % les plus à risque, MRR menacé, 3 facteurs) et les candidats à la formule Commande. Export CSV.
+- **Espace gérant**, formule Pro : page « Plats recommandés ». Les recommandations sont limitées à la carte du jour : un plat retiré depuis la publication disparaît des deux côtés. Un gérant d'une autre formule voit un message.
+- **Le client ne voit pas les recommandations** : elles n'ont pas été testées auprès de vrais clients (test A/B à prévoir).
+- **Fraîcheur :** les scores portent sur les données jusqu'à fin décembre 2026 ; la page affiche la date de publication et la date de copie.
 
 ## Gestion des tables (migration 006)
 
@@ -167,7 +181,7 @@ Ces valeurs seront ajoutées au dictionnaire des données et traitées par dbt (
 
 ## Limites connues
 
-- **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application.
+- **Comptes de démonstration :** un mot de passe commun, publié dans ce README, et pas de changement de mot de passe ni de gestion des comptes dans l'application. Le compte `succes.client` voit les scores de tous les établissements : en production, il faudrait des comptes nominatifs.
 - **Adresse du client :** quiconque obtient l'adresse complète d'un client (avec `s=`), par exemple par une capture partagée, voit son panier et le suivi de sa commande pendant 4 heures. Il ne peut rien voir d'autre.
 - **Deuxième commande d'un même client :** elle ouvre une nouvelle session, qui commence par un événement `scan_qr` comme dans les données générées. Le nombre de scans est donc un peu surestimé quand un client commande plusieurs fois ; le lien entre ces sessions est gardé dans `etats_client`.
 - **Base injoignable :** si PostgreSQL ne répond pas dans les 10 secondes (Docker arrêté ou bloqué), l'équipe voit un message avec la marche à suivre et un bouton « Réessayer » ; le client voit « Le menu est momentanément indisponible ». Les connexions passent par `127.0.0.1` (Windows essaie sinon `::1` en premier).
