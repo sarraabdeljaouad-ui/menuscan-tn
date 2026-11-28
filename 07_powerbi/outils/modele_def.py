@@ -289,7 +289,14 @@ DIVIDE (
 )"""),
     ("8. Menu et marge", "K22 Marge unitaire estimée", "#,0.000",
      "DIVIDE ( [K21 Marge brute estimée TTC], [Quantités servies] )"),
+    # dim_article n'est pas reliée à dim_etablissement : sans TREATAS, une ligne « Pancakes » regroupe les Pancakes
+    # de tous les établissements et la classe reste vide (sauf sous le rôle Gérant démo, qui filtre dim_article).
     ("8. Menu et marge", "K22 Classe du plat", None, """
+CALCULATE (
+    [K22 Classe (calcul)],
+    TREATAS ( VALUES ( dim_etablissement[etablissement_id] ), dim_article[etablissement_id] )
+)"""),
+    ("8. Menu et marge", "K22 Classe (calcul)", None, """
 VAR q = [Quantités servies]
 VAR etab = VALUES ( dim_article[etablissement_id] )
 VAR q_etab =
@@ -668,29 +675,47 @@ for _nom, _filtre in [("hors Ramadan", "FALSE ()"), ("Ramadan", "TRUE ()")]:
         ("9. Saisonnalité", f"Heure de pointe {_nom}", None, f"""
 VAR h = CALCULATETABLE ( VALUES ( dim_heure[heure] ), REMOVEFILTERS ( dim_heure ) )
 VAR pic = TOPN ( 1, h, CALCULATE ( [Commandes servies], dim_date[est_ramadan] = {_filtre} ), DESC )
-RETURN CONCATENATEX ( pic, FORMAT ( dim_heure[heure], "0" ) & " h", ", " )"""),
+VAR total = CALCULATE ( [Commandes servies], dim_date[est_ramadan] = {_filtre}, REMOVEFILTERS ( dim_heure ) )
+RETURN IF ( ISBLANK ( total ), "aucune commande", CONCATENATEX ( pic, FORMAT ( dim_heure[heure], "0" ) & " h", ", " ) )"""),
         ("9. Saisonnalité", f"Heure de pointe {_nom} détail", None, f"""
 VAR h = CALCULATETABLE ( VALUES ( dim_heure[heure] ), REMOVEFILTERS ( dim_heure ) )
 VAR pic = TOPN ( 1, h, CALCULATE ( [Commandes servies], dim_date[est_ramadan] = {_filtre} ), DESC )
-RETURN FORMAT ( CALCULATE ( [Commandes servies], pic, dim_date[est_ramadan] = {_filtre} ), "#,0" ) & " commandes servies à cette heure\""""),
+VAR total = CALCULATE ( [Commandes servies], dim_date[est_ramadan] = {_filtre}, REMOVEFILTERS ( dim_heure ) )
+RETURN
+    IF (
+        ISBLANK ( total ),
+        "pas de commande servie sur cette période",
+        FORMAT ( CALCULATE ( [Commandes servies], pic, dim_date[est_ramadan] = {_filtre} ), "#,0" ) & " commandes servies à cette heure"
+    )"""),
     ]
 MESURES += [
     ("9. Saisonnalité", "Texte commandes par jour", None, """
-FORMAT ( [K23 Commandes par jour hors Ramadan], "#,0.00" ) & " → " & FORMAT ( [K23 Commandes par jour en Ramadan], "#,0.00" )"""),
+FORMAT ( [K23 Commandes par jour hors Ramadan], "#,0.00" ) & " → "
+    & IF ( ISBLANK ( [K23 Commandes par jour en Ramadan] ), "aucune", FORMAT ( [K23 Commandes par jour en Ramadan], "#,0.00" ) )"""),
     ("9. Saisonnalité", "Texte commandes par jour détail", None, """
-"hors Ramadan → Ramadan ("
-    & FORMAT ( DIVIDE ( [K23 Commandes par jour en Ramadan], [K23 Commandes par jour hors Ramadan] ) - 1, "+0 %;-0 %" ) & ")\""""),
+IF (
+    ISBLANK ( [K23 Commandes par jour en Ramadan] ) || ISBLANK ( [K23 Commandes par jour hors Ramadan] ),
+    "comparaison impossible : pas de commande sur l'une des deux périodes",
+    "hors Ramadan → Ramadan ("
+        & FORMAT ( DIVIDE ( [K23 Commandes par jour en Ramadan], [K23 Commandes par jour hors Ramadan] ) - 1, "+0 %;-0 %" ) & ")"
+)"""),
     ("9. Saisonnalité", "Texte CA par jour", None, """
-FORMAT ( CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = FALSE () ), "#,0.0" ) & " → "
-    & FORMAT ( CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = TRUE () ), "#,0.0" ) & " DT\""""),
+VAR h = CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = FALSE () )
+VAR r = CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = TRUE () )
+RETURN FORMAT ( h, "#,0.0" ) & " → " & IF ( ISBLANK ( r ), "aucun", FORMAT ( r, "#,0.0" ) & " DT" )"""),
     ("9. Saisonnalité", "Texte CA par jour détail", None, """
 VAR h = CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = FALSE () )
 VAR r = CALCULATE ( [CA servi par jour], dim_date[est_ramadan] = TRUE () )
-RETURN "hors Ramadan → Ramadan (" & FORMAT ( DIVIDE ( r, h ) - 1, "+0 %;-0 %" ) & ")\""""),
+RETURN
+    IF (
+        ISBLANK ( r ) || ISBLANK ( h ),
+        "comparaison impossible : pas de commande sur l'une des deux périodes",
+        "hors Ramadan → Ramadan (" & FORMAT ( DIVIDE ( r, h ) - 1, "+0 %;-0 %" ) & ")"
+    )"""),
     ("9. Saisonnalité", "Texte été", None, """
 VAR e = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "ete" )
 VAR n = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "normale" )
-RETURN FORMAT ( DIVIDE ( e, n ) - 1, "+0 %;-0 %" ) & " par jour en été\""""),
+RETURN IF ( ISBLANK ( e ) || ISBLANK ( n ), "comparaison impossible", FORMAT ( DIVIDE ( e, n ) - 1, "+0 %;-0 %" ) & " par jour en été" )"""),
     ("9. Saisonnalité", "Texte été détail", None, """
 VAR e = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "ete" )
 VAR n = CALCULATE ( [Commandes servies par jour], dim_date[periode_activite] = "normale" )

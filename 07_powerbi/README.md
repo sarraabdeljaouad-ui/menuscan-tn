@@ -125,7 +125,8 @@ Le cahier des charges a été chiffré en phase 0 sur les données de référenc
 
 - **K01 et K02** donnent la valeur du **dernier mois** de la période filtrée, pas une somme.
 - **K12** suppose une période continue (pas de dates isolées). Le dénominateur ne suit pas le filtre de formule.
-- **K22 Classe du plat** se lit plat par plat, à l'intérieur d'un établissement. Les nombres de plats par classe peuvent prendre quelques secondes à calculer.
+- **K22 Classe du plat** se lit plat par plat, à l'intérieur d'un établissement. Corrigé le 28/11/2026 : la colonne restait vide hors rôle Gérant démo, car `dim_article` n'est pas reliée à `dim_etablissement` (la mesure passe désormais par `TREATAS`).
+- **Textes du Ramadan et de l'été (TB-7)** : si l'établissement n'a aucune commande sur l'une des périodes (ouvert après le Ramadan, par exemple), ils affichent « aucune commande » ou « comparaison impossible » au lieu d'une heure de pointe fausse ou de -100 % (corrigé le 28/11/2026). Les nombres de plats par classe peuvent prendre quelques secondes à calculer.
 - **K21 et K22** reposent sur des taux de coût estimés (seed `taux_cout_categorie`), pas sur des coûts réels.
 - **Établissement = nom · ville** : 403 établissements portent seulement 214 noms (cinq « Café Ennour »). La colonne calculée `dim_etablissement[etablissement]` sert dans les filtres et les tableaux ; avant la phase 7, un filtre sur le nom regroupait les homonymes.
 - **K19 et les résultats `ml`** sont une photo au 31/12/2026 : ils ne suivent pas le filtre de dates. Ils changent quand on republie le schéma `ml`, pas quand on actualise seulement les marts.
